@@ -1,4 +1,4 @@
-module github.com/iotaledger/inx
+module github.com/iotaledger/inx/go
 
 go 1.18
 
