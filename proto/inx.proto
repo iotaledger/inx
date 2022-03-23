@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package inx;
+option go_package = "github.com/iotaledger/inx";
 
 service INX {
 
