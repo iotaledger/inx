@@ -1,6 +1,14 @@
 name: Rust
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore: 
+      - 'go/**'
+      - '**.md'
+  pull_request:
+    paths-ignore: 
+      - 'go/**'
+      - '**.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
