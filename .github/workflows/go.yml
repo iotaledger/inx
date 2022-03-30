@@ -1,10 +1,14 @@
 name: Go
 
 on:
-  push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
+   push:
+     paths-ignore: 
+       - 'rust/**'
+       - '**.md'
+   pull_request:
+     paths-ignore: 
+       - 'rust/**'
+       - '**.md'
 
 defaults:
    run:
@@ -19,7 +23,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: 1.17
+        go-version: 1.18
 
     - name: Build
       run: go build -v ./...
