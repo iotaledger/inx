@@ -1,16 +1,6 @@
 name: Rust
 
-on:
-  push:
-    paths:
-      - 'rust/**'
-    paths-ignore:
-      - '**.md'
-  pull_request:
-    paths:
-      - 'rust/**'
-    paths-ignore:
-      - '**.md'
+on: [push, pull_request]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
