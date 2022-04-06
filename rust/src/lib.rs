@@ -7,4 +7,4 @@ pub mod proto {
 
 pub use self::proto::{inx_client as client, inx_server as server};
 
-pub use tonic::{Request, Response, Status};
+pub use tonic::{transport::Channel, Request, Response, Status};

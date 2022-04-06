@@ -2,6 +2,9 @@
 # Will have compiled files and executables
 target/
 
+# This is a library, so we ignore the lockfile.
+Cargo.lock
+
 # macOS
 .DS_Store
 
