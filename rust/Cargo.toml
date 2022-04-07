@@ -11,7 +11,7 @@ keywords = [ "iota", "plugin", "node", "inx" ]
 homepage = "https://www.iota.org"
 
 [dependencies]
-prost = { version = "0.10", default-features = false }
+prost = { version = "0.10", default-features = false, features = [ "std" ] }
 tonic = { version = "0.7", default-features = false, features = [ "codegen", "prost", "transport" ] }
 
 [build-dependencies]
