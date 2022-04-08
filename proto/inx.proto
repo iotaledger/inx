@@ -13,6 +13,7 @@ service INX {
   rpc ReadMilestone(MilestoneRequest) returns (Milestone);
   rpc ListenToLatestMilestone(NoParams) returns (stream Milestone);
   rpc ListenToConfirmedMilestone(NoParams) returns (stream Milestone);
+  rpc ComputeWhiteFlag(WhiteFlagRequest) returns (WhiteFlagResponse);
 
   // Messages
   rpc ListenToMessages(MessageFilter) returns (stream Message);
@@ -53,10 +54,18 @@ message NoParams {}
 
 message ProtocolParameters {
   string networkName = 1;
-  int32 protocolVersion = 2;
+  uint32 protocolVersion = 2;
   string bech32HRP = 3;
   float minPoWScore = 4;
   RentStructure rentStructure = 5;
+  uint32 milestonePublicKeyCount = 6;
+  repeated MilestoneKeyRange milestoneKeyRanges = 7;
+}
+
+message MilestoneKeyRange {
+  bytes publicKey = 1;
+  uint32 startIndex = 2;
+  uint32 endIndex = 3;
 }
 
 message RentStructure {
@@ -82,6 +91,16 @@ message Milestone {
   uint32 milestoneIndex = 1;
   uint32 milestoneTimestamp = 2;
   MessageId messageId = 3;
+}
+
+message WhiteFlagRequest {
+  uint32 milestoneIndex = 1;
+  uint32 milestoneTimestamp = 2;
+  repeated bytes parents = 3;
+}
+
+message WhiteFlagResponse {
+  bytes milestoneInclusionMerkleRoot = 1;
 }
 
 // Messages
