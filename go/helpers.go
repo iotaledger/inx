@@ -31,6 +31,14 @@ func NewOutputId(outputID *iotago.OutputID) *OutputId {
 	return id
 }
 
+func NewMilestoneId(milestoneID iotago.MilestoneID) *MilestoneId {
+	id := &MilestoneId{
+		Id: make([]byte, len(milestoneID)),
+	}
+	copy(id.Id, milestoneID[:])
+	return id
+}
+
 func NewMilestone(messageID iotago.MessageID, index uint32, timestamp uint32) *Milestone {
 	return &Milestone{
 		MilestoneIndex:     index,
