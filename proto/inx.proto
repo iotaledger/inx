@@ -25,7 +25,8 @@ service INX {
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
-  rpc ListenToLedgerUpdates(LedgerUpdateRequest) returns (stream LedgerUpdate);
+  rpc ListenToLedgerUpdates(LedgerRequest) returns (stream LedgerUpdate);
+  rpc ListenToTreasuryUpdates(LedgerRequest) returns (stream TreasuryUpdate);
   rpc ReadOutput(OutputId) returns (OutputResponse);
   rpc ListenToMigrationReceipts(NoParams) returns (stream RawReceipt);
 
@@ -181,7 +182,16 @@ message LedgerSpent {
   uint32 milestoneTimestampSpent = 4;
 }
 
-message LedgerUpdateRequest {
+message MilestoneId {
+  bytes id = 1;
+}
+
+message TreasuryOutput {
+  MilestoneId milestoneId = 1;
+  uint64 amount = 2;
+}
+
+message LedgerRequest {
   uint32 startMilestoneIndex = 1;
 }
 
@@ -189,6 +199,12 @@ message LedgerUpdate {
   uint32 milestoneIndex = 1;
   repeated LedgerOutput created = 2;
   repeated LedgerSpent consumed = 3;
+}
+
+message TreasuryUpdate {
+  uint32 milestoneIndex = 1;
+  TreasuryOutput created = 2;
+  TreasuryOutput consumed = 3;
 }
 
 message RawReceipt {

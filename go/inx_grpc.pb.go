@@ -35,7 +35,8 @@ type INXClient interface {
 	ReadMessageMetadata(ctx context.Context, in *MessageId, opts ...grpc.CallOption) (*MessageMetadata, error)
 	// UTXO
 	ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error)
-	ListenToLedgerUpdates(ctx context.Context, in *LedgerUpdateRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
+	ListenToLedgerUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
+	ListenToTreasuryUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error)
 	ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputResponse, error)
 	ListenToMigrationReceipts(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToMigrationReceiptsClient, error)
 	// REST API
@@ -307,7 +308,7 @@ func (x *iNXReadUnspentOutputsClient) Recv() (*UnspentOutput, error) {
 	return m, nil
 }
 
-func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *LedgerUpdateRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
+func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
 	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[6], "/inx.INX/ListenToLedgerUpdates", opts...)
 	if err != nil {
 		return nil, err
@@ -339,6 +340,38 @@ func (x *iNXListenToLedgerUpdatesClient) Recv() (*LedgerUpdate, error) {
 	return m, nil
 }
 
+func (c *iNXClient) ListenToTreasuryUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[7], "/inx.INX/ListenToTreasuryUpdates", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &iNXListenToTreasuryUpdatesClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type INX_ListenToTreasuryUpdatesClient interface {
+	Recv() (*TreasuryUpdate, error)
+	grpc.ClientStream
+}
+
+type iNXListenToTreasuryUpdatesClient struct {
+	grpc.ClientStream
+}
+
+func (x *iNXListenToTreasuryUpdatesClient) Recv() (*TreasuryUpdate, error) {
+	m := new(TreasuryUpdate)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *iNXClient) ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputResponse, error) {
 	out := new(OutputResponse)
 	err := c.cc.Invoke(ctx, "/inx.INX/ReadOutput", in, out, opts...)
@@ -349,7 +382,7 @@ func (c *iNXClient) ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.C
 }
 
 func (c *iNXClient) ListenToMigrationReceipts(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToMigrationReceiptsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[7], "/inx.INX/ListenToMigrationReceipts", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[8], "/inx.INX/ListenToMigrationReceipts", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -428,7 +461,8 @@ type INXServer interface {
 	ReadMessageMetadata(context.Context, *MessageId) (*MessageMetadata, error)
 	// UTXO
 	ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error
-	ListenToLedgerUpdates(*LedgerUpdateRequest, INX_ListenToLedgerUpdatesServer) error
+	ListenToLedgerUpdates(*LedgerRequest, INX_ListenToLedgerUpdatesServer) error
+	ListenToTreasuryUpdates(*LedgerRequest, INX_ListenToTreasuryUpdatesServer) error
 	ReadOutput(context.Context, *OutputId) (*OutputResponse, error)
 	ListenToMigrationReceipts(*NoParams, INX_ListenToMigrationReceiptsServer) error
 	// REST API
@@ -481,8 +515,11 @@ func (UnimplementedINXServer) ReadMessageMetadata(context.Context, *MessageId) (
 func (UnimplementedINXServer) ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReadUnspentOutputs not implemented")
 }
-func (UnimplementedINXServer) ListenToLedgerUpdates(*LedgerUpdateRequest, INX_ListenToLedgerUpdatesServer) error {
+func (UnimplementedINXServer) ListenToLedgerUpdates(*LedgerRequest, INX_ListenToLedgerUpdatesServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToLedgerUpdates not implemented")
+}
+func (UnimplementedINXServer) ListenToTreasuryUpdates(*LedgerRequest, INX_ListenToTreasuryUpdatesServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListenToTreasuryUpdates not implemented")
 }
 func (UnimplementedINXServer) ReadOutput(context.Context, *OutputId) (*OutputResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadOutput not implemented")
@@ -765,7 +802,7 @@ func (x *iNXReadUnspentOutputsServer) Send(m *UnspentOutput) error {
 }
 
 func _INX_ListenToLedgerUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(LedgerUpdateRequest)
+	m := new(LedgerRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -782,6 +819,27 @@ type iNXListenToLedgerUpdatesServer struct {
 }
 
 func (x *iNXListenToLedgerUpdatesServer) Send(m *LedgerUpdate) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _INX_ListenToTreasuryUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(LedgerRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(INXServer).ListenToTreasuryUpdates(m, &iNXListenToTreasuryUpdatesServer{stream})
+}
+
+type INX_ListenToTreasuryUpdatesServer interface {
+	Send(*TreasuryUpdate) error
+	grpc.ServerStream
+}
+
+type iNXListenToTreasuryUpdatesServer struct {
+	grpc.ServerStream
+}
+
+func (x *iNXListenToTreasuryUpdatesServer) Send(m *TreasuryUpdate) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -964,6 +1022,11 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ListenToLedgerUpdates",
 			Handler:       _INX_ListenToLedgerUpdates_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ListenToTreasuryUpdates",
+			Handler:       _INX_ListenToTreasuryUpdates_Handler,
 			ServerStreams: true,
 		},
 		{

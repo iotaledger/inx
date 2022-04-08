@@ -107,7 +107,17 @@ func (x *LedgerSpent) UnwrapTransactionIDSpent() *iotago.TransactionID {
 	return id
 }
 
+func (x *TreasuryOutput) UnwrapMilestoneID() *iotago.MilestoneID {
+	return x.GetMilestoneId().Unwrap()
+}
+
 // Milestones
+
+func (x *MilestoneId) Unwrap() *iotago.MilestoneID {
+	id := &iotago.MilestoneID{}
+	copy(id[:], x.GetId())
+	return id
+}
 
 func WrapReceipt(receipt *iotago.Receipt) (*RawReceipt, error) {
 	bytes, err := receipt.Serialize(serializer.DeSeriModeNoValidation, iotago.ZeroRentParas)
