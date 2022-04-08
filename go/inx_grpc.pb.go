@@ -25,6 +25,7 @@ type INXClient interface {
 	ReadMilestone(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (*Milestone, error)
 	ListenToLatestMilestone(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToLatestMilestoneClient, error)
 	ListenToConfirmedMilestone(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToConfirmedMilestoneClient, error)
+	ComputeWhiteFlag(ctx context.Context, in *WhiteFlagRequest, opts ...grpc.CallOption) (*WhiteFlagResponse, error)
 	// Messages
 	ListenToMessages(ctx context.Context, in *MessageFilter, opts ...grpc.CallOption) (INX_ListenToMessagesClient, error)
 	ListenToSolidMessages(ctx context.Context, in *MessageFilter, opts ...grpc.CallOption) (INX_ListenToSolidMessagesClient, error)
@@ -140,6 +141,15 @@ func (x *iNXListenToConfirmedMilestoneClient) Recv() (*Milestone, error) {
 		return nil, err
 	}
 	return m, nil
+}
+
+func (c *iNXClient) ComputeWhiteFlag(ctx context.Context, in *WhiteFlagRequest, opts ...grpc.CallOption) (*WhiteFlagResponse, error) {
+	out := new(WhiteFlagResponse)
+	err := c.cc.Invoke(ctx, "/inx.INX/ComputeWhiteFlag", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *iNXClient) ListenToMessages(ctx context.Context, in *MessageFilter, opts ...grpc.CallOption) (INX_ListenToMessagesClient, error) {
@@ -408,6 +418,7 @@ type INXServer interface {
 	ReadMilestone(context.Context, *MilestoneRequest) (*Milestone, error)
 	ListenToLatestMilestone(*NoParams, INX_ListenToLatestMilestoneServer) error
 	ListenToConfirmedMilestone(*NoParams, INX_ListenToConfirmedMilestoneServer) error
+	ComputeWhiteFlag(context.Context, *WhiteFlagRequest) (*WhiteFlagResponse, error)
 	// Messages
 	ListenToMessages(*MessageFilter, INX_ListenToMessagesServer) error
 	ListenToSolidMessages(*MessageFilter, INX_ListenToSolidMessagesServer) error
@@ -445,6 +456,9 @@ func (UnimplementedINXServer) ListenToLatestMilestone(*NoParams, INX_ListenToLat
 }
 func (UnimplementedINXServer) ListenToConfirmedMilestone(*NoParams, INX_ListenToConfirmedMilestoneServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToConfirmedMilestone not implemented")
+}
+func (UnimplementedINXServer) ComputeWhiteFlag(context.Context, *WhiteFlagRequest) (*WhiteFlagResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ComputeWhiteFlag not implemented")
 }
 func (UnimplementedINXServer) ListenToMessages(*MessageFilter, INX_ListenToMessagesServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToMessages not implemented")
@@ -592,6 +606,24 @@ type iNXListenToConfirmedMilestoneServer struct {
 
 func (x *iNXListenToConfirmedMilestoneServer) Send(m *Milestone) error {
 	return x.ServerStream.SendMsg(m)
+}
+
+func _INX_ComputeWhiteFlag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(WhiteFlagRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(INXServer).ComputeWhiteFlag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/inx.INX/ComputeWhiteFlag",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(INXServer).ComputeWhiteFlag(ctx, req.(*WhiteFlagRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _INX_ListenToMessages_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -864,6 +896,10 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReadMilestone",
 			Handler:    _INX_ReadMilestone_Handler,
+		},
+		{
+			MethodName: "ComputeWhiteFlag",
+			Handler:    _INX_ComputeWhiteFlag_Handler,
 		},
 		{
 			MethodName: "SubmitMessage",
