@@ -92,16 +92,19 @@ message Milestone {
   uint32 milestoneIndex = 1;
   uint32 milestoneTimestamp = 2;
   MessageId messageId = 3;
+  MilestoneId milestoneId = 4;
 }
 
 message WhiteFlagRequest {
   uint32 milestoneIndex = 1;
   uint32 milestoneTimestamp = 2;
   repeated bytes parents = 3;
+  MilestoneId lastMilestoneId = 4;
 }
 
 message WhiteFlagResponse {
-  bytes milestoneInclusionMerkleRoot = 1;
+  bytes milestoneInclusionMerkleProof = 1;
+  bytes milestonePastConeMerkleProof = 2;
 }
 
 // Messages

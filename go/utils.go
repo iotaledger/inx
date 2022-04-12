@@ -35,6 +35,9 @@ func (x *RawMessage) UnwrapMessage(deSeriMode serializer.DeSerializationMode) (*
 
 func (x *MessageId) Unwrap() iotago.MessageID {
 	id := iotago.MessageID{}
+	if len(x.GetId()) != iotago.MessageIDLength {
+		return id
+	}
 	copy(id[:], x.GetId())
 	return id
 }
@@ -62,6 +65,9 @@ func (x *MessageMetadata) UnwrapMessageID() iotago.MessageID {
 // Ledger
 
 func (x *OutputId) Unwrap() *iotago.OutputID {
+	if len(x.GetId()) != iotago.OutputIDLength {
+		return nil
+	}
 	id := &iotago.OutputID{}
 	copy(id[:], x.GetId())
 	return id
@@ -102,24 +108,30 @@ func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMod
 }
 
 func (x *LedgerSpent) UnwrapTransactionIDSpent() *iotago.TransactionID {
+	if len(x.GetTransactionIdSpent()) != iotago.TransactionIDLength {
+		return nil
+	}
 	id := &iotago.TransactionID{}
 	copy(id[:], x.GetTransactionIdSpent())
 	return id
 }
 
-func (x *TreasuryOutput) UnwrapMilestoneID() *iotago.MilestoneID {
+func (x *TreasuryOutput) UnwrapMilestoneID() iotago.MilestoneID {
 	return x.GetMilestoneId().Unwrap()
 }
 
 // Milestones
 
-func (x *MilestoneId) Unwrap() *iotago.MilestoneID {
-	id := &iotago.MilestoneID{}
+func (x *MilestoneId) Unwrap() iotago.MilestoneID {
+	id := iotago.MilestoneID{}
+	if len(x.GetId()) != iotago.MilestoneIDLength {
+		return id
+	}
 	copy(id[:], x.GetId())
 	return id
 }
 
-func WrapReceipt(receipt *iotago.Receipt) (*RawReceipt, error) {
+func WrapReceipt(receipt *iotago.ReceiptMilestoneOpt) (*RawReceipt, error) {
 	bytes, err := receipt.Serialize(serializer.DeSeriModeNoValidation, iotago.ZeroRentParas)
 	if err != nil {
 		return nil, err
@@ -129,8 +141,8 @@ func WrapReceipt(receipt *iotago.Receipt) (*RawReceipt, error) {
 	}, nil
 }
 
-func (x *RawReceipt) UnwrapReceipt(deSeriMode serializer.DeSerializationMode) (*iotago.Receipt, error) {
-	r := &iotago.Receipt{}
+func (x *RawReceipt) UnwrapReceipt(deSeriMode serializer.DeSerializationMode) (*iotago.ReceiptMilestoneOpt, error) {
+	r := &iotago.ReceiptMilestoneOpt{}
 	if _, err := r.Deserialize(x.GetData(), deSeriMode, iotago.ZeroRentParas); err != nil {
 		return nil, err
 	}
