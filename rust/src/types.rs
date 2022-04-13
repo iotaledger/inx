@@ -51,7 +51,8 @@ impl TryFrom<proto::MilestoneId> for stardust::payload::milestone::MilestoneId {
     type Error = Error;
 
     fn try_from(value: proto::MilestoneId) -> Result<Self, Self::Error> {
-        let bytes: [u8; stardust::payload::milestone::MilestoneId::LENGTH] = value.id.try_into().map_err(|_| Error::InvalidBufferLength)?;
+        let bytes: [u8; stardust::payload::milestone::MilestoneId::LENGTH] =
+            value.id.try_into().map_err(|_| Error::InvalidBufferLength)?;
         Ok(stardust::payload::milestone::MilestoneId::from(bytes))
     }
 }
@@ -83,7 +84,10 @@ impl TryFrom<proto::Milestone> for Milestone {
             milestone_index: value.milestone_index,
             milestone_timestamp: value.milestone_timestamp,
             message_id: value.message_id.ok_or(Error::MissingField("message_id"))?.try_into()?,
-            milestone_id: value.milestone_id.ok_or(Error::MissingField("milestone_id"))?.try_into()?,
+            milestone_id: value
+                .milestone_id
+                .ok_or(Error::MissingField("milestone_id"))?
+                .try_into()?,
         })
     }
 }
