@@ -26,6 +26,7 @@ pub struct Message {
 }
 
 /// The [`Milestone`] type.
+#[derive(PartialEq, Debug)]
 pub struct Milestone {
     /// The milestone index.
     pub milestone_index: u32,
