@@ -17,6 +17,7 @@ pub enum Error {
 }
 
 /// The [`Message`] type.
+#[derive(PartialEq, Debug)]
 pub struct Message {
     /// The [`MessageId`](stardust::MessageId) of the message.
     pub message_id: stardust::MessageId,
