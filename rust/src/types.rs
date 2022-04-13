@@ -54,3 +54,14 @@ impl TryFrom<proto::RawMessage> for stardust::Message {
         stardust::Message::unpack_verified(value.data).map_err(|_| Error::PackableError)
     }
 }
+
+impl TryFrom<proto::Message> for Message {
+    type Error = Error;
+
+    fn try_from(value: proto::Message) -> Result<Self, Self::Error> {
+        Ok(Message {
+            message_id: value.message_id.ok_or(Error::MissingField("message_id"))?.try_into()?,
+            message: value.message.ok_or(Error::MissingField("message"))?.try_into()?,
+        })
+    }
+}
