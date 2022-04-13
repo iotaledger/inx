@@ -4,7 +4,7 @@
 use crate::proto;
 
 use bee_message as stardust;
-use packable::{PackableExt};
+use packable::PackableExt;
 
 /// Represents [`Error`]s that happened during conversion.
 #[allow(missing_docs)]
@@ -52,4 +52,3 @@ impl TryFrom<proto::RawMessage> for stardust::Message {
         stardust::Message::unpack_verified(value.data).map_err(|_| Error::PackableError)
     }
 }
-
