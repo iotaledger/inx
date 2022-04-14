@@ -2,28 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::proto;
+use super::Error;
 
-use bee_message as stardust;
-use packable::PackableExt;
-
-/// Represents [`Error`]s that happened during conversion.
-#[allow(missing_docs)]
-#[derive(PartialEq, Debug)]
-pub enum Error {
-    MissingField(&'static str),
-    InvalidField(&'static str),
-    InvalidBufferLength,
-    PackableError,
-}
-
-/// The [`Message`] type.
-#[derive(PartialEq, Debug)]
-pub struct Message {
-    /// The [`MessageId`](stardust::MessageId) of the message.
-    pub message_id: stardust::MessageId,
-    /// The complete [`Message`](stardust::Message).
-    pub message: stardust::Message,
-}
+use bee_message_stardust as stardust;
 
 /// The [`Milestone`] type.
 #[derive(PartialEq, Debug)]
@@ -38,15 +19,6 @@ pub struct Milestone {
     pub milestone_id: stardust::payload::milestone::MilestoneId,
 }
 
-impl TryFrom<proto::MessageId> for stardust::MessageId {
-    type Error = Error;
-
-    fn try_from(value: proto::MessageId) -> Result<Self, Self::Error> {
-        let bytes: [u8; stardust::MessageId::LENGTH] = value.id.try_into().map_err(|_| Error::InvalidBufferLength)?;
-        Ok(stardust::MessageId::from(bytes))
-    }
-}
-
 impl TryFrom<proto::MilestoneId> for stardust::payload::milestone::MilestoneId {
     type Error = Error;
 
@@ -54,25 +26,6 @@ impl TryFrom<proto::MilestoneId> for stardust::payload::milestone::MilestoneId {
         let bytes: [u8; stardust::payload::milestone::MilestoneId::LENGTH] =
             value.id.try_into().map_err(|_| Error::InvalidBufferLength)?;
         Ok(stardust::payload::milestone::MilestoneId::from(bytes))
-    }
-}
-
-impl TryFrom<proto::RawMessage> for stardust::Message {
-    type Error = Error;
-
-    fn try_from(value: proto::RawMessage) -> Result<Self, Self::Error> {
-        stardust::Message::unpack_verified(value.data).map_err(|_| Error::PackableError)
-    }
-}
-
-impl TryFrom<proto::Message> for Message {
-    type Error = Error;
-
-    fn try_from(value: proto::Message) -> Result<Self, Self::Error> {
-        Ok(Message {
-            message_id: value.message_id.ok_or(Error::MissingField("message_id"))?.try_into()?,
-            message: value.message.ok_or(Error::MissingField("message"))?.try_into()?,
-        })
     }
 }
 
