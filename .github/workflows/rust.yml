@@ -44,8 +44,9 @@ jobs:
 
       - uses: Swatinem/rust-cache@v1
 
-      - name: Install protoc
-        uses: arduino/setup-protoc@v1
+      - name: Install protoc (macOS)
+        if: contains(matrix.os, 'macos')
+        run: brew install protobuf
 
       - name: Build
         uses: actions-rs/cargo@v1
