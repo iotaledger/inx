@@ -20,8 +20,14 @@ impl TryFrom<proto::NodeStatus> for NodeStatus {
     fn try_from(value: proto::NodeStatus) -> Result<Self, Self::Error> {
         Ok(NodeStatus {
             is_healthy: value.is_healthy,
-            latest_milestone: value.latest_milestone.ok_or(Error::MissingField("latest_milestone"))?.try_into()?,
-            confirmed_milestone: value.confirmed_milestone.ok_or(Error::MissingField("confirmed_milestone"))?.try_into()?,
+            latest_milestone: value
+                .latest_milestone
+                .ok_or(Error::MissingField("latest_milestone"))?
+                .try_into()?,
+            confirmed_milestone: value
+                .confirmed_milestone
+                .ok_or(Error::MissingField("confirmed_milestone"))?
+                .try_into()?,
             pruning_index: value.pruning_index,
             ledger_index: value.ledger_index,
         })
