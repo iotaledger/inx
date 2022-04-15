@@ -3,7 +3,10 @@
 
 mod error;
 mod message;
+mod metadata;
 mod milestone;
 mod node_status;
 
-pub use self::{error::Error, message::Message, milestone::Milestone, node_status::NodeStatus};
+pub use self::{
+    error::Error, message::Message, metadata::MessageMetadata, milestone::Milestone, node_status::NodeStatus,
+};
