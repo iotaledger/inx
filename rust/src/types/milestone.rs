@@ -6,17 +6,24 @@ use crate::proto;
 
 use bee_message_stardust as stardust;
 
-/// The [`Milestone`] type.
+/// The [`MilestoneInfo`] type.
 #[derive(PartialEq, Debug)]
-pub struct Milestone {
+pub struct MilestoneInfo {
+    /// The [`MilestoneId`](stardust::payload::milestone::MilestoneId) of the milestone.
+    pub milestone_id: stardust::payload::milestone::MilestoneId,
     /// The milestone index.
     pub milestone_index: u32,
     /// The timestamp of the milestone.
     pub milestone_timestamp: u32,
-    /// The [`MessageId`](stardust::MessageId) of the milestone.
-    pub message_id: stardust::MessageId,
-    /// The [`MilestoneId`](stardust::payload::milestone::MilestoneId) of the milestone.
-    pub milestone_id: stardust::payload::milestone::MilestoneId,
+}
+
+/// The [`Milestone`] type.
+#[derive(PartialEq, Debug)]
+pub struct Milestone {
+    /// Information about the milestone.
+    pub milestone_info: MilestoneInfo,
+    /// The raw bytes of the milestone.
+    pub milestone: Vec<u8>, // TODO: Find an appropriate type for this.
 }
 
 impl TryFrom<proto::MilestoneId> for stardust::payload::milestone::MilestoneId {
@@ -29,18 +36,31 @@ impl TryFrom<proto::MilestoneId> for stardust::payload::milestone::MilestoneId {
     }
 }
 
+impl TryFrom<proto::MilestoneInfo> for MilestoneInfo {
+    type Error = Error;
+
+    fn try_from(value: proto::MilestoneInfo) -> Result<Self, Self::Error> {
+        Ok(MilestoneInfo {
+            milestone_id: value
+                .milestone_id
+                .ok_or(Error::MissingField("milestone_id"))?
+                .try_into()?,
+            milestone_index: value.milestone_index,
+            milestone_timestamp: value.milestone_timestamp,
+        })
+    }
+}
+
 impl TryFrom<proto::Milestone> for Milestone {
     type Error = Error;
 
     fn try_from(value: proto::Milestone) -> Result<Self, Self::Error> {
         Ok(Milestone {
-            milestone_index: value.milestone_index,
-            milestone_timestamp: value.milestone_timestamp,
-            message_id: value.message_id.ok_or(Error::MissingField("message_id"))?.try_into()?,
-            milestone_id: value
-                .milestone_id
-                .ok_or(Error::MissingField("milestone_id"))?
+            milestone_info: value
+                .milestone_info
+                .ok_or(Error::MissingField("milestone_info"))?
                 .try_into()?,
+            milestone: value.milestone.ok_or(Error::MissingField("milestone"))?.data,
         })
     }
 }

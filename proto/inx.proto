@@ -77,34 +77,47 @@ message RentStructure {
 
 message NodeStatus {
   bool isHealthy = 1;
-  Milestone latestMilestone = 2;
-  Milestone confirmedMilestone = 3;
+  MilestoneInfo latestMilestone = 2;
+  MilestoneInfo confirmedMilestone = 3;
   uint32 pruningIndex = 4;
   uint32 ledgerIndex = 5;
 }
 
 // Milestones
+
+message RawMilestone {
+  bytes data = 1;
+}
+
+message MilestoneId {
+  bytes id = 1;
+}
+
 message MilestoneRequest {
   uint32 milestoneIndex = 1;
 }
 
+message MilestoneInfo {
+  MilestoneId milestoneId = 1;
+  uint32 milestoneIndex = 2;
+  uint32 milestoneTimestamp = 3;
+}
+
 message Milestone {
-  uint32 milestoneIndex = 1;
-  uint32 milestoneTimestamp = 2;
-  MessageId messageId = 3;
-  MilestoneId milestoneId = 4;
+  MilestoneInfo milestoneInfo = 1;
+  RawMilestone milestone = 2;
 }
 
 message WhiteFlagRequest {
   uint32 milestoneIndex = 1;
   uint32 milestoneTimestamp = 2;
-  repeated bytes parents = 3;
+  repeated MessageId parents = 3;
   MilestoneId lastMilestoneId = 4;
 }
 
 message WhiteFlagResponse {
-  bytes milestoneInclusionMerkleProof = 1;
-  bytes milestonePastConeMerkleProof = 2;
+  bytes milestoneConfirmedMerkleProof = 1;
+  bytes milestoneAppliedMerkleProof = 2;
 }
 
 // Messages
@@ -127,7 +140,7 @@ message Message {
 
 message MessageMetadata {
   MessageId messageId = 1;
-  repeated bytes parents = 2;
+  repeated MessageId parents = 2;
   bool solid = 3;
   bool shouldPromote = 4;
   bool shouldReattach = 5;
@@ -183,10 +196,6 @@ message LedgerSpent {
   bytes transactionIdSpent = 2;
   uint32 milestoneIndexSpent = 3;
   uint32 milestoneTimestampSpent = 4;
-}
-
-message MilestoneId {
-  bytes id = 1;
 }
 
 message TreasuryOutput {

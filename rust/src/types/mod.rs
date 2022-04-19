@@ -8,5 +8,9 @@ mod milestone;
 mod node_status;
 
 pub use self::{
-    error::Error, message::Message, metadata::MessageMetadata, milestone::Milestone, node_status::NodeStatus,
+    error::Error,
+    message::Message,
+    metadata::MessageMetadata,
+    milestone::{Milestone, MilestoneInfo},
+    node_status::NodeStatus,
 };

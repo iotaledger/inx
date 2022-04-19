@@ -1,7 +1,7 @@
 // Copyright 2022 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-use super::{Error, Milestone};
+use super::{Error, MilestoneInfo};
 use crate::proto;
 
 /// The [`NodeStatus`] type.
@@ -10,9 +10,9 @@ pub struct NodeStatus {
     /// Signals if the node is healthy.
     pub is_healthy: bool,
     /// The latest milestone seen by the node.
-    pub latest_milestone: Milestone,
+    pub latest_milestone: MilestoneInfo,
     /// The last confirmed milestone.
-    pub confirmed_milestone: Milestone,
+    pub confirmed_milestone: MilestoneInfo,
     /// The pruning index of the node.
     pub pruning_index: u32,
     /// The ledger index of the node.
