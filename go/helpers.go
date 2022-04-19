@@ -39,11 +39,10 @@ func NewMilestoneId(milestoneID iotago.MilestoneID) *MilestoneId {
 	return id
 }
 
-func NewMilestone(milestoneID iotago.MilestoneID, messageID iotago.MessageID, index uint32, timestamp uint32) *Milestone {
-	return &Milestone{
+func NewMilestoneInfo(milestoneID iotago.MilestoneID, index uint32, timestamp uint32) *MilestoneInfo {
+	return &MilestoneInfo{
+		MilestoneId:        NewMilestoneId(milestoneID),
 		MilestoneIndex:     index,
 		MilestoneTimestamp: timestamp,
-		MessageId:          NewMessageId(messageID),
-		MilestoneId:        NewMilestoneId(milestoneID),
 	}
 }
