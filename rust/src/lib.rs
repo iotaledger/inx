@@ -10,6 +10,7 @@ mod types;
 
 /// The raw protobuf definitions.
 pub mod proto {
+    #![allow(missing_docs)]
     tonic::include_proto!("inx");
 }
 
