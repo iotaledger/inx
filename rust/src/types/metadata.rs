@@ -57,8 +57,7 @@ impl TryFrom<proto::MessageMetadata> for MessageMetadata {
 
         let mut parents = Vec::with_capacity(value.parents.len());
         for parent in value.parents {
-            let bytes: [u8; stardust::MessageId::LENGTH] = parent.try_into().map_err(|_| Error::InvalidBufferLength)?;
-            parents.push(stardust::MessageId::from(bytes));
+            parents.push(parent.try_into()?);
         }
 
         Ok(MessageMetadata {
