@@ -7,10 +7,15 @@ use crate::proto;
 /// The [`NodeStatus`] type.
 #[derive(PartialEq, Debug)]
 pub struct NodeStatus {
+    /// Signals if the node is healthy.
     pub is_healthy: bool,
+    /// The latest milestone seen by the node.
     pub latest_milestone: Milestone,
+    /// The last confirmed milestone.
     pub confirmed_milestone: Milestone,
+    /// The pruning index of the node.
     pub pruning_index: u32,
+    /// The ledger index of the node.
     pub ledger_index: u32,
 }
 

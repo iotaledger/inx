@@ -18,4 +18,4 @@ pub mod tonic {
 pub use self::proto::{inx_client as client, inx_server as server};
 
 #[cfg(feature = "types")]
-pub use self::types::{Error, Message, Milestone};
+pub use self::types::*;
