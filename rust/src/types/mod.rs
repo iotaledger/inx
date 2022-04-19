@@ -10,7 +10,7 @@ mod node_status;
 pub use self::{
     error::Error,
     message::Message,
-    metadata::MessageMetadata,
+    metadata::{ConflictReason, LedgerInclusionState, MessageMetadata},
     milestone::{Milestone, MilestoneInfo},
     node_status::NodeStatus,
 };

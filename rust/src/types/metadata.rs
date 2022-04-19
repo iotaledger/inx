@@ -6,6 +6,7 @@ use crate::proto;
 
 use bee_message_stardust as stardust;
 
+#[allow(missing_docs)]
 #[derive(PartialEq, Debug)]
 pub enum LedgerInclusionState {
     NoTransaction,
@@ -13,6 +14,7 @@ pub enum LedgerInclusionState {
     Conflicting,
 }
 
+#[allow(missing_docs)]
 #[derive(PartialEq, Debug)]
 pub enum ConflictReason {
     None,
@@ -29,23 +31,23 @@ pub enum ConflictReason {
 #[derive(PartialEq, Debug)]
 pub struct MessageMetadata {
     /// The id of the message.
-    message_id: stardust::MessageId,
+    pub message_id: stardust::MessageId,
     /// The parents of the messsage.
-    parents: Vec<stardust::MessageId>,
+    pub parents: Vec<stardust::MessageId>,
     /// Status of the solidification process.
-    is_solid: bool,
+    pub is_solid: bool,
     /// Indicates that the message should be promoted.
-    should_promote: bool,
+    pub should_promote: bool,
     /// Indicates that the message should be reattached.
-    should_reattach: bool,
+    pub should_reattach: bool,
     /// The milestone that referenced the message.
-    referenced_by_milestone_index: u32,
+    pub referenced_by_milestone_index: u32,
     /// The corresponding milestone index.
-    milestone_index: u32,
+    pub milestone_index: u32,
     /// Indicates if a message is part of the ledger state or not.
-    ledger_inclusion_state: LedgerInclusionState,
+    pub ledger_inclusion_state: LedgerInclusionState,
     /// Indicates if a conflict occured, and if so holds information about the reason for the conflict.
-    conflict_reason: ConflictReason,
+    pub conflict_reason: ConflictReason,
 }
 
 impl TryFrom<proto::MessageMetadata> for MessageMetadata {
