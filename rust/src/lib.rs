@@ -3,7 +3,7 @@
 
 #![deny(warnings, missing_docs)]
 
-//! This crate provides bindings for the IOTA node interface extensions (INX).
+//! This crate provides bindings for the IOTA node extensions (INX).
 
 #[cfg(feature = "types")]
 mod types;
