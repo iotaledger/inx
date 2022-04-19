@@ -93,7 +93,7 @@ jobs:
     continue-on-error: ${{ (matrix.rust != 'stable') }}
     strategy:
       matrix:
-        rust: [stable, beta]
+        rust: [stable]
 
     steps:
       - uses: actions/checkout@v2
