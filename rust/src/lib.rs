@@ -1,7 +1,10 @@
 // Copyright 2022 IOTA Stiftung
 // SPDX-License-Identifier: Apache-2.0
 
-#[deny(warnings, missing_docs)]
+#![deny(warnings, missing_docs)]
+
+//! This crate provides bindings for the IOTA node interface extensions (INX).
+
 #[cfg(feature = "types")]
 mod types;
 
