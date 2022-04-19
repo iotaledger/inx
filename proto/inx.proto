@@ -116,8 +116,8 @@ message WhiteFlagRequest {
 }
 
 message WhiteFlagResponse {
-  bytes milestoneConfirmedMerkleProof = 1;
-  bytes milestoneAppliedMerkleProof = 2;
+  bytes milestoneConfirmedMerkleRoot = 1;
+  bytes milestoneAppliedMerkleRoot = 2;
 }
 
 // Messages
