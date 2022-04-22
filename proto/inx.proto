@@ -10,7 +10,7 @@ service INX {
   rpc ReadProtocolParameters(NoParams) returns (ProtocolParameters);
 
   // Milestones
-  rpc ReadMilestone(MilestoneRequest) returns (Milestone);
+  rpc ReadMilestone(MilestoneId) returns (Milestone);
   rpc ListenToLatestMilestone(NoParams) returns (stream Milestone);
   rpc ListenToConfirmedMilestone(NoParams) returns (stream Milestone);
   rpc ComputeWhiteFlag(WhiteFlagRequest) returns (WhiteFlagResponse);
