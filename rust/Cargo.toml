@@ -16,7 +16,7 @@ tonic = { version = "0.7", default-features = false, features = [ "codegen", "pr
 
 # optional
 bee-message-stardust = { package = "bee-message", version = "0.2", git = "https://github.com/iotaledger/bee", branch = "shimmer-develop", default-features = false, features = [ "std" ], optional = true }
-packable = { version = "0.2", default-features = false, optional = true }
+packable = { version = "0.3", default-features = false, optional = true }
 
 [build-dependencies]
 tonic-build = { version = "0.7", default-features = false, features = [ "transport", "prost" ] }
