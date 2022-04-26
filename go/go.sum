@@ -235,6 +235,8 @@ github.com/iotaledger/iota.go/v3 v3.0.0-20220419063054-a9fef1da7ef1 h1:Jt6H57hDN
 github.com/iotaledger/iota.go/v3 v3.0.0-20220419063054-a9fef1da7ef1/go.mod h1:GMXWLKvIlIknUCjXyCcYipq3uWDqAjJQ75ylkgQFQ1I=
 github.com/iotaledger/iota.go/v3 v3.0.0-20220425160654-b3583f0bafa9 h1:wGHwkjHh26ULCkfgPBGW11fdzrkWtCqRFGibtHJMNmE=
 github.com/iotaledger/iota.go/v3 v3.0.0-20220425160654-b3583f0bafa9/go.mod h1:GMXWLKvIlIknUCjXyCcYipq3uWDqAjJQ75ylkgQFQ1I=
+github.com/iotaledger/iota.go/v3 v3.0.0-20220426124950-4b19bfb47f9a h1:7oyZbdL3aFBeaV0lntDKdX589j5aGo5cgLKtgC/QjrU=
+github.com/iotaledger/iota.go/v3 v3.0.0-20220426124950-4b19bfb47f9a/go.mod h1:xfxQn9CnfDvJAZbbOVnKkC+sfaVohC++RQUp3eryvFg=
 github.com/jackpal/go-nat-pmp v1.0.2/go.mod h1:QPH045xvCAeXUZOxsnwmrtiCoxIr9eob+4orBN1SBKc=
 github.com/jedisct1/go-minisign v0.0.0-20190909160543-45766022959e/go.mod h1:G1CVv03EnqU1wYL2dFwXxW2An0az9JTl/ZsqXQeBlkU=
 github.com/jmespath/go-jmespath v0.4.0/go.mod h1:T8mJZnbsbmF+m6zOOFylbeCJqk5+pHWvzYPziyZiYoo=
