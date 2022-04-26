@@ -46,3 +46,18 @@ func NewMilestoneInfo(milestoneID iotago.MilestoneID, index uint32, timestamp ui
 		MilestoneTimestamp: timestamp,
 	}
 }
+
+func NewProtocolParameters(protoParas *iotago.ProtocolParameters) *ProtocolParameters {
+	return &ProtocolParameters{
+		Version:     uint32(protoParas.Version),
+		NetworkName: protoParas.NetworkName,
+		Bech32HRP:   string(protoParas.Bech32HRP),
+		MinPowScore: float32(protoParas.MinPowScore),
+		RentStructure: &RentStructure{
+			VByteCost:       protoParas.RentStructure.VByteCost,
+			VByteFactorData: uint64(protoParas.RentStructure.VBFactorData),
+			VByteFactorKey:  uint64(protoParas.RentStructure.VBFactorKey),
+		},
+		TokenSupply: protoParas.TokenSupply,
+	}
+}

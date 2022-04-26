@@ -7,7 +7,7 @@ service INX {
 
   // Node
   rpc ReadNodeStatus(NoParams) returns (NodeStatus);
-  rpc ReadProtocolParameters(NoParams) returns (ProtocolParameters);
+  rpc ReadNodeConfiguration(NoParams) returns (NodeConfiguration);
 
   // Milestones
   rpc ReadMilestone(MilestoneRequest) returns (Milestone);
@@ -52,15 +52,19 @@ message APIResponse {
 message NoParams {}
 
 // Node
+message NodeConfiguration {
+  ProtocolParameters protocolParameters = 1;
+  uint32 milestonePublicKeyCount = 2;
+  repeated MilestoneKeyRange milestoneKeyRanges = 3;
+}
 
 message ProtocolParameters {
-  string networkName = 1;
-  uint32 protocolVersion = 2;
+  uint32 version = 1;
+  string networkName = 2;
   string bech32HRP = 3;
-  float minPoWScore = 4;
+  float minPowScore = 4;
   RentStructure rentStructure = 5;
-  uint32 milestonePublicKeyCount = 6;
-  repeated MilestoneKeyRange milestoneKeyRanges = 7;
+  uint64 tokenSupply = 6;
 }
 
 message MilestoneKeyRange {
