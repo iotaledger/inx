@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-20220426085024-dfad09f16be5
-	github.com/iotaledger/iota.go/v3 v3.0.0-20220425160654-b3583f0bafa9
+	github.com/iotaledger/iota.go/v3 v3.0.0-20220426124950-4b19bfb47f9a
 	github.com/pkg/errors v0.9.1
 	google.golang.org/grpc v1.46.0
 	google.golang.org/protobuf v1.28.0

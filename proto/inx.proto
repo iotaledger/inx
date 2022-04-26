@@ -113,7 +113,7 @@ message WhiteFlagRequest {
   uint32 milestoneIndex = 1;
   uint32 milestoneTimestamp = 2;
   repeated MessageId parents = 3;
-  MilestoneId lastMilestoneId = 4;
+  MilestoneId previousMilestoneId = 4;
 }
 
 message WhiteFlagResponse {
