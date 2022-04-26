@@ -40,9 +40,9 @@ func WrapMessage(msg *iotago.Message) (*RawMessage, error) {
 	}, nil
 }
 
-func (x *RawMessage) UnwrapMessage(deSeriMode serializer.DeSerializationMode, deSeriCtx interface{}) (*iotago.Message, error) {
+func (x *RawMessage) UnwrapMessage(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Message, error) {
 	msg := &iotago.Message{}
-	if _, err := msg.Deserialize(x.GetData(), deSeriMode, deSeriCtx); err != nil {
+	if _, err := msg.Deserialize(x.GetData(), deSeriMode, protoParas); err != nil {
 		return nil, err
 	}
 	return msg, nil
@@ -61,12 +61,12 @@ func (x *Message) UnwrapMessageID() iotago.MessageID {
 	return x.GetMessageId().Unwrap()
 }
 
-func (x *Message) UnwrapMessage(deSeriMode serializer.DeSerializationMode, deSeriCtx interface{}) (*iotago.Message, error) {
-	return x.GetMessage().UnwrapMessage(deSeriMode, deSeriCtx)
+func (x *Message) UnwrapMessage(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Message, error) {
+	return x.GetMessage().UnwrapMessage(deSeriMode, protoParas)
 }
 
-func (x *Message) MustUnwrapMessage(deSeriMode serializer.DeSerializationMode, deSeriCtx interface{}) *iotago.Message {
-	msg, err := x.GetMessage().UnwrapMessage(deSeriMode, deSeriCtx)
+func (x *Message) MustUnwrapMessage(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) *iotago.Message {
+	msg, err := x.GetMessage().UnwrapMessage(deSeriMode, protoParas)
 	if err != nil {
 		panic(err)
 	}
@@ -96,7 +96,7 @@ func (x *LedgerOutput) UnwrapMessageID() iotago.MessageID {
 	return x.MessageId.Unwrap()
 }
 
-func (x *LedgerOutput) UnwrapOutput(deSeriMode serializer.DeSerializationMode, deSeriCtx interface{}) (iotago.Output, error) {
+func (x *LedgerOutput) UnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (iotago.Output, error) {
 	data := x.GetOutput()
 	if len(data) == 0 {
 		return nil, errors.New("invalid output length")
@@ -107,15 +107,15 @@ func (x *LedgerOutput) UnwrapOutput(deSeriMode serializer.DeSerializationMode, d
 		return nil, err
 	}
 
-	_, err = output.Deserialize(data, deSeriMode, deSeriCtx)
+	_, err = output.Deserialize(data, deSeriMode, protoParas)
 	if err != nil {
 		return nil, err
 	}
 	return output, nil
 }
 
-func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMode, deSeriCtx interface{}) iotago.Output {
-	output, err := x.UnwrapOutput(deSeriMode, deSeriCtx)
+func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) iotago.Output {
+	output, err := x.UnwrapOutput(deSeriMode, protoParas)
 	if err != nil {
 		panic(err)
 	}
@@ -156,9 +156,9 @@ func WrapReceipt(receipt *iotago.ReceiptMilestoneOpt) (*RawReceipt, error) {
 	}, nil
 }
 
-func (x *RawReceipt) UnwrapReceipt(deSeriMode serializer.DeSerializationMode, deSeriCtx interface{}) (*iotago.ReceiptMilestoneOpt, error) {
+func (x *RawReceipt) UnwrapReceipt(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.ReceiptMilestoneOpt, error) {
 	r := &iotago.ReceiptMilestoneOpt{}
-	if _, err := r.Deserialize(x.GetData(), deSeriMode, deSeriCtx); err != nil {
+	if _, err := r.Deserialize(x.GetData(), deSeriMode, protoParas); err != nil {
 		return nil, err
 	}
 	return r, nil
