@@ -9,8 +9,23 @@ import (
 
 // Node
 
-func (x *ProtocolParameters) NetworkPrefix() iotago.NetworkPrefix {
-	return iotago.NetworkPrefix(x.GetBech32HRP())
+func (x *NodeConfiguration) UnwrapProtocolParameters() *iotago.ProtocolParameters {
+	return x.GetProtocolParameters().Unwrap()
+}
+
+func (x *ProtocolParameters) Unwrap() *iotago.ProtocolParameters {
+	return &iotago.ProtocolParameters{
+		Version:     byte(x.GetVersion()),
+		NetworkName: x.GetNetworkName(),
+		Bech32HRP:   iotago.NetworkPrefix(x.GetBech32HRP()),
+		MinPowScore: float64(x.GetMinPowScore()),
+		RentStructure: iotago.RentStructure{
+			VByteCost:    x.GetRentStructure().GetVByteCost(),
+			VBFactorData: iotago.VByteCostFactor(x.GetRentStructure().GetVByteFactorData()),
+			VBFactorKey:  iotago.VByteCostFactor(x.GetRentStructure().GetVByteFactorKey()),
+		},
+		TokenSupply: x.GetTokenSupply(),
+	}
 }
 
 // Message
