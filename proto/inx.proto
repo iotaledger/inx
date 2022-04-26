@@ -95,6 +95,7 @@ message MilestoneId {
 
 message MilestoneRequest {
   uint32 milestoneIndex = 1;
+  MilestoneId milestoneId = 2;
 }
 
 message MilestoneInfo {
