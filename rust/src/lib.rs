@@ -16,7 +16,7 @@ pub mod proto {
 
 /// Rexports of [`tonic`] types.
 pub mod tonic {
-    pub use tonic::{transport::Channel, Request, Response, Status};
+    pub use tonic::{transport::{Channel, Error}, Request, Response, Status};
 }
 
 pub use self::proto::{inx_client as client, inx_server as server};
