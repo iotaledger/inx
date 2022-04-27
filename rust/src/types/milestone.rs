@@ -5,6 +5,7 @@ use super::Error;
 use crate::proto;
 
 use bee_message_stardust as stardust;
+use packable::PackableExt;
 
 /// The [`MilestoneInfo`] type.
 #[derive(PartialEq, Debug)]
@@ -23,7 +24,7 @@ pub struct Milestone {
     /// Information about the milestone.
     pub milestone_info: MilestoneInfo,
     /// The raw bytes of the milestone.
-    pub milestone: Vec<u8>, // TODO: Find an appropriate type for this.
+    pub milestone: stardust::payload::MilestonePayload,
 }
 
 impl TryFrom<proto::MilestoneId> for stardust::payload::milestone::MilestoneId {
@@ -51,6 +52,15 @@ impl TryFrom<proto::MilestoneInfo> for MilestoneInfo {
     }
 }
 
+impl TryFrom<proto::RawMilestone> for stardust::payload::MilestonePayload {
+    type Error = Error;
+
+    fn try_from(value: proto::RawMilestone) -> Result<Self, Self::Error> {
+        stardust::payload::MilestonePayload::unpack_verified(value.data)
+            .map_err(|e| Error::PackableError(format!("{e}")))
+    }
+}
+
 impl TryFrom<proto::Milestone> for Milestone {
     type Error = Error;
 
@@ -60,7 +70,7 @@ impl TryFrom<proto::Milestone> for Milestone {
                 .milestone_info
                 .ok_or(Error::MissingField("milestone_info"))?
                 .try_into()?,
-            milestone: value.milestone.ok_or(Error::MissingField("milestone"))?.data,
+            milestone: value.milestone.ok_or(Error::MissingField("milestone"))?.try_into()?,
         })
     }
 }
