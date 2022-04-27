@@ -16,6 +16,14 @@ pub struct Message {
     pub message: stardust::Message,
 }
 
+impl From<stardust::MessageId> for proto::MessageId {
+    fn from(value: stardust::MessageId) -> Self {
+        Self {
+            id: value.pack_to_vec(),
+        }
+    }
+}
+
 impl TryFrom<proto::MessageId> for stardust::MessageId {
     type Error = Error;
 
