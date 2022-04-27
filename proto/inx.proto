@@ -56,6 +56,7 @@ message NodeConfiguration {
   ProtocolParameters protocolParameters = 1;
   uint32 milestonePublicKeyCount = 2;
   repeated MilestoneKeyRange milestoneKeyRanges = 3;
+  BaseToken baseToken = 4;
 }
 
 message ProtocolParameters {
@@ -65,6 +66,15 @@ message ProtocolParameters {
   float minPoWScore = 4;
   RentStructure rentStructure = 5;
   uint64 tokenSupply = 6;
+}
+
+message BaseToken {
+  string name = 1;
+  string tickerSymbol = 2;
+  string unit = 3;
+  string subunit = 4;
+  uint32 decimals = 5;
+  bool useMetricSystem = 6;
 }
 
 message MilestoneKeyRange {
