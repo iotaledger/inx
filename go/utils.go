@@ -18,7 +18,7 @@ func (x *ProtocolParameters) Unwrap() *iotago.ProtocolParameters {
 		Version:     byte(x.GetVersion()),
 		NetworkName: x.GetNetworkName(),
 		Bech32HRP:   iotago.NetworkPrefix(x.GetBech32HRP()),
-		MinPowScore: float64(x.GetMinPowScore()),
+		MinPoWScore: float64(x.GetMinPoWScore()),
 		RentStructure: iotago.RentStructure{
 			VByteCost:    x.GetRentStructure().GetVByteCost(),
 			VBFactorData: iotago.VByteCostFactor(x.GetRentStructure().GetVByteFactorData()),

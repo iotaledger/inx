@@ -62,7 +62,7 @@ message ProtocolParameters {
   uint32 version = 1;
   string networkName = 2;
   string bech32HRP = 3;
-  float minPowScore = 4;
+  float minPoWScore = 4;
   RentStructure rentStructure = 5;
   uint64 tokenSupply = 6;
 }
