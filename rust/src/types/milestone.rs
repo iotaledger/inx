@@ -56,8 +56,13 @@ impl TryFrom<proto::RawMilestone> for stardust::payload::MilestonePayload {
     type Error = Error;
 
     fn try_from(value: proto::RawMilestone) -> Result<Self, Self::Error> {
-        stardust::payload::MilestonePayload::unpack_verified(value.data)
-            .map_err(|e| Error::PackableError(format!("{e}")))
+        let payload = stardust::payload::Payload::unpack_verified(value.data)
+            .map_err(|e| Error::PackableError(format!("{e}")))?;
+
+        match payload {
+            stardust::payload::Payload::Milestone(payload) => Ok(*payload),
+            _ => Err(Error::InvalidField("milestone (wrong payload type)")),
+        }
     }
 }
 
