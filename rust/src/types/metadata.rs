@@ -97,7 +97,6 @@ impl From<proto::message_metadata::ConflictReason> for ConflictReason {
             proto::message_metadata::ConflictReason::InputNotFound => ConflictReason::InputNotFound,
             proto::message_metadata::ConflictReason::InputOutputSumMismatch => ConflictReason::InputOutputSumMismatch,
             proto::message_metadata::ConflictReason::InvalidSignature => ConflictReason::InvalidSignature,
-            proto::message_metadata::ConflictReason::InvalidNetworkId => ConflictReason::InvalidNetworkId,
             proto::message_metadata::ConflictReason::SemanticValidationFailed => {
                 ConflictReason::SemanticValidationFailed
             }
