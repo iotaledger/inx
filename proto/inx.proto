@@ -74,7 +74,7 @@ message BaseToken {
   string unit = 3;
   string subunit = 4;
   uint32 decimals = 5;
-  bool useMetricSystem = 6;
+  bool useMetricPrefix = 6;
 }
 
 message MilestoneKeyRange {
@@ -174,7 +174,6 @@ message MessageMetadata {
     INPUT_NOT_FOUND = 3;
     INPUT_OUTPUT_SUM_MISMATCH = 4;
     INVALID_SIGNATURE = 5;
-    INVALID_NETWORK_ID = 6;
     SEMANTIC_VALIDATION_FAILED = 255;
   }
   ConflictReason conflictReason = 9;
