@@ -55,6 +55,8 @@ github.com/btcsuite/btcd v0.22.0-beta h1:LTDpDKUM5EeOFBPM8IXpinEcmZ6FWfNZbE3lfrf
 github.com/btcsuite/btcd/btcec/v2 v2.1.2/go.mod h1:ctjw4H1kknNJmRN4iP1R7bTQ+v3GJkZBd6mui8ZsAZE=
 github.com/btcsuite/btcd/btcec/v2 v2.1.3 h1:xM/n3yIhHAhHy04z4i43C8p4ehixJZMsnrVJkgl+MTE=
 github.com/btcsuite/btcd/btcec/v2 v2.1.3/go.mod h1:ctjw4H1kknNJmRN4iP1R7bTQ+v3GJkZBd6mui8ZsAZE=
+github.com/btcsuite/btcd/btcec/v2 v2.2.0 h1:fzn1qaOt32TuLjFlkzYSsBC35Q3KUjT1SwPxiMSCF5k=
+github.com/btcsuite/btcd/btcec/v2 v2.2.0/go.mod h1:U7MHm051Al6XmscBQ0BoNydpOTsFAn707034b5nY8zU=
 github.com/btcsuite/btcd/chaincfg/chainhash v1.0.0/go.mod h1:7SFka0XMvUgj3hfZtydOrQY2mwhPclbT2snogU7SQQc=
 github.com/c-bata/go-prompt v0.2.2/go.mod h1:VzqtzE2ksDBcdln8G7mk2RX9QyGjH+OVqOCSiVIqS34=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
@@ -229,6 +231,8 @@ github.com/iotaledger/hive.go/serializer/v2 v2.0.0-20220406082310-fa38df493f6b h
 github.com/iotaledger/hive.go/serializer/v2 v2.0.0-20220406082310-fa38df493f6b/go.mod h1:O18k+0+qtbHfk8AYI+dgMOoDBDKy9vwXk2ocyD7MyRI=
 github.com/iotaledger/hive.go/serializer/v2 v2.0.0-20220426085024-dfad09f16be5 h1:s1ku9sIx2Y82NCNnNoWCNJgeUwGCrlthwLaSSuJ3pJM=
 github.com/iotaledger/hive.go/serializer/v2 v2.0.0-20220426085024-dfad09f16be5/go.mod h1:O18k+0+qtbHfk8AYI+dgMOoDBDKy9vwXk2ocyD7MyRI=
+github.com/iotaledger/hive.go/serializer/v2 v2.0.0-20220428170023-7fb77d7475d8 h1:xV09lnCc6R82859vcdxHBX1zVNJGMlEt8aelD+mdZ6w=
+github.com/iotaledger/hive.go/serializer/v2 v2.0.0-20220428170023-7fb77d7475d8/go.mod h1:O18k+0+qtbHfk8AYI+dgMOoDBDKy9vwXk2ocyD7MyRI=
 github.com/iotaledger/iota.go v1.0.0 h1:tqm1FxJ/zOdzbrAaQ5BQpVF8dUy2eeGlSeWlNG8GoXY=
 github.com/iotaledger/iota.go v1.0.0/go.mod h1:RiKYwDyY7aCD1L0YRzHSjOsJ5mUR9yvQpvhZncNcGQI=
 github.com/iotaledger/iota.go/v3 v3.0.0-20220419063054-a9fef1da7ef1 h1:Jt6H57hDNtnA8OjLgfiwFjus+Oek6XoTIoAxiKopASo=
@@ -241,6 +245,8 @@ github.com/iotaledger/iota.go/v3 v3.0.0-20220427112536-018935603721 h1:/1X7aL/UY
 github.com/iotaledger/iota.go/v3 v3.0.0-20220427112536-018935603721/go.mod h1:xfxQn9CnfDvJAZbbOVnKkC+sfaVohC++RQUp3eryvFg=
 github.com/iotaledger/iota.go/v3 v3.0.0-20220427162019-fb89ca0738f2 h1:+4iB+ipy58WNHbFR8BgFGdJL2Rr1PQ6o/7WcXCkJQk0=
 github.com/iotaledger/iota.go/v3 v3.0.0-20220427162019-fb89ca0738f2/go.mod h1:xfxQn9CnfDvJAZbbOVnKkC+sfaVohC++RQUp3eryvFg=
+github.com/iotaledger/iota.go/v3 v3.0.0-20220429092212-d275a7831f6a h1:PP0lBwm1jLsfoJHqo3IC2osQzZ8K8xdc31eVwGPOgEM=
+github.com/iotaledger/iota.go/v3 v3.0.0-20220429092212-d275a7831f6a/go.mod h1:wOFD+5h47EMj37r8hTql2icIBlnZoPHurrB3UXVPNIA=
 github.com/jackpal/go-nat-pmp v1.0.2/go.mod h1:QPH045xvCAeXUZOxsnwmrtiCoxIr9eob+4orBN1SBKc=
 github.com/jedisct1/go-minisign v0.0.0-20190909160543-45766022959e/go.mod h1:G1CVv03EnqU1wYL2dFwXxW2An0az9JTl/ZsqXQeBlkU=
 github.com/jmespath/go-jmespath v0.4.0/go.mod h1:T8mJZnbsbmF+m6zOOFylbeCJqk5+pHWvzYPziyZiYoo=
@@ -527,6 +533,8 @@ golang.org/x/sys v0.0.0-20220412211240-33da011f77ad h1:ntjMns5wyP/fN65tdBD4g8J5w
 golang.org/x/sys v0.0.0-20220412211240-33da011f77ad/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20220422013727-9388b58f7150 h1:xHms4gcpe1YE7A3yIllJXP16CMAGuqwO2lX1mTyyRRc=
 golang.org/x/sys v0.0.0-20220422013727-9388b58f7150/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.0.0-20220429121018-84afa8d3f7b3 h1:kBsBifDikLCf5sUMbcD8p73OinDtAQWQp8+n7FiyzlA=
+golang.org/x/sys v0.0.0-20220429121018-84afa8d3f7b3/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201117132131-f5c789dd3221/go.mod h1:Nr5EML6q2oocZ2LXRh80K7BxOlk5/8JxuGnuhpl+muw=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
