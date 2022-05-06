@@ -64,8 +64,9 @@ message ProtocolParameters {
   string networkName = 2;
   string bech32HRP = 3;
   float minPoWScore = 4;
-  RentStructure rentStructure = 5;
-  uint64 tokenSupply = 6;
+  uint32 belowMaxDepth = 5;
+  RentStructure rentStructure = 6;
+  uint64 tokenSupply = 7;
 }
 
 message BaseToken {
