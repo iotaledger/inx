@@ -4,7 +4,7 @@
 use super::Error;
 use crate::proto;
 
-use bee_message_stardust as stardust;
+use bee_block_stardust as stardust;
 
 #[allow(missing_docs)]
 #[derive(PartialEq, Debug)]
@@ -33,33 +33,33 @@ pub enum ConflictReason {
     SemanticValidationFailed,
 }
 
-/// The metadata for a message with a given [`MessageId`](stardust::MessageId).
+/// The metadata for a block with a given [`BlockId`](stardust::BlockId).
 #[derive(PartialEq, Debug)]
-pub struct MessageMetadata {
-    /// The id of the message.
-    pub message_id: stardust::MessageId,
+pub struct BlockMetadata {
+    /// The id of the block.
+    pub block_id: stardust::BlockId,
     /// The parents of the messsage.
-    pub parents: Vec<stardust::MessageId>,
+    pub parents: Vec<stardust::BlockId>,
     /// Status of the solidification process.
     pub is_solid: bool,
-    /// Indicates that the message should be promoted.
+    /// Indicates that the block should be promoted.
     pub should_promote: bool,
-    /// Indicates that the message should be reattached.
+    /// Indicates that the block should be reattached.
     pub should_reattach: bool,
-    /// The milestone that referenced the message.
+    /// The milestone that referenced the block.
     pub referenced_by_milestone_index: u32,
     /// The corresponding milestone index.
     pub milestone_index: u32,
-    /// Indicates if a message is part of the ledger state or not.
+    /// Indicates if a block is part of the ledger state or not.
     pub ledger_inclusion_state: LedgerInclusionState,
     /// Indicates if a conflict occured, and if so holds information about the reason for the conflict.
     pub conflict_reason: ConflictReason,
 }
 
-impl TryFrom<proto::MessageMetadata> for MessageMetadata {
+impl TryFrom<proto::BlockMetadata> for BlockMetadata {
     type Error = Error;
 
-    fn try_from(value: proto::MessageMetadata) -> Result<Self, Self::Error> {
+    fn try_from(value: proto::BlockMetadata) -> Result<Self, Self::Error> {
         let ledger_inclusion_state = value.ledger_inclusion_state().into();
         let conflict_reason = value.conflict_reason().into();
 
@@ -68,8 +68,8 @@ impl TryFrom<proto::MessageMetadata> for MessageMetadata {
             parents.push(parent.try_into()?);
         }
 
-        Ok(MessageMetadata {
-            message_id: value.message_id.ok_or(Error::MissingField("message_id"))?.try_into()?,
+        Ok(BlockMetadata {
+            block_id: value.block_id.ok_or(Error::MissingField("block_id"))?.try_into()?,
             parents,
             is_solid: value.solid,
             should_promote: value.should_promote,
@@ -82,37 +82,37 @@ impl TryFrom<proto::MessageMetadata> for MessageMetadata {
     }
 }
 
-impl From<proto::message_metadata::LedgerInclusionState> for LedgerInclusionState {
-    fn from(value: proto::message_metadata::LedgerInclusionState) -> Self {
+impl From<proto::block_metadata::LedgerInclusionState> for LedgerInclusionState {
+    fn from(value: proto::block_metadata::LedgerInclusionState) -> Self {
         match value {
-            proto::message_metadata::LedgerInclusionState::NoTransaction => LedgerInclusionState::NoTransaction,
-            proto::message_metadata::LedgerInclusionState::Included => LedgerInclusionState::Included,
-            proto::message_metadata::LedgerInclusionState::Conflicting => LedgerInclusionState::Conflicting,
+            proto::block_metadata::LedgerInclusionState::NoTransaction => LedgerInclusionState::NoTransaction,
+            proto::block_metadata::LedgerInclusionState::Included => LedgerInclusionState::Included,
+            proto::block_metadata::LedgerInclusionState::Conflicting => LedgerInclusionState::Conflicting,
         }
     }
 }
 
-impl From<proto::message_metadata::ConflictReason> for ConflictReason {
-    fn from(value: proto::message_metadata::ConflictReason) -> Self {
+impl From<proto::block_metadata::ConflictReason> for ConflictReason {
+    fn from(value: proto::block_metadata::ConflictReason) -> Self {
         match value {
-            proto::message_metadata::ConflictReason::None => ConflictReason::None,
-            proto::message_metadata::ConflictReason::InputAlreadySpent => ConflictReason::InputAlreadySpent,
-            proto::message_metadata::ConflictReason::InputAlreadySpentInThisMilestone => {
+            proto::block_metadata::ConflictReason::None => ConflictReason::None,
+            proto::block_metadata::ConflictReason::InputAlreadySpent => ConflictReason::InputAlreadySpent,
+            proto::block_metadata::ConflictReason::InputAlreadySpentInThisMilestone => {
                 ConflictReason::InputAlreadySpentInThisMilestone
             }
-            proto::message_metadata::ConflictReason::InputNotFound => ConflictReason::InputNotFound,
-            proto::message_metadata::ConflictReason::InputOutputSumMismatch => ConflictReason::InputOutputSumMismatch,
-            proto::message_metadata::ConflictReason::InvalidSignature => ConflictReason::InvalidSignature,
-            proto::message_metadata::ConflictReason::TimelockNotExpired => ConflictReason::TimelockNotExpired,
-            proto::message_metadata::ConflictReason::InvalidNativeTokens => ConflictReason::InvalidNativeTokens,
-            proto::message_metadata::ConflictReason::ReturnAmountNotFulfilled => ConflictReason::ReturnAmountNotFulfilled,
-            proto::message_metadata::ConflictReason::InvalidInputUnlock => ConflictReason::InvalidInputUnlock,
-            proto::message_metadata::ConflictReason::InvalidInputsCommitment => ConflictReason::InvalidInputsCommitment,
-            proto::message_metadata::ConflictReason::InvalidSender => ConflictReason::InvalidSender,
-            proto::message_metadata::ConflictReason::InvalidChainStateTransition => ConflictReason::InvalidChainStateTransition,
-            proto::message_metadata::ConflictReason::SemanticValidationFailed => {
-                ConflictReason::SemanticValidationFailed
+            proto::block_metadata::ConflictReason::InputNotFound => ConflictReason::InputNotFound,
+            proto::block_metadata::ConflictReason::InputOutputSumMismatch => ConflictReason::InputOutputSumMismatch,
+            proto::block_metadata::ConflictReason::InvalidSignature => ConflictReason::InvalidSignature,
+            proto::block_metadata::ConflictReason::TimelockNotExpired => ConflictReason::TimelockNotExpired,
+            proto::block_metadata::ConflictReason::InvalidNativeTokens => ConflictReason::InvalidNativeTokens,
+            proto::block_metadata::ConflictReason::ReturnAmountNotFulfilled => ConflictReason::ReturnAmountNotFulfilled,
+            proto::block_metadata::ConflictReason::InvalidInputUnlock => ConflictReason::InvalidInputUnlock,
+            proto::block_metadata::ConflictReason::InvalidInputsCommitment => ConflictReason::InvalidInputsCommitment,
+            proto::block_metadata::ConflictReason::InvalidSender => ConflictReason::InvalidSender,
+            proto::block_metadata::ConflictReason::InvalidChainStateTransition => {
+                ConflictReason::InvalidChainStateTransition
             }
+            proto::block_metadata::ConflictReason::SemanticValidationFailed => ConflictReason::SemanticValidationFailed,
         }
     }
 }

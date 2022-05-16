@@ -4,7 +4,7 @@
 use super::Error;
 use crate::proto;
 
-use bee_message_stardust as stardust;
+use bee_block_stardust as stardust;
 use packable::PackableExt;
 
 /// The [`MilestoneInfo`] type.

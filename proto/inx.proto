@@ -15,13 +15,13 @@ service INX {
   rpc ListenToConfirmedMilestone(NoParams) returns (stream Milestone);
   rpc ComputeWhiteFlag(WhiteFlagRequest) returns (WhiteFlagResponse);
 
-  // Messages
-  rpc ListenToMessages(MessageFilter) returns (stream Message);
-  rpc ListenToSolidMessages(MessageFilter) returns (stream MessageMetadata);
-  rpc ListenToReferencedMessages(MessageFilter) returns (stream MessageMetadata);
-  rpc SubmitMessage(RawMessage) returns (MessageId);
-  rpc ReadMessage(MessageId) returns (RawMessage);
-  rpc ReadMessageMetadata(MessageId) returns (MessageMetadata);
+  // Blocks
+  rpc ListenToBlocks(BlockFilter) returns (stream Block);
+  rpc ListenToSolidBlocks(BlockFilter) returns (stream BlockMetadata);
+  rpc ListenToReferencedBlocks(BlockFilter) returns (stream BlockMetadata);
+  rpc SubmitBlock(RawBlock) returns (BlockId);
+  rpc ReadBlock(BlockId) returns (RawBlock);
+  rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
@@ -127,7 +127,7 @@ message Milestone {
 message WhiteFlagRequest {
   uint32 milestoneIndex = 1;
   uint32 milestoneTimestamp = 2;
-  repeated MessageId parents = 3;
+  repeated BlockId parents = 3;
   MilestoneId previousMilestoneId = 4;
 }
 
@@ -136,27 +136,27 @@ message WhiteFlagResponse {
   bytes milestoneAppliedMerkleRoot = 2;
 }
 
-// Messages
-message MessageFilter {
+// Blocks
+message BlockFilter {
   //TODO
 }
 
-message RawMessage {
+message RawBlock {
   bytes data = 1;
 }
 
-message MessageId {
+message BlockId {
   bytes id = 1;
 }
 
-message Message {
-  MessageId messageId = 1;
-  RawMessage message = 2;
+message Block {
+  BlockId blockId = 1;
+  RawBlock block = 2;
 }
 
-message MessageMetadata {
-  MessageId messageId = 1;
-  repeated MessageId parents = 2;
+message BlockMetadata {
+  BlockId blockId = 1;
+  repeated BlockId parents = 2;
   bool solid = 3;
   bool shouldPromote = 4;
   bool shouldReattach = 5;
@@ -207,7 +207,7 @@ message UnspentOutput {
 
 message LedgerOutput {
   OutputId outputId = 1;
-  MessageId messageId = 2;
+  BlockId blockId = 2;
   uint32 milestoneIndexBooked = 3;
   uint32 milestoneTimestampBooked = 4;
   bytes output = 5;
