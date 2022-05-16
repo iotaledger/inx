@@ -29,53 +29,53 @@ func (x *ProtocolParameters) Unwrap() *iotago.ProtocolParameters {
 	}
 }
 
-// Message
+// Block
 
-func WrapMessage(msg *iotago.Message) (*RawMessage, error) {
+func WrapBlock(msg *iotago.Block) (*RawBlock, error) {
 	bytes, err := msg.Serialize(serializer.DeSeriModeNoValidation, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &RawMessage{
+	return &RawBlock{
 		Data: bytes,
 	}, nil
 }
 
-func (x *RawMessage) UnwrapMessage(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Message, error) {
-	msg := &iotago.Message{}
+func (x *RawBlock) UnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Block, error) {
+	msg := &iotago.Block{}
 	if _, err := msg.Deserialize(x.GetData(), deSeriMode, protoParas); err != nil {
 		return nil, err
 	}
 	return msg, nil
 }
 
-func (x *MessageId) Unwrap() iotago.MessageID {
-	id := iotago.MessageID{}
-	if len(x.GetId()) != iotago.MessageIDLength {
+func (x *BlockId) Unwrap() iotago.BlockID {
+	id := iotago.BlockID{}
+	if len(x.GetId()) != iotago.BlockIDLength {
 		return id
 	}
 	copy(id[:], x.GetId())
 	return id
 }
 
-func (x *Message) UnwrapMessageID() iotago.MessageID {
-	return x.GetMessageId().Unwrap()
+func (x *Block) UnwrapBlockID() iotago.BlockID {
+	return x.GetBlockId().Unwrap()
 }
 
-func (x *Message) UnwrapMessage(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Message, error) {
-	return x.GetMessage().UnwrapMessage(deSeriMode, protoParas)
+func (x *Block) UnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Block, error) {
+	return x.GetBlock().UnwrapBlock(deSeriMode, protoParas)
 }
 
-func (x *Message) MustUnwrapMessage(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) *iotago.Message {
-	msg, err := x.GetMessage().UnwrapMessage(deSeriMode, protoParas)
+func (x *Block) MustUnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) *iotago.Block {
+	msg, err := x.GetBlock().UnwrapBlock(deSeriMode, protoParas)
 	if err != nil {
 		panic(err)
 	}
 	return msg
 }
 
-func (x *MessageMetadata) UnwrapMessageID() iotago.MessageID {
-	return x.GetMessageId().Unwrap()
+func (x *BlockMetadata) UnwrapBlockID() iotago.BlockID {
+	return x.GetBlockId().Unwrap()
 }
 
 // Ledger
@@ -93,8 +93,8 @@ func (x *LedgerOutput) UnwrapOutputID() *iotago.OutputID {
 	return x.OutputId.Unwrap()
 }
 
-func (x *LedgerOutput) UnwrapMessageID() iotago.MessageID {
-	return x.MessageId.Unwrap()
+func (x *LedgerOutput) UnwrapBlockID() iotago.BlockID {
+	return x.BlockId.Unwrap()
 }
 
 func (x *LedgerOutput) UnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (iotago.Output, error) {

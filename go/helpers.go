@@ -4,22 +4,22 @@ import (
 	iotago "github.com/iotaledger/iota.go/v3"
 )
 
-func NewMessageId(messageID iotago.MessageID) *MessageId {
-	id := &MessageId{
-		Id: make([]byte, len(messageID)),
+func NewBlockId(blockID iotago.BlockID) *BlockId {
+	id := &BlockId{
+		Id: make([]byte, len(blockID)),
 	}
-	copy(id.Id, messageID[:])
+	copy(id.Id, blockID[:])
 	return id
 }
 
-func NewMessageWithBytes(messageID iotago.MessageID, data []byte) *Message {
-	m := &Message{
-		MessageId: NewMessageId(messageID),
-		Message: &RawMessage{
+func NewBlockWithBytes(blockID iotago.BlockID, data []byte) *Block {
+	m := &Block{
+		BlockId: NewBlockId(blockID),
+		Block: &RawBlock{
 			Data: make([]byte, len(data)),
 		},
 	}
-	copy(m.Message.Data, data)
+	copy(m.Block.Data, data)
 	return m
 }
 
