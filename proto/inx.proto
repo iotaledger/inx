@@ -132,7 +132,7 @@ message WhiteFlagRequest {
 }
 
 message WhiteFlagResponse {
-  bytes milestoneConfirmedMerkleRoot = 1;
+  bytes milestoneInclusionMerkleRoot = 1;
   bytes milestoneAppliedMerkleRoot = 2;
 }
 
