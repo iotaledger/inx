@@ -6,7 +6,7 @@ import (
 
 func NewBlockId(blockID iotago.BlockID) *BlockId {
 	id := &BlockId{
-		Id: make([]byte, len(blockID)),
+		Id: make([]byte, iotago.BlockIDLength),
 	}
 	copy(id.Id, blockID[:])
 	return id
@@ -23,9 +23,9 @@ func NewBlockWithBytes(blockID iotago.BlockID, data []byte) *Block {
 	return m
 }
 
-func NewOutputId(outputID *iotago.OutputID) *OutputId {
+func NewOutputId(outputID iotago.OutputID) *OutputId {
 	id := &OutputId{
-		Id: make([]byte, len(outputID)),
+		Id: make([]byte, iotago.OutputIDLength),
 	}
 	copy(id.Id, outputID[:])
 	return id
@@ -33,7 +33,7 @@ func NewOutputId(outputID *iotago.OutputID) *OutputId {
 
 func NewMilestoneId(milestoneID iotago.MilestoneID) *MilestoneId {
 	id := &MilestoneId{
-		Id: make([]byte, len(milestoneID)),
+		Id: make([]byte, iotago.MilestoneIDLength),
 	}
 	copy(id.Id, milestoneID[:])
 	return id

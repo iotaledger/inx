@@ -80,16 +80,16 @@ func (x *BlockMetadata) UnwrapBlockID() iotago.BlockID {
 
 // Ledger
 
-func (x *OutputId) Unwrap() *iotago.OutputID {
+func (x *OutputId) Unwrap() iotago.OutputID {
+	id := iotago.OutputID{}
 	if len(x.GetId()) != iotago.OutputIDLength {
-		return nil
+		return iotago.OutputID{}
 	}
-	id := &iotago.OutputID{}
 	copy(id[:], x.GetId())
 	return id
 }
 
-func (x *LedgerOutput) UnwrapOutputID() *iotago.OutputID {
+func (x *LedgerOutput) UnwrapOutputID() iotago.OutputID {
 	return x.OutputId.Unwrap()
 }
 
@@ -123,11 +123,11 @@ func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMod
 	return output
 }
 
-func (x *LedgerSpent) UnwrapTransactionIDSpent() *iotago.TransactionID {
+func (x *LedgerSpent) UnwrapTransactionIDSpent() iotago.TransactionID {
+	id := iotago.TransactionID{}
 	if len(x.GetTransactionIdSpent()) != iotago.TransactionIDLength {
-		return nil
+		return id
 	}
-	id := &iotago.TransactionID{}
 	copy(id[:], x.GetTransactionIdSpent())
 	return id
 }
