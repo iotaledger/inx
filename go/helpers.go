@@ -12,6 +12,14 @@ func NewBlockId(blockID iotago.BlockID) *BlockId {
 	return id
 }
 
+func NewBlockIds(blockIDs iotago.BlockIDs) []*BlockId {
+	result := make([]*BlockId, len(blockIDs))
+	for i := range blockIDs {
+		result[i] = NewBlockId(blockIDs[i])
+	}
+	return result
+}
+
 func NewBlockWithBytes(blockID iotago.BlockID, data []byte) *Block {
 	m := &Block{
 		BlockId: NewBlockId(blockID),

@@ -7,6 +7,14 @@ import (
 	iotago "github.com/iotaledger/iota.go/v3"
 )
 
+func blockIDsFromSlice(slice []*BlockId) iotago.BlockIDs {
+	result := make([]iotago.BlockID, len(slice))
+	for i := range slice {
+		result[i] = slice[i].Unwrap()
+	}
+	return result
+}
+
 // Node
 
 func (x *NodeConfiguration) UnwrapProtocolParameters() *iotago.ProtocolParameters {
@@ -76,6 +84,10 @@ func (x *Block) MustUnwrapBlock(deSeriMode serializer.DeSerializationMode, proto
 
 func (x *BlockMetadata) UnwrapBlockID() iotago.BlockID {
 	return x.GetBlockId().Unwrap()
+}
+
+func (x *BlockMetadata) UnwrapParents() iotago.BlockIDs {
+	return blockIDsFromSlice(x.GetParents())
 }
 
 // Ledger
@@ -163,4 +175,8 @@ func (x *RawReceipt) UnwrapReceipt(deSeriMode serializer.DeSerializationMode, pr
 		return nil, err
 	}
 	return r, nil
+}
+
+func (x *WhiteFlagRequest) UnwrapParents() iotago.BlockIDs {
+	return blockIDsFromSlice(x.GetParents())
 }
