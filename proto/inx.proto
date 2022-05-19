@@ -212,12 +212,16 @@ message UnspentOutput {
   LedgerOutput output = 2;
 }
 
+message RawOutput {
+  bytes data = 1;
+}
+
 message LedgerOutput {
   OutputId outputId = 1;
   BlockId blockId = 2;
   uint32 milestoneIndexBooked = 3;
   uint32 milestoneTimestampBooked = 4;
-  bytes output = 5;
+  RawOutput output = 5;
 }
 
 message LedgerSpent {

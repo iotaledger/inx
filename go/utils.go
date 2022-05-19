@@ -114,7 +114,29 @@ func (x *LedgerOutput) UnwrapBlockID() iotago.BlockID {
 }
 
 func (x *LedgerOutput) UnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (iotago.Output, error) {
-	data := x.GetOutput()
+	return x.GetOutput().Unwrap(deSeriMode, protoParas)
+}
+
+func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) iotago.Output {
+	output, err := x.UnwrapOutput(deSeriMode, protoParas)
+	if err != nil {
+		panic(err)
+	}
+	return output
+}
+
+func WrapOutput(output iotago.Output) (*RawOutput, error) {
+	bytes, err := output.Serialize(serializer.DeSeriModeNoValidation, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &RawOutput{
+		Data: bytes,
+	}, nil
+}
+
+func (x *RawOutput) Unwrap(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (iotago.Output, error) {
+	data := x.GetData()
 	if len(data) == 0 {
 		return nil, errors.New("invalid output length")
 	}
@@ -129,14 +151,6 @@ func (x *LedgerOutput) UnwrapOutput(deSeriMode serializer.DeSerializationMode, p
 		return nil, err
 	}
 	return output, nil
-}
-
-func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) iotago.Output {
-	output, err := x.UnwrapOutput(deSeriMode, protoParas)
-	if err != nil {
-		panic(err)
-	}
-	return output
 }
 
 func (x *LedgerSpent) UnwrapTransactionIDSpent() iotago.TransactionID {
