@@ -105,11 +105,15 @@ impl From<proto::message_metadata::ConflictReason> for ConflictReason {
             proto::message_metadata::ConflictReason::InvalidSignature => ConflictReason::InvalidSignature,
             proto::message_metadata::ConflictReason::TimelockNotExpired => ConflictReason::TimelockNotExpired,
             proto::message_metadata::ConflictReason::InvalidNativeTokens => ConflictReason::InvalidNativeTokens,
-            proto::message_metadata::ConflictReason::ReturnAmountNotFulfilled => ConflictReason::ReturnAmountNotFulfilled,
+            proto::message_metadata::ConflictReason::ReturnAmountNotFulfilled => {
+                ConflictReason::ReturnAmountNotFulfilled
+            }
             proto::message_metadata::ConflictReason::InvalidInputUnlock => ConflictReason::InvalidInputUnlock,
             proto::message_metadata::ConflictReason::InvalidInputsCommitment => ConflictReason::InvalidInputsCommitment,
             proto::message_metadata::ConflictReason::InvalidSender => ConflictReason::InvalidSender,
-            proto::message_metadata::ConflictReason::InvalidChainStateTransition => ConflictReason::InvalidChainStateTransition,
+            proto::message_metadata::ConflictReason::InvalidChainStateTransition => {
+                ConflictReason::InvalidChainStateTransition
+            }
             proto::message_metadata::ConflictReason::SemanticValidationFailed => {
                 ConflictReason::SemanticValidationFailed
             }
