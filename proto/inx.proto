@@ -14,6 +14,8 @@ service INX {
   rpc ListenToLatestMilestone(NoParams) returns (stream Milestone);
   rpc ListenToConfirmedMilestone(NoParams) returns (stream Milestone);
   rpc ComputeWhiteFlag(WhiteFlagRequest) returns (WhiteFlagResponse);
+  rpc ReadMilestoneCone(MilestoneRequest) returns (stream BlockWithMetadata);
+  rpc ReadMilestoneConeMetadata(MilestoneRequest) returns (stream BlockMetadata);
 
   // Blocks
   rpc ListenToBlocks(BlockFilter) returns (stream Block);
@@ -151,6 +153,11 @@ message BlockId {
 
 message Block {
   BlockId blockId = 1;
+  RawBlock block = 2;
+}
+
+message BlockWithMetadata {
+  BlockMetadata metadata = 1;
   RawBlock block = 2;
 }
 

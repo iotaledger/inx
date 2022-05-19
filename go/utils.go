@@ -90,6 +90,10 @@ func (x *BlockMetadata) UnwrapParents() iotago.BlockIDs {
 	return blockIDsFromSlice(x.GetParents())
 }
 
+func (x *BlockWithMetadata) UnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Block, error) {
+	return x.GetBlock().UnwrapBlock(deSeriMode, protoParas)
+}
+
 // Ledger
 
 func (x *OutputId) Unwrap() iotago.OutputID {
