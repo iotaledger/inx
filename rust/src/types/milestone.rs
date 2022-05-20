@@ -14,6 +14,18 @@ pub enum MilestoneRequest {
     MilestoneId(stardust::payload::milestone::MilestoneId),
 }
 
+/// Convenience method to create a [`proto::ConfirmedMilestonesRequest`]. All the milestone ranges are inclusive.
+pub enum ConfirmedMilestonesRequest {
+    /// Returns a stream that starts now and continues indefinetly.
+    UntilForever,
+    /// Returns a stream that starts now and continues until a given milestone index.
+    UntilMilestoneIndex(u32),
+    /// Returns a stream that starts and end with given milestone indices.
+    FromUntilMilestoneIndex(u32, u32),
+    /// Returns a stream that starts with a given given milestone index and continues indefinetly.
+    FromMilestoneIndex(u32),
+}
+
 /// The [`MilestoneInfo`] type.
 #[derive(PartialEq, Debug)]
 pub struct MilestoneInfo {
@@ -106,6 +118,33 @@ impl From<MilestoneRequest> for proto::MilestoneRequest {
                 milestone_id: Some(milestone_id.into()),
                 milestone_index: 0,
             },
+        }
+    }
+}
+
+impl From<ConfirmedMilestonesRequest> for proto::ConfirmedMilestonesRequest {
+    fn from(value: ConfirmedMilestonesRequest) -> Self {
+        match value {
+            ConfirmedMilestonesRequest::UntilForever => proto::ConfirmedMilestonesRequest {
+                start_milestone_index: 0,
+                end_milestone_index: 0,
+            },
+            ConfirmedMilestonesRequest::UntilMilestoneIndex(end_milestone_index) => proto::ConfirmedMilestonesRequest {
+                start_milestone_index: 0,
+                end_milestone_index,
+            },
+            ConfirmedMilestonesRequest::FromMilestoneIndex(start_milestone_index) => {
+                proto::ConfirmedMilestonesRequest {
+                    start_milestone_index,
+                    end_milestone_index: 0,
+                }
+            }
+            ConfirmedMilestonesRequest::FromUntilMilestoneIndex(start_milestone_index, end_milestone_index) => {
+                proto::ConfirmedMilestonesRequest {
+                    start_milestone_index,
+                    end_milestone_index,
+                }
+            }
         }
     }
 }
