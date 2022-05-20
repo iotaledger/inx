@@ -5,7 +5,6 @@ use std::error::Error;
 
 use futures::StreamExt;
 use inx::proto::{self};
-use tokio;
 
 const INX_ADDRESS: &str = "localhost:9029";
 
