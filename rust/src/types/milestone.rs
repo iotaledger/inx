@@ -7,7 +7,7 @@ use crate::proto;
 use bee_block_stardust as stardust;
 use packable::PackableExt;
 
-///
+#[allow(missing_docs)]
 #[derive(PartialEq, Debug)]
 pub enum MilestoneRequest {
     MilestoneIndex(u32),
