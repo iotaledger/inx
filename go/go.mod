@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-20220516114042-6c0ad76bc65f
-	github.com/iotaledger/iota.go/v3 v3.0.0-20220518073052-2790196ba70a
+	github.com/iotaledger/iota.go/v3 v3.0.0-20220519135423-82921868d5cd
 	github.com/pkg/errors v0.9.1
 	google.golang.org/grpc v1.46.2
 	google.golang.org/protobuf v1.28.0
@@ -25,8 +25,8 @@ require (
 	github.com/onsi/gomega v1.16.0 // indirect
 	github.com/pasztorpisti/qs v0.0.0-20171216220353-8d6c33ee906c // indirect
 	golang.org/x/crypto v0.0.0-20220518034528-6f7dac969898 // indirect
-	golang.org/x/net v0.0.0-20220517181318-183a9ca12b87 // indirect
-	golang.org/x/sys v0.0.0-20220517195934-5e4e11fc645e // indirect
+	golang.org/x/net v0.0.0-20220520000938-2e3eb7b945c2 // indirect
+	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20220505152158-f39f71e6c8f3 // indirect
+	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd // indirect
 )
