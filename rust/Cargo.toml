@@ -13,6 +13,7 @@ homepage = "https://www.iota.org"
 [dependencies]
 prost = { version = "0.10", default-features = false, features = [ "prost-derive", "std" ] }
 tonic = { version = "0.7", default-features = false, features = [ "codegen", "prost", "transport" ] }
+thiserror = { version = "1.0", default-features = false }
 
 # optional
 bee-block-stardust = { package = "bee-block", version = "0.1", git = "https://github.com/iotaledger/bee", branch = "shimmer-develop", default-features = false, features = [ "std" ], optional = true }
@@ -20,6 +21,10 @@ packable = { version = "0.3", default-features = false, optional = true }
 
 [build-dependencies]
 tonic-build = { version = "0.7", default-features = false, features = [ "transport", "prost" ] }
+
+[dev-dependencies]
+tokio = { version = "1.18", default-features = false, features = [ "rt-multi-thread" ] }
+futures = { version = "0.3", default-features = false }
 
 [features]
 default = [ "types" ]

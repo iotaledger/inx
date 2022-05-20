@@ -16,6 +16,26 @@ pub struct Block {
     pub block: stardust::Block,
 }
 
+/// The [`BlockWithMetadata`] type.
+#[derive(PartialEq, Debug)]
+pub struct BlockWithMetadata {
+    /// The [`Metadata`](crate::BlockMetadata) of the block.
+    pub metadata: crate::BlockMetadata,
+    /// The complete [`Block`](stardust::Block).
+    pub block: stardust::Block,
+}
+
+impl TryFrom<proto::BlockWithMetadata> for BlockWithMetadata {
+    type Error = Error;
+
+    fn try_from(value: proto::BlockWithMetadata) -> Result<Self, Self::Error> {
+        let metadata = value.metadata.ok_or(Error::MissingField("metadata"))?.try_into()?;
+        let block = value.block.ok_or(Error::MissingField("block"))?.try_into()?;
+
+        Ok(BlockWithMetadata { metadata, block })
+    }
+}
+
 impl From<stardust::BlockId> for proto::BlockId {
     fn from(value: stardust::BlockId) -> Self {
         Self {
