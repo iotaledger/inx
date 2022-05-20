@@ -6,7 +6,7 @@ use std::error::Error;
 use futures::StreamExt;
 use inx::proto::{self};
 
-const INX_ADDRESS: &str = "localhost:9029";
+const INX_ADDRESS: &str = "http://localhost:9029";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
