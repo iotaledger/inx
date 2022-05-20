@@ -198,3 +198,9 @@ func (x *RawReceipt) UnwrapReceipt(deSeriMode serializer.DeSerializationMode, pr
 func (x *WhiteFlagRequest) UnwrapParents() iotago.BlockIDs {
 	return blockIDsFromSlice(x.GetParents())
 }
+
+// Tips
+
+func (x *TipsResponse) UnwrapTips() iotago.BlockIDs {
+	return blockIDsFromSlice(x.GetTips())
+}

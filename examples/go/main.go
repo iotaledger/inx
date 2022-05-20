@@ -25,7 +25,7 @@ func main() {
 	client := inx.NewINXClient(conn)
 
 	// Listen to all confirmed milestones
-	stream, err := client.ListenToConfirmedMilestone(context.Background(), &inx.NoParams{})
+	stream, err := client.ListenToConfirmedMilestones(context.Background(), &inx.ConfirmedMilestonesRequest{})
 	if err != nil {
 		panic(err)
 	}
