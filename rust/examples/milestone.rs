@@ -14,7 +14,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Listen to the milestones from the node.
     let mut milestone_stream = inx
-        .listen_to_confirmed_milestones(proto::ConfirmedMilestonesRequest {})
+        .listen_to_confirmed_milestones(proto::ConfirmedMilestonesRequest::from(
+            inx::ConfirmedMilestonesRequest::UntilForever,
+        ))
         .await?
         .into_inner();
 
