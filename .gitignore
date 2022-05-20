@@ -2,4 +2,3 @@ go/.idea
 .DS_Store
 .idea
 examples/nodejs/node_modules
-examples/nodejs/package-lock.json
