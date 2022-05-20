@@ -3,7 +3,7 @@
 
 use thiserror::Error;
 
-/// Represents [`Error`]s that happened during conversion.
+/// Represents [`Error`](self::Error) s that happened during conversion.
 #[allow(missing_docs)]
 #[derive(PartialEq, Debug, Error)]
 pub enum Error {
