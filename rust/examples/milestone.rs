@@ -1,3 +1,6 @@
+// Copyright 2022 IOTA Stiftung
+// SPDX-License-Identifier: Apache-2.0
+
 use std::error::Error;
 
 use futures::StreamExt;
@@ -35,14 +38,19 @@ async fn main() -> Result<(), Box<dyn Error>> {
         let mut count = 0usize;
 
         while let Some(Ok(proto_block_metadata)) = cone_stream.next().await {
-
             let block_metadata: inx::BlockWithMetadata = proto_block_metadata.try_into()?;
 
-            println!("Block {}: {:#?}", block_metadata.metadata.block_id, block_metadata.block);
+            println!(
+                "Block {}: {:#?}",
+                block_metadata.metadata.block_id, block_metadata.block
+            );
             count += 1;
         }
 
-        println!("Milestone {} contained {count} blocks", milestone.milestone_info.milestone_id);
+        println!(
+            "Milestone {} contained {count} blocks",
+            milestone.milestone_info.milestone_id
+        );
     }
 
     Ok(())
