@@ -11,7 +11,7 @@ service INX {
   // Milestones
   rpc ReadMilestone(MilestoneRequest) returns (Milestone);
   rpc ListenToLatestMilestones(NoParams) returns (stream Milestone);
-  rpc ListenToConfirmedMilestones(ConfirmedMilestonesRequest) returns (stream Milestone);
+  rpc ListenToConfirmedMilestones(MilestoneRangeRequest) returns (stream Milestone);
   rpc ComputeWhiteFlag(WhiteFlagRequest) returns (WhiteFlagResponse);
   rpc ReadMilestoneCone(MilestoneRequest) returns (stream BlockWithMetadata);
   rpc ReadMilestoneConeMetadata(MilestoneRequest) returns (stream BlockMetadata);
@@ -30,8 +30,8 @@ service INX {
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
-  rpc ListenToLedgerUpdates(LedgerRequest) returns (stream LedgerUpdate);
-  rpc ListenToTreasuryUpdates(LedgerRequest) returns (stream TreasuryUpdate);
+  rpc ListenToLedgerUpdates(MilestoneRangeRequest) returns (stream LedgerUpdate);
+  rpc ListenToTreasuryUpdates(MilestoneRangeRequest) returns (stream TreasuryUpdate);
   rpc ReadOutput(OutputId) returns (OutputResponse);
   rpc ListenToMigrationReceipts(NoParams) returns (stream RawReceipt);
 
@@ -106,7 +106,7 @@ message MilestoneRequest {
   MilestoneId milestoneId = 2;
 }
 
-message ConfirmedMilestonesRequest {
+message MilestoneRangeRequest {
   // startMilestoneIndex is the initial milestone to get. Use 0 to start from the current node status.
   uint32 startMilestoneIndex = 1;
   // endMilestoneIndex is the last milestone to get (inclusive). Use 0 to keep getting new confirmed milestones.
@@ -247,13 +247,6 @@ message LedgerSpent {
 message TreasuryOutput {
   MilestoneId milestoneId = 1;
   uint64 amount = 2;
-}
-
-message LedgerRequest {
-  // startMilestoneIndex is the initial milestone for which to get ledger information. Use 0 to start from the current node status.
-  uint32 startMilestoneIndex = 1;
-  // endMilestoneIndex is the last milestone for which to get ledger information (inclusive). Use 0 to keep getting new updates.
-  uint32 endMilestoneIndex = 2;
 }
 
 message LedgerUpdate {

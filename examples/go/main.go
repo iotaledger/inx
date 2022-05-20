@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"google.golang.org/grpc/credentials/insecure"
 	"io"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/iotaledger/hive.go/serializer/v2"
 	inx "github.com/iotaledger/inx/go"
-	"google.golang.org/grpc"
 )
 
 const (
@@ -25,7 +26,7 @@ func main() {
 	client := inx.NewINXClient(conn)
 
 	// Listen to all confirmed milestones
-	stream, err := client.ListenToConfirmedMilestones(context.Background(), &inx.ConfirmedMilestonesRequest{})
+	stream, err := client.ListenToConfirmedMilestones(context.Background(), &inx.MilestoneRangeRequest{})
 	if err != nil {
 		panic(err)
 	}

@@ -24,7 +24,7 @@ type INXClient interface {
 	// Milestones
 	ReadMilestone(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (*Milestone, error)
 	ListenToLatestMilestones(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToLatestMilestonesClient, error)
-	ListenToConfirmedMilestones(ctx context.Context, in *ConfirmedMilestonesRequest, opts ...grpc.CallOption) (INX_ListenToConfirmedMilestonesClient, error)
+	ListenToConfirmedMilestones(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToConfirmedMilestonesClient, error)
 	ComputeWhiteFlag(ctx context.Context, in *WhiteFlagRequest, opts ...grpc.CallOption) (*WhiteFlagResponse, error)
 	ReadMilestoneCone(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (INX_ReadMilestoneConeClient, error)
 	ReadMilestoneConeMetadata(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (INX_ReadMilestoneConeMetadataClient, error)
@@ -40,8 +40,8 @@ type INXClient interface {
 	ListenToTipsMetrics(ctx context.Context, in *TipsMetricRequest, opts ...grpc.CallOption) (INX_ListenToTipsMetricsClient, error)
 	// UTXO
 	ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error)
-	ListenToLedgerUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
-	ListenToTreasuryUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error)
+	ListenToLedgerUpdates(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
+	ListenToTreasuryUpdates(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error)
 	ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputResponse, error)
 	ListenToMigrationReceipts(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToMigrationReceiptsClient, error)
 	// REST API
@@ -117,7 +117,7 @@ func (x *iNXListenToLatestMilestonesClient) Recv() (*Milestone, error) {
 	return m, nil
 }
 
-func (c *iNXClient) ListenToConfirmedMilestones(ctx context.Context, in *ConfirmedMilestonesRequest, opts ...grpc.CallOption) (INX_ListenToConfirmedMilestonesClient, error) {
+func (c *iNXClient) ListenToConfirmedMilestones(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToConfirmedMilestonesClient, error) {
 	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[1], "/inx.INX/ListenToConfirmedMilestones", opts...)
 	if err != nil {
 		return nil, err
@@ -418,7 +418,7 @@ func (x *iNXReadUnspentOutputsClient) Recv() (*UnspentOutput, error) {
 	return m, nil
 }
 
-func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
+func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
 	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[9], "/inx.INX/ListenToLedgerUpdates", opts...)
 	if err != nil {
 		return nil, err
@@ -450,7 +450,7 @@ func (x *iNXListenToLedgerUpdatesClient) Recv() (*LedgerUpdate, error) {
 	return m, nil
 }
 
-func (c *iNXClient) ListenToTreasuryUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error) {
+func (c *iNXClient) ListenToTreasuryUpdates(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error) {
 	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[10], "/inx.INX/ListenToTreasuryUpdates", opts...)
 	if err != nil {
 		return nil, err
@@ -560,7 +560,7 @@ type INXServer interface {
 	// Milestones
 	ReadMilestone(context.Context, *MilestoneRequest) (*Milestone, error)
 	ListenToLatestMilestones(*NoParams, INX_ListenToLatestMilestonesServer) error
-	ListenToConfirmedMilestones(*ConfirmedMilestonesRequest, INX_ListenToConfirmedMilestonesServer) error
+	ListenToConfirmedMilestones(*MilestoneRangeRequest, INX_ListenToConfirmedMilestonesServer) error
 	ComputeWhiteFlag(context.Context, *WhiteFlagRequest) (*WhiteFlagResponse, error)
 	ReadMilestoneCone(*MilestoneRequest, INX_ReadMilestoneConeServer) error
 	ReadMilestoneConeMetadata(*MilestoneRequest, INX_ReadMilestoneConeMetadataServer) error
@@ -576,8 +576,8 @@ type INXServer interface {
 	ListenToTipsMetrics(*TipsMetricRequest, INX_ListenToTipsMetricsServer) error
 	// UTXO
 	ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error
-	ListenToLedgerUpdates(*LedgerRequest, INX_ListenToLedgerUpdatesServer) error
-	ListenToTreasuryUpdates(*LedgerRequest, INX_ListenToTreasuryUpdatesServer) error
+	ListenToLedgerUpdates(*MilestoneRangeRequest, INX_ListenToLedgerUpdatesServer) error
+	ListenToTreasuryUpdates(*MilestoneRangeRequest, INX_ListenToTreasuryUpdatesServer) error
 	ReadOutput(context.Context, *OutputId) (*OutputResponse, error)
 	ListenToMigrationReceipts(*NoParams, INX_ListenToMigrationReceiptsServer) error
 	// REST API
@@ -603,7 +603,7 @@ func (UnimplementedINXServer) ReadMilestone(context.Context, *MilestoneRequest) 
 func (UnimplementedINXServer) ListenToLatestMilestones(*NoParams, INX_ListenToLatestMilestonesServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToLatestMilestones not implemented")
 }
-func (UnimplementedINXServer) ListenToConfirmedMilestones(*ConfirmedMilestonesRequest, INX_ListenToConfirmedMilestonesServer) error {
+func (UnimplementedINXServer) ListenToConfirmedMilestones(*MilestoneRangeRequest, INX_ListenToConfirmedMilestonesServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToConfirmedMilestones not implemented")
 }
 func (UnimplementedINXServer) ComputeWhiteFlag(context.Context, *WhiteFlagRequest) (*WhiteFlagResponse, error) {
@@ -642,10 +642,10 @@ func (UnimplementedINXServer) ListenToTipsMetrics(*TipsMetricRequest, INX_Listen
 func (UnimplementedINXServer) ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReadUnspentOutputs not implemented")
 }
-func (UnimplementedINXServer) ListenToLedgerUpdates(*LedgerRequest, INX_ListenToLedgerUpdatesServer) error {
+func (UnimplementedINXServer) ListenToLedgerUpdates(*MilestoneRangeRequest, INX_ListenToLedgerUpdatesServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToLedgerUpdates not implemented")
 }
-func (UnimplementedINXServer) ListenToTreasuryUpdates(*LedgerRequest, INX_ListenToTreasuryUpdatesServer) error {
+func (UnimplementedINXServer) ListenToTreasuryUpdates(*MilestoneRangeRequest, INX_ListenToTreasuryUpdatesServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToTreasuryUpdates not implemented")
 }
 func (UnimplementedINXServer) ReadOutput(context.Context, *OutputId) (*OutputResponse, error) {
@@ -752,7 +752,7 @@ func (x *iNXListenToLatestMilestonesServer) Send(m *Milestone) error {
 }
 
 func _INX_ListenToConfirmedMilestones_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ConfirmedMilestonesRequest)
+	m := new(MilestoneRangeRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -1010,7 +1010,7 @@ func (x *iNXReadUnspentOutputsServer) Send(m *UnspentOutput) error {
 }
 
 func _INX_ListenToLedgerUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(LedgerRequest)
+	m := new(MilestoneRangeRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -1031,7 +1031,7 @@ func (x *iNXListenToLedgerUpdatesServer) Send(m *LedgerUpdate) error {
 }
 
 func _INX_ListenToTreasuryUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(LedgerRequest)
+	m := new(MilestoneRangeRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}

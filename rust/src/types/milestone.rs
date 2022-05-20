@@ -14,8 +14,8 @@ pub enum MilestoneRequest {
     MilestoneId(stardust::payload::milestone::MilestoneId),
 }
 
-/// Convenience method to create a [`proto::ConfirmedMilestonesRequest`]. All the milestone ranges are inclusive.
-pub enum ConfirmedMilestonesRequest {
+/// Convenience method to create a [`proto::MilestoneRangeRequest`]. All the milestone ranges are inclusive.
+pub enum MilestoneRangeRequest {
     /// Returns a stream that starts now and continues indefinetly.
     UntilForever,
     /// Returns a stream that starts now and continues until a given milestone index.
@@ -122,25 +122,25 @@ impl From<MilestoneRequest> for proto::MilestoneRequest {
     }
 }
 
-impl From<ConfirmedMilestonesRequest> for proto::ConfirmedMilestonesRequest {
-    fn from(value: ConfirmedMilestonesRequest) -> Self {
+impl From<MilestoneRangeRequest> for proto::MilestoneRangeRequest {
+    fn from(value: MilestoneRangeRequest) -> Self {
         match value {
-            ConfirmedMilestonesRequest::UntilForever => proto::ConfirmedMilestonesRequest {
+            MilestoneRangeRequest::UntilForever => proto::MilestoneRangeRequest {
                 start_milestone_index: 0,
                 end_milestone_index: 0,
             },
-            ConfirmedMilestonesRequest::UntilMilestoneIndex(end_milestone_index) => proto::ConfirmedMilestonesRequest {
+            MilestoneRangeRequest::UntilMilestoneIndex(end_milestone_index) => proto::MilestoneRangeRequest {
                 start_milestone_index: 0,
                 end_milestone_index,
             },
-            ConfirmedMilestonesRequest::FromMilestoneIndex(start_milestone_index) => {
-                proto::ConfirmedMilestonesRequest {
+            MilestoneRangeRequest::FromMilestoneIndex(start_milestone_index) => {
+                proto::MilestoneRangeRequest {
                     start_milestone_index,
                     end_milestone_index: 0,
                 }
             }
-            ConfirmedMilestonesRequest::FromUntilMilestoneIndex(start_milestone_index, end_milestone_index) => {
-                proto::ConfirmedMilestonesRequest {
+            MilestoneRangeRequest::FromUntilMilestoneIndex(start_milestone_index, end_milestone_index) => {
+                proto::MilestoneRangeRequest {
                     start_milestone_index,
                     end_milestone_index,
                 }
