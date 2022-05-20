@@ -26,13 +26,15 @@ type INXClient interface {
 	ListenToLatestMilestone(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToLatestMilestoneClient, error)
 	ListenToConfirmedMilestone(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToConfirmedMilestoneClient, error)
 	ComputeWhiteFlag(ctx context.Context, in *WhiteFlagRequest, opts ...grpc.CallOption) (*WhiteFlagResponse, error)
-	// Messages
-	ListenToMessages(ctx context.Context, in *MessageFilter, opts ...grpc.CallOption) (INX_ListenToMessagesClient, error)
-	ListenToSolidMessages(ctx context.Context, in *MessageFilter, opts ...grpc.CallOption) (INX_ListenToSolidMessagesClient, error)
-	ListenToReferencedMessages(ctx context.Context, in *MessageFilter, opts ...grpc.CallOption) (INX_ListenToReferencedMessagesClient, error)
-	SubmitMessage(ctx context.Context, in *RawMessage, opts ...grpc.CallOption) (*MessageId, error)
-	ReadMessage(ctx context.Context, in *MessageId, opts ...grpc.CallOption) (*RawMessage, error)
-	ReadMessageMetadata(ctx context.Context, in *MessageId, opts ...grpc.CallOption) (*MessageMetadata, error)
+	ReadMilestoneCone(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (INX_ReadMilestoneConeClient, error)
+	ReadMilestoneConeMetadata(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (INX_ReadMilestoneConeMetadataClient, error)
+	// Blocks
+	ListenToBlocks(ctx context.Context, in *BlockFilter, opts ...grpc.CallOption) (INX_ListenToBlocksClient, error)
+	ListenToSolidBlocks(ctx context.Context, in *BlockFilter, opts ...grpc.CallOption) (INX_ListenToSolidBlocksClient, error)
+	ListenToReferencedBlocks(ctx context.Context, in *BlockFilter, opts ...grpc.CallOption) (INX_ListenToReferencedBlocksClient, error)
+	SubmitBlock(ctx context.Context, in *RawBlock, opts ...grpc.CallOption) (*BlockId, error)
+	ReadBlock(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*RawBlock, error)
+	ReadBlockMetadata(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*BlockMetadata, error)
 	// UTXO
 	ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error)
 	ListenToLedgerUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
@@ -153,12 +155,12 @@ func (c *iNXClient) ComputeWhiteFlag(ctx context.Context, in *WhiteFlagRequest, 
 	return out, nil
 }
 
-func (c *iNXClient) ListenToMessages(ctx context.Context, in *MessageFilter, opts ...grpc.CallOption) (INX_ListenToMessagesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[2], "/inx.INX/ListenToMessages", opts...)
+func (c *iNXClient) ReadMilestoneCone(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (INX_ReadMilestoneConeClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[2], "/inx.INX/ReadMilestoneCone", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &iNXListenToMessagesClient{stream}
+	x := &iNXReadMilestoneConeClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -168,29 +170,29 @@ func (c *iNXClient) ListenToMessages(ctx context.Context, in *MessageFilter, opt
 	return x, nil
 }
 
-type INX_ListenToMessagesClient interface {
-	Recv() (*Message, error)
+type INX_ReadMilestoneConeClient interface {
+	Recv() (*BlockWithMetadata, error)
 	grpc.ClientStream
 }
 
-type iNXListenToMessagesClient struct {
+type iNXReadMilestoneConeClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNXListenToMessagesClient) Recv() (*Message, error) {
-	m := new(Message)
+func (x *iNXReadMilestoneConeClient) Recv() (*BlockWithMetadata, error) {
+	m := new(BlockWithMetadata)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *iNXClient) ListenToSolidMessages(ctx context.Context, in *MessageFilter, opts ...grpc.CallOption) (INX_ListenToSolidMessagesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[3], "/inx.INX/ListenToSolidMessages", opts...)
+func (c *iNXClient) ReadMilestoneConeMetadata(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (INX_ReadMilestoneConeMetadataClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[3], "/inx.INX/ReadMilestoneConeMetadata", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &iNXListenToSolidMessagesClient{stream}
+	x := &iNXReadMilestoneConeMetadataClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -200,29 +202,29 @@ func (c *iNXClient) ListenToSolidMessages(ctx context.Context, in *MessageFilter
 	return x, nil
 }
 
-type INX_ListenToSolidMessagesClient interface {
-	Recv() (*MessageMetadata, error)
+type INX_ReadMilestoneConeMetadataClient interface {
+	Recv() (*BlockMetadata, error)
 	grpc.ClientStream
 }
 
-type iNXListenToSolidMessagesClient struct {
+type iNXReadMilestoneConeMetadataClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNXListenToSolidMessagesClient) Recv() (*MessageMetadata, error) {
-	m := new(MessageMetadata)
+func (x *iNXReadMilestoneConeMetadataClient) Recv() (*BlockMetadata, error) {
+	m := new(BlockMetadata)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *iNXClient) ListenToReferencedMessages(ctx context.Context, in *MessageFilter, opts ...grpc.CallOption) (INX_ListenToReferencedMessagesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[4], "/inx.INX/ListenToReferencedMessages", opts...)
+func (c *iNXClient) ListenToBlocks(ctx context.Context, in *BlockFilter, opts ...grpc.CallOption) (INX_ListenToBlocksClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[4], "/inx.INX/ListenToBlocks", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &iNXListenToReferencedMessagesClient{stream}
+	x := &iNXListenToBlocksClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -232,44 +234,108 @@ func (c *iNXClient) ListenToReferencedMessages(ctx context.Context, in *MessageF
 	return x, nil
 }
 
-type INX_ListenToReferencedMessagesClient interface {
-	Recv() (*MessageMetadata, error)
+type INX_ListenToBlocksClient interface {
+	Recv() (*Block, error)
 	grpc.ClientStream
 }
 
-type iNXListenToReferencedMessagesClient struct {
+type iNXListenToBlocksClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNXListenToReferencedMessagesClient) Recv() (*MessageMetadata, error) {
-	m := new(MessageMetadata)
+func (x *iNXListenToBlocksClient) Recv() (*Block, error) {
+	m := new(Block)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *iNXClient) SubmitMessage(ctx context.Context, in *RawMessage, opts ...grpc.CallOption) (*MessageId, error) {
-	out := new(MessageId)
-	err := c.cc.Invoke(ctx, "/inx.INX/SubmitMessage", in, out, opts...)
+func (c *iNXClient) ListenToSolidBlocks(ctx context.Context, in *BlockFilter, opts ...grpc.CallOption) (INX_ListenToSolidBlocksClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[5], "/inx.INX/ListenToSolidBlocks", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &iNXListenToSolidBlocksClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type INX_ListenToSolidBlocksClient interface {
+	Recv() (*BlockMetadata, error)
+	grpc.ClientStream
+}
+
+type iNXListenToSolidBlocksClient struct {
+	grpc.ClientStream
+}
+
+func (x *iNXListenToSolidBlocksClient) Recv() (*BlockMetadata, error) {
+	m := new(BlockMetadata)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *iNXClient) ListenToReferencedBlocks(ctx context.Context, in *BlockFilter, opts ...grpc.CallOption) (INX_ListenToReferencedBlocksClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[6], "/inx.INX/ListenToReferencedBlocks", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &iNXListenToReferencedBlocksClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type INX_ListenToReferencedBlocksClient interface {
+	Recv() (*BlockMetadata, error)
+	grpc.ClientStream
+}
+
+type iNXListenToReferencedBlocksClient struct {
+	grpc.ClientStream
+}
+
+func (x *iNXListenToReferencedBlocksClient) Recv() (*BlockMetadata, error) {
+	m := new(BlockMetadata)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *iNXClient) SubmitBlock(ctx context.Context, in *RawBlock, opts ...grpc.CallOption) (*BlockId, error) {
+	out := new(BlockId)
+	err := c.cc.Invoke(ctx, "/inx.INX/SubmitBlock", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iNXClient) ReadMessage(ctx context.Context, in *MessageId, opts ...grpc.CallOption) (*RawMessage, error) {
-	out := new(RawMessage)
-	err := c.cc.Invoke(ctx, "/inx.INX/ReadMessage", in, out, opts...)
+func (c *iNXClient) ReadBlock(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*RawBlock, error) {
+	out := new(RawBlock)
+	err := c.cc.Invoke(ctx, "/inx.INX/ReadBlock", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *iNXClient) ReadMessageMetadata(ctx context.Context, in *MessageId, opts ...grpc.CallOption) (*MessageMetadata, error) {
-	out := new(MessageMetadata)
-	err := c.cc.Invoke(ctx, "/inx.INX/ReadMessageMetadata", in, out, opts...)
+func (c *iNXClient) ReadBlockMetadata(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*BlockMetadata, error) {
+	out := new(BlockMetadata)
+	err := c.cc.Invoke(ctx, "/inx.INX/ReadBlockMetadata", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -277,7 +343,7 @@ func (c *iNXClient) ReadMessageMetadata(ctx context.Context, in *MessageId, opts
 }
 
 func (c *iNXClient) ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[5], "/inx.INX/ReadUnspentOutputs", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[7], "/inx.INX/ReadUnspentOutputs", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -309,7 +375,7 @@ func (x *iNXReadUnspentOutputsClient) Recv() (*UnspentOutput, error) {
 }
 
 func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[6], "/inx.INX/ListenToLedgerUpdates", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[8], "/inx.INX/ListenToLedgerUpdates", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -341,7 +407,7 @@ func (x *iNXListenToLedgerUpdatesClient) Recv() (*LedgerUpdate, error) {
 }
 
 func (c *iNXClient) ListenToTreasuryUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[7], "/inx.INX/ListenToTreasuryUpdates", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[9], "/inx.INX/ListenToTreasuryUpdates", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -382,7 +448,7 @@ func (c *iNXClient) ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.C
 }
 
 func (c *iNXClient) ListenToMigrationReceipts(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToMigrationReceiptsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[8], "/inx.INX/ListenToMigrationReceipts", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[10], "/inx.INX/ListenToMigrationReceipts", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -452,13 +518,15 @@ type INXServer interface {
 	ListenToLatestMilestone(*NoParams, INX_ListenToLatestMilestoneServer) error
 	ListenToConfirmedMilestone(*NoParams, INX_ListenToConfirmedMilestoneServer) error
 	ComputeWhiteFlag(context.Context, *WhiteFlagRequest) (*WhiteFlagResponse, error)
-	// Messages
-	ListenToMessages(*MessageFilter, INX_ListenToMessagesServer) error
-	ListenToSolidMessages(*MessageFilter, INX_ListenToSolidMessagesServer) error
-	ListenToReferencedMessages(*MessageFilter, INX_ListenToReferencedMessagesServer) error
-	SubmitMessage(context.Context, *RawMessage) (*MessageId, error)
-	ReadMessage(context.Context, *MessageId) (*RawMessage, error)
-	ReadMessageMetadata(context.Context, *MessageId) (*MessageMetadata, error)
+	ReadMilestoneCone(*MilestoneRequest, INX_ReadMilestoneConeServer) error
+	ReadMilestoneConeMetadata(*MilestoneRequest, INX_ReadMilestoneConeMetadataServer) error
+	// Blocks
+	ListenToBlocks(*BlockFilter, INX_ListenToBlocksServer) error
+	ListenToSolidBlocks(*BlockFilter, INX_ListenToSolidBlocksServer) error
+	ListenToReferencedBlocks(*BlockFilter, INX_ListenToReferencedBlocksServer) error
+	SubmitBlock(context.Context, *RawBlock) (*BlockId, error)
+	ReadBlock(context.Context, *BlockId) (*RawBlock, error)
+	ReadBlockMetadata(context.Context, *BlockId) (*BlockMetadata, error)
 	// UTXO
 	ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error
 	ListenToLedgerUpdates(*LedgerRequest, INX_ListenToLedgerUpdatesServer) error
@@ -494,23 +562,29 @@ func (UnimplementedINXServer) ListenToConfirmedMilestone(*NoParams, INX_ListenTo
 func (UnimplementedINXServer) ComputeWhiteFlag(context.Context, *WhiteFlagRequest) (*WhiteFlagResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ComputeWhiteFlag not implemented")
 }
-func (UnimplementedINXServer) ListenToMessages(*MessageFilter, INX_ListenToMessagesServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToMessages not implemented")
+func (UnimplementedINXServer) ReadMilestoneCone(*MilestoneRequest, INX_ReadMilestoneConeServer) error {
+	return status.Errorf(codes.Unimplemented, "method ReadMilestoneCone not implemented")
 }
-func (UnimplementedINXServer) ListenToSolidMessages(*MessageFilter, INX_ListenToSolidMessagesServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToSolidMessages not implemented")
+func (UnimplementedINXServer) ReadMilestoneConeMetadata(*MilestoneRequest, INX_ReadMilestoneConeMetadataServer) error {
+	return status.Errorf(codes.Unimplemented, "method ReadMilestoneConeMetadata not implemented")
 }
-func (UnimplementedINXServer) ListenToReferencedMessages(*MessageFilter, INX_ListenToReferencedMessagesServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToReferencedMessages not implemented")
+func (UnimplementedINXServer) ListenToBlocks(*BlockFilter, INX_ListenToBlocksServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListenToBlocks not implemented")
 }
-func (UnimplementedINXServer) SubmitMessage(context.Context, *RawMessage) (*MessageId, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitMessage not implemented")
+func (UnimplementedINXServer) ListenToSolidBlocks(*BlockFilter, INX_ListenToSolidBlocksServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListenToSolidBlocks not implemented")
 }
-func (UnimplementedINXServer) ReadMessage(context.Context, *MessageId) (*RawMessage, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadMessage not implemented")
+func (UnimplementedINXServer) ListenToReferencedBlocks(*BlockFilter, INX_ListenToReferencedBlocksServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListenToReferencedBlocks not implemented")
 }
-func (UnimplementedINXServer) ReadMessageMetadata(context.Context, *MessageId) (*MessageMetadata, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadMessageMetadata not implemented")
+func (UnimplementedINXServer) SubmitBlock(context.Context, *RawBlock) (*BlockId, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitBlock not implemented")
+}
+func (UnimplementedINXServer) ReadBlock(context.Context, *BlockId) (*RawBlock, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadBlock not implemented")
+}
+func (UnimplementedINXServer) ReadBlockMetadata(context.Context, *BlockId) (*BlockMetadata, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadBlockMetadata not implemented")
 }
 func (UnimplementedINXServer) ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReadUnspentOutputs not implemented")
@@ -663,119 +737,161 @@ func _INX_ComputeWhiteFlag_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _INX_ListenToMessages_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(MessageFilter)
+func _INX_ReadMilestoneCone_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(MilestoneRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(INXServer).ListenToMessages(m, &iNXListenToMessagesServer{stream})
+	return srv.(INXServer).ReadMilestoneCone(m, &iNXReadMilestoneConeServer{stream})
 }
 
-type INX_ListenToMessagesServer interface {
-	Send(*Message) error
+type INX_ReadMilestoneConeServer interface {
+	Send(*BlockWithMetadata) error
 	grpc.ServerStream
 }
 
-type iNXListenToMessagesServer struct {
+type iNXReadMilestoneConeServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNXListenToMessagesServer) Send(m *Message) error {
+func (x *iNXReadMilestoneConeServer) Send(m *BlockWithMetadata) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _INX_ListenToSolidMessages_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(MessageFilter)
+func _INX_ReadMilestoneConeMetadata_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(MilestoneRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(INXServer).ListenToSolidMessages(m, &iNXListenToSolidMessagesServer{stream})
+	return srv.(INXServer).ReadMilestoneConeMetadata(m, &iNXReadMilestoneConeMetadataServer{stream})
 }
 
-type INX_ListenToSolidMessagesServer interface {
-	Send(*MessageMetadata) error
+type INX_ReadMilestoneConeMetadataServer interface {
+	Send(*BlockMetadata) error
 	grpc.ServerStream
 }
 
-type iNXListenToSolidMessagesServer struct {
+type iNXReadMilestoneConeMetadataServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNXListenToSolidMessagesServer) Send(m *MessageMetadata) error {
+func (x *iNXReadMilestoneConeMetadataServer) Send(m *BlockMetadata) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _INX_ListenToReferencedMessages_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(MessageFilter)
+func _INX_ListenToBlocks_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(BlockFilter)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(INXServer).ListenToReferencedMessages(m, &iNXListenToReferencedMessagesServer{stream})
+	return srv.(INXServer).ListenToBlocks(m, &iNXListenToBlocksServer{stream})
 }
 
-type INX_ListenToReferencedMessagesServer interface {
-	Send(*MessageMetadata) error
+type INX_ListenToBlocksServer interface {
+	Send(*Block) error
 	grpc.ServerStream
 }
 
-type iNXListenToReferencedMessagesServer struct {
+type iNXListenToBlocksServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNXListenToReferencedMessagesServer) Send(m *MessageMetadata) error {
+func (x *iNXListenToBlocksServer) Send(m *Block) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _INX_SubmitMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RawMessage)
+func _INX_ListenToSolidBlocks_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(BlockFilter)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(INXServer).ListenToSolidBlocks(m, &iNXListenToSolidBlocksServer{stream})
+}
+
+type INX_ListenToSolidBlocksServer interface {
+	Send(*BlockMetadata) error
+	grpc.ServerStream
+}
+
+type iNXListenToSolidBlocksServer struct {
+	grpc.ServerStream
+}
+
+func (x *iNXListenToSolidBlocksServer) Send(m *BlockMetadata) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _INX_ListenToReferencedBlocks_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(BlockFilter)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(INXServer).ListenToReferencedBlocks(m, &iNXListenToReferencedBlocksServer{stream})
+}
+
+type INX_ListenToReferencedBlocksServer interface {
+	Send(*BlockMetadata) error
+	grpc.ServerStream
+}
+
+type iNXListenToReferencedBlocksServer struct {
+	grpc.ServerStream
+}
+
+func (x *iNXListenToReferencedBlocksServer) Send(m *BlockMetadata) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _INX_SubmitBlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RawBlock)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(INXServer).SubmitMessage(ctx, in)
+		return srv.(INXServer).SubmitBlock(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/inx.INX/SubmitMessage",
+		FullMethod: "/inx.INX/SubmitBlock",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(INXServer).SubmitMessage(ctx, req.(*RawMessage))
+		return srv.(INXServer).SubmitBlock(ctx, req.(*RawBlock))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _INX_ReadMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MessageId)
+func _INX_ReadBlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(INXServer).ReadMessage(ctx, in)
+		return srv.(INXServer).ReadBlock(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/inx.INX/ReadMessage",
+		FullMethod: "/inx.INX/ReadBlock",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(INXServer).ReadMessage(ctx, req.(*MessageId))
+		return srv.(INXServer).ReadBlock(ctx, req.(*BlockId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _INX_ReadMessageMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MessageId)
+func _INX_ReadBlockMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(INXServer).ReadMessageMetadata(ctx, in)
+		return srv.(INXServer).ReadBlockMetadata(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/inx.INX/ReadMessageMetadata",
+		FullMethod: "/inx.INX/ReadBlockMetadata",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(INXServer).ReadMessageMetadata(ctx, req.(*MessageId))
+		return srv.(INXServer).ReadBlockMetadata(ctx, req.(*BlockId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -960,16 +1076,16 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _INX_ComputeWhiteFlag_Handler,
 		},
 		{
-			MethodName: "SubmitMessage",
-			Handler:    _INX_SubmitMessage_Handler,
+			MethodName: "SubmitBlock",
+			Handler:    _INX_SubmitBlock_Handler,
 		},
 		{
-			MethodName: "ReadMessage",
-			Handler:    _INX_ReadMessage_Handler,
+			MethodName: "ReadBlock",
+			Handler:    _INX_ReadBlock_Handler,
 		},
 		{
-			MethodName: "ReadMessageMetadata",
-			Handler:    _INX_ReadMessageMetadata_Handler,
+			MethodName: "ReadBlockMetadata",
+			Handler:    _INX_ReadBlockMetadata_Handler,
 		},
 		{
 			MethodName: "ReadOutput",
@@ -1000,18 +1116,28 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "ListenToMessages",
-			Handler:       _INX_ListenToMessages_Handler,
+			StreamName:    "ReadMilestoneCone",
+			Handler:       _INX_ReadMilestoneCone_Handler,
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "ListenToSolidMessages",
-			Handler:       _INX_ListenToSolidMessages_Handler,
+			StreamName:    "ReadMilestoneConeMetadata",
+			Handler:       _INX_ReadMilestoneConeMetadata_Handler,
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "ListenToReferencedMessages",
-			Handler:       _INX_ListenToReferencedMessages_Handler,
+			StreamName:    "ListenToBlocks",
+			Handler:       _INX_ListenToBlocks_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ListenToSolidBlocks",
+			Handler:       _INX_ListenToSolidBlocks_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ListenToReferencedBlocks",
+			Handler:       _INX_ListenToReferencedBlocks_Handler,
 			ServerStreams: true,
 		},
 		{

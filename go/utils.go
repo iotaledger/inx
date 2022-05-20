@@ -7,6 +7,14 @@ import (
 	iotago "github.com/iotaledger/iota.go/v3"
 )
 
+func blockIDsFromSlice(slice []*BlockId) iotago.BlockIDs {
+	result := make([]iotago.BlockID, len(slice))
+	for i := range slice {
+		result[i] = slice[i].Unwrap()
+	}
+	return result
+}
+
 // Node
 
 func (x *NodeConfiguration) UnwrapProtocolParameters() *iotago.ProtocolParameters {
@@ -29,76 +37,106 @@ func (x *ProtocolParameters) Unwrap() *iotago.ProtocolParameters {
 	}
 }
 
-// Message
+// Block
 
-func WrapMessage(msg *iotago.Message) (*RawMessage, error) {
+func WrapBlock(msg *iotago.Block) (*RawBlock, error) {
 	bytes, err := msg.Serialize(serializer.DeSeriModeNoValidation, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &RawMessage{
+	return &RawBlock{
 		Data: bytes,
 	}, nil
 }
 
-func (x *RawMessage) UnwrapMessage(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Message, error) {
-	msg := &iotago.Message{}
+func (x *RawBlock) UnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Block, error) {
+	msg := &iotago.Block{}
 	if _, err := msg.Deserialize(x.GetData(), deSeriMode, protoParas); err != nil {
 		return nil, err
 	}
 	return msg, nil
 }
 
-func (x *MessageId) Unwrap() iotago.MessageID {
-	id := iotago.MessageID{}
-	if len(x.GetId()) != iotago.MessageIDLength {
+func (x *BlockId) Unwrap() iotago.BlockID {
+	id := iotago.BlockID{}
+	if len(x.GetId()) != iotago.BlockIDLength {
 		return id
 	}
 	copy(id[:], x.GetId())
 	return id
 }
 
-func (x *Message) UnwrapMessageID() iotago.MessageID {
-	return x.GetMessageId().Unwrap()
+func (x *Block) UnwrapBlockID() iotago.BlockID {
+	return x.GetBlockId().Unwrap()
 }
 
-func (x *Message) UnwrapMessage(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Message, error) {
-	return x.GetMessage().UnwrapMessage(deSeriMode, protoParas)
+func (x *Block) UnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Block, error) {
+	return x.GetBlock().UnwrapBlock(deSeriMode, protoParas)
 }
 
-func (x *Message) MustUnwrapMessage(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) *iotago.Message {
-	msg, err := x.GetMessage().UnwrapMessage(deSeriMode, protoParas)
+func (x *Block) MustUnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) *iotago.Block {
+	msg, err := x.GetBlock().UnwrapBlock(deSeriMode, protoParas)
 	if err != nil {
 		panic(err)
 	}
 	return msg
 }
 
-func (x *MessageMetadata) UnwrapMessageID() iotago.MessageID {
-	return x.GetMessageId().Unwrap()
+func (x *BlockMetadata) UnwrapBlockID() iotago.BlockID {
+	return x.GetBlockId().Unwrap()
+}
+
+func (x *BlockMetadata) UnwrapParents() iotago.BlockIDs {
+	return blockIDsFromSlice(x.GetParents())
+}
+
+func (x *BlockWithMetadata) UnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Block, error) {
+	return x.GetBlock().UnwrapBlock(deSeriMode, protoParas)
 }
 
 // Ledger
 
-func (x *OutputId) Unwrap() *iotago.OutputID {
+func (x *OutputId) Unwrap() iotago.OutputID {
+	id := iotago.OutputID{}
 	if len(x.GetId()) != iotago.OutputIDLength {
-		return nil
+		return iotago.OutputID{}
 	}
-	id := &iotago.OutputID{}
 	copy(id[:], x.GetId())
 	return id
 }
 
-func (x *LedgerOutput) UnwrapOutputID() *iotago.OutputID {
+func (x *LedgerOutput) UnwrapOutputID() iotago.OutputID {
 	return x.OutputId.Unwrap()
 }
 
-func (x *LedgerOutput) UnwrapMessageID() iotago.MessageID {
-	return x.MessageId.Unwrap()
+func (x *LedgerOutput) UnwrapBlockID() iotago.BlockID {
+	return x.BlockId.Unwrap()
 }
 
 func (x *LedgerOutput) UnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (iotago.Output, error) {
-	data := x.GetOutput()
+	return x.GetOutput().Unwrap(deSeriMode, protoParas)
+}
+
+func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) iotago.Output {
+	output, err := x.UnwrapOutput(deSeriMode, protoParas)
+	if err != nil {
+		panic(err)
+	}
+	return output
+}
+
+func WrapOutput(output iotago.Output) (*RawOutput, error) {
+	bytes, err := output.Serialize(serializer.DeSeriModeNoValidation, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &RawOutput{
+		Data: bytes,
+	}, nil
+}
+
+func (x *RawOutput) Unwrap(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (iotago.Output, error) {
+	data := x.GetData()
 	if len(data) == 0 {
 		return nil, errors.New("invalid output length")
 	}
@@ -115,19 +153,11 @@ func (x *LedgerOutput) UnwrapOutput(deSeriMode serializer.DeSerializationMode, p
 	return output, nil
 }
 
-func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) iotago.Output {
-	output, err := x.UnwrapOutput(deSeriMode, protoParas)
-	if err != nil {
-		panic(err)
-	}
-	return output
-}
-
-func (x *LedgerSpent) UnwrapTransactionIDSpent() *iotago.TransactionID {
+func (x *LedgerSpent) UnwrapTransactionIDSpent() iotago.TransactionID {
+	id := iotago.TransactionID{}
 	if len(x.GetTransactionIdSpent()) != iotago.TransactionIDLength {
-		return nil
+		return id
 	}
-	id := &iotago.TransactionID{}
 	copy(id[:], x.GetTransactionIdSpent())
 	return id
 }
@@ -163,4 +193,8 @@ func (x *RawReceipt) UnwrapReceipt(deSeriMode serializer.DeSerializationMode, pr
 		return nil, err
 	}
 	return r, nil
+}
+
+func (x *WhiteFlagRequest) UnwrapParents() iotago.BlockIDs {
+	return blockIDsFromSlice(x.GetParents())
 }
