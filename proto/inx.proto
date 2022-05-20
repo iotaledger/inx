@@ -4,26 +4,28 @@ package inx;
 option go_package = "github.com/iotaledger/inx/go;inx";
 
 service INX {
-
   // Node
   rpc ReadNodeStatus(NoParams) returns (NodeStatus);
   rpc ReadNodeConfiguration(NoParams) returns (NodeConfiguration);
 
   // Milestones
   rpc ReadMilestone(MilestoneRequest) returns (Milestone);
-  rpc ListenToLatestMilestone(NoParams) returns (stream Milestone);
-  rpc ListenToConfirmedMilestone(NoParams) returns (stream Milestone);
+  rpc ListenToLatestMilestones(NoParams) returns (stream Milestone);
+  rpc ListenToConfirmedMilestones(ConfirmedMilestonesRequest) returns (stream Milestone);
   rpc ComputeWhiteFlag(WhiteFlagRequest) returns (WhiteFlagResponse);
   rpc ReadMilestoneCone(MilestoneRequest) returns (stream BlockWithMetadata);
   rpc ReadMilestoneConeMetadata(MilestoneRequest) returns (stream BlockMetadata);
 
   // Blocks
-  rpc ListenToBlocks(BlockFilter) returns (stream Block);
-  rpc ListenToSolidBlocks(BlockFilter) returns (stream BlockMetadata);
-  rpc ListenToReferencedBlocks(BlockFilter) returns (stream BlockMetadata);
+  rpc ListenToBlocks(NoParams) returns (stream Block);
+  rpc ListenToSolidBlocks(NoParams) returns (stream BlockMetadata);
+  rpc ListenToReferencedBlocks(NoParams) returns (stream BlockMetadata);
   rpc SubmitBlock(RawBlock) returns (BlockId);
   rpc ReadBlock(BlockId) returns (RawBlock);
   rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
+
+  // Tips
+  rpc RequestTips(TipsRequest) returns (TipsResponse);
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
@@ -36,19 +38,6 @@ service INX {
   rpc RegisterAPIRoute(APIRouteRequest) returns (NoParams);
   rpc UnregisterAPIRoute(APIRouteRequest) returns (NoParams);
   rpc PerformAPIRequest(APIRequest) returns (APIResponse);
-}
-
-message APIRequest {
-  string method = 1;
-  string path = 2;
-  map<string,string> headers = 3;
-  bytes body = 4;
-}
-
-message APIResponse {
-  uint32 code = 1;
-  map<string,string>  headers = 2;
-  bytes body = 3;
 }
 
 message NoParams {}
@@ -94,14 +83,15 @@ message RentStructure {
 
 message NodeStatus {
   bool isHealthy = 1;
-  MilestoneInfo latestMilestone = 2;
-  MilestoneInfo confirmedMilestone = 3;
-  uint32 pruningIndex = 4;
-  uint32 ledgerIndex = 5;
+  Milestone latestMilestone = 2;
+  Milestone confirmedMilestone = 3;
+  uint32 tanglePruningIndex = 4;
+  uint32 milestonesPruningIndex = 5;
+  uint32 ledgerPruningIndex = 6;
+  uint32 ledgerIndex = 7;
 }
 
 // Milestones
-
 message RawMilestone {
   bytes data = 1;
 }
@@ -113,6 +103,13 @@ message MilestoneId {
 message MilestoneRequest {
   uint32 milestoneIndex = 1;
   MilestoneId milestoneId = 2;
+}
+
+message ConfirmedMilestonesRequest {
+  // startMilestoneIndex is the initial milestone to get. Use 0 to start from the current node status.
+  uint32 startMilestoneIndex = 1;
+  // endMilestoneIndex is the last milestone to get (inclusive). Use 0 to keep getting new confirmed milestones.
+  uint32 endMilestoneIndex = 2;
 }
 
 message MilestoneInfo {
@@ -139,10 +136,6 @@ message WhiteFlagResponse {
 }
 
 // Blocks
-message BlockFilter {
-  //TODO
-}
-
 message RawBlock {
   bytes data = 1;
 }
@@ -194,6 +187,15 @@ message BlockMetadata {
   ConflictReason conflictReason = 9;
 }
 
+// Tips
+message TipsRequest {
+  uint32 count = 1;
+}
+
+message TipsResponse {
+  repeated BlockId tips = 1;
+}
+
 // UTXO
 message OutputId {
   bytes id = 1;
@@ -237,7 +239,10 @@ message TreasuryOutput {
 }
 
 message LedgerRequest {
+  // startMilestoneIndex is the initial milestone for which to get ledger information. Use 0 to start from the current node status.
   uint32 startMilestoneIndex = 1;
+  // endMilestoneIndex is the last milestone for which to get ledger information (inclusive). Use 0 to keep getting new updates.
+  uint32 endMilestoneIndex = 2;
 }
 
 message LedgerUpdate {
@@ -261,4 +266,17 @@ message APIRouteRequest {
   string route = 1;
   string host = 2;
   uint32 port = 3;
+}
+
+message APIRequest {
+  string method = 1;
+  string path = 2;
+  map<string,string> headers = 3;
+  bytes body = 4;
+}
+
+message APIResponse {
+  uint32 code = 1;
+  map<string,string>  headers = 2;
+  bytes body = 3;
 }

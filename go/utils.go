@@ -177,6 +177,19 @@ func (x *MilestoneId) Unwrap() iotago.MilestoneID {
 	return id
 }
 
+func (x *Milestone) UnwrapMilestone(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Milestone, error) {
+	return x.GetMilestone().Unwrap(deSeriMode, protoParas)
+}
+
+func (x *RawMilestone) Unwrap(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Milestone, error) {
+	milestone := &iotago.Milestone{}
+	_, err := milestone.Deserialize(x.GetData(), deSeriMode, protoParas)
+	if err != nil {
+		return nil, err
+	}
+	return milestone, nil
+}
+
 func WrapReceipt(receipt *iotago.ReceiptMilestoneOpt) (*RawReceipt, error) {
 	bytes, err := receipt.Serialize(serializer.DeSeriModeNoValidation, nil)
 	if err != nil {
@@ -197,4 +210,10 @@ func (x *RawReceipt) UnwrapReceipt(deSeriMode serializer.DeSerializationMode, pr
 
 func (x *WhiteFlagRequest) UnwrapParents() iotago.BlockIDs {
 	return blockIDsFromSlice(x.GetParents())
+}
+
+// Tips
+
+func (x *TipsResponse) UnwrapTips() iotago.BlockIDs {
+	return blockIDsFromSlice(x.GetTips())
 }

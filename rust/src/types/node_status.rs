@@ -10,11 +10,15 @@ pub struct NodeStatus {
     /// Signals if the node is healthy.
     pub is_healthy: bool,
     /// The latest milestone seen by the node.
-    pub latest_milestone: MilestoneInfo,
+    pub latest_milestone: Milestone,
     /// The last confirmed milestone.
-    pub confirmed_milestone: MilestoneInfo,
-    /// The pruning index of the node.
-    pub pruning_index: u32,
+    pub confirmed_milestone: Milestone,
+    /// The tangle pruning index of the node.
+    pub tangle_pruning_index: u32,
+    /// The milestones pruning index of the node.
+    pub milestones_pruning_index: u32,
+    /// The ledger pruning index of the node.
+    pub ledger_pruning_index: u32,
     /// The ledger index of the node.
     pub ledger_index: u32,
 }
@@ -33,7 +37,9 @@ impl TryFrom<proto::NodeStatus> for NodeStatus {
                 .confirmed_milestone
                 .ok_or(Error::MissingField("confirmed_milestone"))?
                 .try_into()?,
-            pruning_index: value.pruning_index,
+            tangle_pruning_index: value.tangle_pruning_index,
+            milestones_pruning_index: value.milestones_pruning_index,
+            ledger_pruning_index: value.ledger_pruning_index,
             ledger_index: value.ledger_index,
         })
     }

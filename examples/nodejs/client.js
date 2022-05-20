@@ -41,8 +41,8 @@ router.get('/info', (ctx) => {
                 reject(error);
             } else {
                 ctx.body = {
-                    "lsmi": status.latestMilestone.milestoneIndex,
-                    "cmi": status.confirmedMilestone.milestoneIndex,
+                    "lsmi": status.latestMilestone.milestoneInfo.milestoneIndex,
+                    "cmi": status.confirmedMilestone.milestoneInfo.milestoneIndex,
                 };
                 resolve();
             }
