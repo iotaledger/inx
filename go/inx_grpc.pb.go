@@ -37,6 +37,7 @@ type INXClient interface {
 	ReadBlockMetadata(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*BlockMetadata, error)
 	// Tips
 	RequestTips(ctx context.Context, in *TipsRequest, opts ...grpc.CallOption) (*TipsResponse, error)
+	ListenToTipsMetrics(ctx context.Context, in *TipsMetricRequest, opts ...grpc.CallOption) (INX_ListenToTipsMetricsClient, error)
 	// UTXO
 	ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error)
 	ListenToLedgerUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
@@ -353,8 +354,40 @@ func (c *iNXClient) RequestTips(ctx context.Context, in *TipsRequest, opts ...gr
 	return out, nil
 }
 
+func (c *iNXClient) ListenToTipsMetrics(ctx context.Context, in *TipsMetricRequest, opts ...grpc.CallOption) (INX_ListenToTipsMetricsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[7], "/inx.INX/ListenToTipsMetrics", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &iNXListenToTipsMetricsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type INX_ListenToTipsMetricsClient interface {
+	Recv() (*TipsMetric, error)
+	grpc.ClientStream
+}
+
+type iNXListenToTipsMetricsClient struct {
+	grpc.ClientStream
+}
+
+func (x *iNXListenToTipsMetricsClient) Recv() (*TipsMetric, error) {
+	m := new(TipsMetric)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *iNXClient) ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[7], "/inx.INX/ReadUnspentOutputs", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[8], "/inx.INX/ReadUnspentOutputs", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -386,7 +419,7 @@ func (x *iNXReadUnspentOutputsClient) Recv() (*UnspentOutput, error) {
 }
 
 func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[8], "/inx.INX/ListenToLedgerUpdates", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[9], "/inx.INX/ListenToLedgerUpdates", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -418,7 +451,7 @@ func (x *iNXListenToLedgerUpdatesClient) Recv() (*LedgerUpdate, error) {
 }
 
 func (c *iNXClient) ListenToTreasuryUpdates(ctx context.Context, in *LedgerRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[9], "/inx.INX/ListenToTreasuryUpdates", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[10], "/inx.INX/ListenToTreasuryUpdates", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -459,7 +492,7 @@ func (c *iNXClient) ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.C
 }
 
 func (c *iNXClient) ListenToMigrationReceipts(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToMigrationReceiptsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[10], "/inx.INX/ListenToMigrationReceipts", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[11], "/inx.INX/ListenToMigrationReceipts", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -540,6 +573,7 @@ type INXServer interface {
 	ReadBlockMetadata(context.Context, *BlockId) (*BlockMetadata, error)
 	// Tips
 	RequestTips(context.Context, *TipsRequest) (*TipsResponse, error)
+	ListenToTipsMetrics(*TipsMetricRequest, INX_ListenToTipsMetricsServer) error
 	// UTXO
 	ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error
 	ListenToLedgerUpdates(*LedgerRequest, INX_ListenToLedgerUpdatesServer) error
@@ -601,6 +635,9 @@ func (UnimplementedINXServer) ReadBlockMetadata(context.Context, *BlockId) (*Blo
 }
 func (UnimplementedINXServer) RequestTips(context.Context, *TipsRequest) (*TipsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestTips not implemented")
+}
+func (UnimplementedINXServer) ListenToTipsMetrics(*TipsMetricRequest, INX_ListenToTipsMetricsServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListenToTipsMetrics not implemented")
 }
 func (UnimplementedINXServer) ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReadUnspentOutputs not implemented")
@@ -930,6 +967,27 @@ func _INX_RequestTips_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _INX_ListenToTipsMetrics_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(TipsMetricRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(INXServer).ListenToTipsMetrics(m, &iNXListenToTipsMetricsServer{stream})
+}
+
+type INX_ListenToTipsMetricsServer interface {
+	Send(*TipsMetric) error
+	grpc.ServerStream
+}
+
+type iNXListenToTipsMetricsServer struct {
+	grpc.ServerStream
+}
+
+func (x *iNXListenToTipsMetricsServer) Send(m *TipsMetric) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 func _INX_ReadUnspentOutputs_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(NoParams)
 	if err := stream.RecvMsg(m); err != nil {
@@ -1176,6 +1234,11 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ListenToReferencedBlocks",
 			Handler:       _INX_ListenToReferencedBlocks_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ListenToTipsMetrics",
+			Handler:       _INX_ListenToTipsMetrics_Handler,
 			ServerStreams: true,
 		},
 		{

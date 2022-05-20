@@ -26,6 +26,7 @@ service INX {
 
   // Tips
   rpc RequestTips(TipsRequest) returns (TipsResponse);
+  rpc ListenToTipsMetrics(TipsMetricRequest) returns (stream TipsMetric);
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
@@ -190,10 +191,20 @@ message BlockMetadata {
 // Tips
 message TipsRequest {
   uint32 count = 1;
+  bool allowSemiLazy = 2;
 }
 
 message TipsResponse {
   repeated BlockId tips = 1;
+}
+
+message TipsMetricRequest {
+  uint32 intervalInMilliseconds = 1;
+}
+
+message TipsMetric {
+  uint32 nonLazyPoolSize = 1;
+  uint32 semiLazyPoolSize = 2;
 }
 
 // UTXO
