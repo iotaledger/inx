@@ -12,7 +12,6 @@ pub use self::{
     block::Block,
     error::Error,
     ledger::{LedgerOutput, LedgerSpent, LedgerUpdate},
-    message::Message,
     metadata::{BlockMetadata, ConflictReason, LedgerInclusionState},
     milestone::{Milestone, MilestoneInfo},
     node_status::NodeStatus,
