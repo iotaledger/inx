@@ -8,7 +8,7 @@ use bee_block_stardust as stardust;
 
 /// Represents a new output in the ledger.
 #[allow(missing_docs)]
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct LedgerOutput {
     pub output_id: stardust::output::OutputId,
     pub message_id: stardust::BlockId,
@@ -18,7 +18,7 @@ pub struct LedgerOutput {
 
 /// Represents a spent output in the ledger.
 #[allow(missing_docs)]
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct LedgerSpent {
     pub output: LedgerOutput,
     pub transaction_id_spent: stardust::payload::transaction::TransactionId,
@@ -28,7 +28,7 @@ pub struct LedgerSpent {
 
 /// Represents an update to ledger.
 #[allow(missing_docs)]
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct LedgerUpdate {
     pub milestone_index: u32,
     pub created: Box<[LedgerOutput]>,

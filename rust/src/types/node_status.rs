@@ -5,7 +5,7 @@ use super::{Error, Milestone};
 use crate::proto;
 
 /// The [`NodeStatus`] type.
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct NodeStatus {
     /// Signals if the node is healthy.
     pub is_healthy: bool,

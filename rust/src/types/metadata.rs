@@ -7,7 +7,7 @@ use crate::proto;
 use bee_block_stardust as stardust;
 
 #[allow(missing_docs)]
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum LedgerInclusionState {
     NoTransaction,
     Included,
@@ -15,7 +15,7 @@ pub enum LedgerInclusionState {
 }
 
 #[allow(missing_docs)]
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum ConflictReason {
     None,
     InputAlreadySpent,
@@ -34,7 +34,7 @@ pub enum ConflictReason {
 }
 
 /// The metadata for a block with a given [`BlockId`](stardust::BlockId).
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct BlockMetadata {
     /// The id of the block.
     pub block_id: stardust::BlockId,

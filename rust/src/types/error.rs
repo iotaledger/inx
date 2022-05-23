@@ -3,7 +3,7 @@
 
 /// Represents [`Error`](Error) s that happened during conversion.
 #[allow(missing_docs)]
-#[derive(PartialEq, Debug, thiserror::Error)]
+#[derive(Clone, Debug, PartialEq, thiserror::Error)]
 pub enum Error {
     #[error("missing field: {0}")]
     MissingField(&'static str),

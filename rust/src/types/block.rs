@@ -8,7 +8,7 @@ use bee_block_stardust as stardust;
 use packable::PackableExt;
 
 /// The [`Block`] type.
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Block {
     /// The [`BlockId`](stardust::BlockId) of the block.
     pub block_id: stardust::BlockId,
@@ -17,7 +17,7 @@ pub struct Block {
 }
 
 /// The [`BlockWithMetadata`] type.
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct BlockWithMetadata {
     /// The [`Metadata`](crate::BlockMetadata) of the block.
     pub metadata: crate::BlockMetadata,
