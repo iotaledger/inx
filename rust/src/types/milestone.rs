@@ -8,7 +8,7 @@ use bee_block_stardust as stardust;
 use packable::PackableExt;
 
 #[allow(missing_docs)]
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum MilestoneRequest {
     MilestoneIndex(u32),
     MilestoneId(stardust::payload::milestone::MilestoneId),
@@ -27,7 +27,7 @@ pub enum MilestoneRangeRequest {
 }
 
 /// The [`MilestoneInfo`] type.
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct MilestoneInfo {
     /// The [`MilestoneId`](stardust::payload::milestone::MilestoneId) of the milestone.
     pub milestone_id: stardust::payload::milestone::MilestoneId,
@@ -38,7 +38,7 @@ pub struct MilestoneInfo {
 }
 
 /// The [`Milestone`] type.
-#[derive(PartialEq, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Milestone {
     /// Information about the milestone.
     pub milestone_info: MilestoneInfo,
