@@ -133,12 +133,10 @@ impl From<MilestoneRangeRequest> for proto::MilestoneRangeRequest {
                 start_milestone_index: 0,
                 end_milestone_index,
             },
-            MilestoneRangeRequest::FromMilestoneIndex(start_milestone_index) => {
-                proto::MilestoneRangeRequest {
-                    start_milestone_index,
-                    end_milestone_index: 0,
-                }
-            }
+            MilestoneRangeRequest::FromMilestoneIndex(start_milestone_index) => proto::MilestoneRangeRequest {
+                start_milestone_index,
+                end_milestone_index: 0,
+            },
             MilestoneRangeRequest::FromUntilMilestoneIndex(start_milestone_index, end_milestone_index) => {
                 proto::MilestoneRangeRequest {
                     start_milestone_index,
