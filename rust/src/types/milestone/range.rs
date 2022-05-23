@@ -87,5 +87,16 @@ mod test {
                 end_milestone_index: 42
             }
         );
+
+        let from = 17u32;
+        let to = 43;
+        let range = proto::MilestoneRangeRequest::from(from..to);
+        assert_eq!(
+            range,
+            proto::MilestoneRangeRequest {
+                start_milestone_index: 17,
+                end_milestone_index: 42
+            }
+        );
     }
 }
