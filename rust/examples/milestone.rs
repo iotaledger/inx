@@ -14,9 +14,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     // Listen to the milestones from the node.
     let mut milestone_stream = inx
-        .listen_to_confirmed_milestones(proto::MilestoneRangeRequest::from(
-            inx::MilestoneRangeRequest::UntilForever,
-        ))
+        .listen_to_confirmed_milestones(proto::MilestoneRangeRequest::from(..))
         .await?
         .into_inner();
 
@@ -24,14 +22,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
         // Parse the `inx::proto::Milestone` into an `inx::Milestone`.
         let milestone: inx::Milestone = proto_milestone.try_into()?;
 
-        // Create a request for the current milestone.
-        let request = inx::MilestoneRequest::MilestoneIndex(milestone.milestone_info.milestone_index);
-
         println!("Fetch cone of milestone {}", milestone.milestone_info.milestone_index);
 
         // Listen to messages in the past cone of a milestone.
         let mut cone_stream = inx
-            .read_milestone_cone(proto::MilestoneRequest::from(request))
+            .read_milestone_cone(proto::MilestoneRequest::from(milestone.milestone_info.milestone_index))
             .await?
             .into_inner();
 
