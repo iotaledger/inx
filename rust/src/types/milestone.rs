@@ -15,6 +15,7 @@ pub enum MilestoneRequest {
 }
 
 /// Convenience method to create a [`proto::MilestoneRangeRequest`]. All the milestone ranges are inclusive.
+#[derive(Clone, Debug, PartialEq)]
 pub enum MilestoneRangeRequest {
     /// Returns a stream that starts now and continues indefinetly.
     UntilForever,
