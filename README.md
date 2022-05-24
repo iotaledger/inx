@@ -1,5 +1,8 @@
 # inx
 
+[![Go](https://github.com/iotaledger/inx/actions/workflows/go.yml/badge.svg)](https://github.com/iotaledger/inx/actions/workflows/go.yml)
+[![Rust](https://github.com/iotaledger/inx/actions/workflows/rust.yml/badge.svg)](https://github.com/iotaledger/inx/actions/workflows/rust.yml)
+
 IOTA Node Extension interface definitions.
 
 ## List of plugins
