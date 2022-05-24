@@ -18,7 +18,7 @@ pub mod proto {
 pub mod tonic {
     pub use tonic::{
         transport::{Channel, Error},
-        Request, Response, Status,
+        Code, Request, Response, Status,
     };
 }
 
