@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 mod range;
-mod request;
 
 use super::Error;
 use crate::proto;
