@@ -26,7 +26,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
         // Listen to messages in the past cone of a milestone.
         let mut cone_stream = inx
-            .read_milestone_cone(proto::MilestoneRequest::from(milestone.milestone_info.milestone_index))
+            .read_milestone_cone(proto::MilestoneRequest::from_index(
+                milestone.milestone_info.milestone_index,
+            ))
             .await?
             .into_inner();
 
