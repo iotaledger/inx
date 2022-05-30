@@ -53,6 +53,16 @@ impl TryFrom<proto::BlockId> for stardust::BlockId {
     }
 }
 
+impl TryFrom<proto::TransactionId> for stardust::payload::transaction::TransactionId {
+    type Error = Error;
+
+    fn try_from(value: proto::TransactionId) -> Result<Self, Self::Error> {
+        let bytes: [u8; stardust::payload::transaction::TransactionId::LENGTH] =
+            value.id.try_into().map_err(|_| Error::InvalidBufferLength)?;
+        Ok(stardust::payload::transaction::TransactionId::from(bytes))
+    }
+}
+
 impl TryFrom<proto::Block> for Block {
     type Error = Error;
 
