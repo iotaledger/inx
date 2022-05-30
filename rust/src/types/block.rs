@@ -59,7 +59,7 @@ impl TryFrom<proto::Block> for Block {
     type Error = Error;
 
     fn try_from(value: proto::Block) -> Result<Self, Self::Error> {
-        let raw = value.block.ok_or(Error::MissingField("block"))?; 
+        let raw = value.block.ok_or(Error::MissingField("block"))?;
         Ok(Block {
             block_id: value.block_id.ok_or(Error::MissingField("block_id"))?.try_into()?,
             block: raw.clone().try_into()?,
