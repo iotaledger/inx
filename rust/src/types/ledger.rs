@@ -11,7 +11,7 @@ use bee_block_stardust as stardust;
 #[derive(Clone, Debug, PartialEq)]
 pub struct LedgerOutput {
     pub output_id: stardust::output::OutputId,
-    pub message_id: stardust::BlockId,
+    pub block_id: stardust::BlockId,
     pub milestone_index_booked: u32,
     pub milestone_timestamp_booked: u32,
 }
@@ -51,7 +51,7 @@ impl TryFrom<proto::LedgerOutput> for LedgerOutput {
     fn try_from(value: proto::LedgerOutput) -> Result<Self, Self::Error> {
         Ok(LedgerOutput {
             output_id: value.output_id.ok_or(Error::MissingField("output_id"))?.try_into()?,
-            message_id: value.block_id.ok_or(Error::MissingField("message_id"))?.try_into()?,
+            block_id: value.block_id.ok_or(Error::MissingField("message_id"))?.try_into()?,
             milestone_index_booked: value.milestone_index_booked,
             milestone_timestamp_booked: value.milestone_timestamp_booked,
         })
