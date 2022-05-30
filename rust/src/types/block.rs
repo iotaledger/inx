@@ -76,10 +76,17 @@ impl TryFrom<proto::Block> for (Block, Vec<u8>) {
     }
 }
 
-impl TryFrom<proto::RawBlock> for stardust::Block {
-    type Error = Error;
+macro_rules! impl_try_from_raw {
+    ($from_type:ty, $to_type:ty) => {
+        impl TryFrom<$from_type> for $to_type {
+            type Error = Error;
 
-    fn try_from(value: proto::RawBlock) -> Result<Self, Self::Error> {
-        stardust::Block::unpack_verified(value.data).map_err(|e| Error::PackableError(format!("{e}")))
-    }
+            fn try_from(value: $from_type) -> Result<Self, Self::Error> {
+                Self::unpack_verified(value.data).map_err(|e| Error::PackableError(format!("{e}")))
+            }
+        }
+    };
 }
+
+impl_try_from_raw!(proto::RawBlock, stardust::Block);
+impl_try_from_raw!(proto::RawOutput, stardust::output::Output);
