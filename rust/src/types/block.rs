@@ -25,16 +25,20 @@ pub struct BlockWithMetadata {
     pub metadata: crate::BlockMetadata,
     /// The complete [`Block`](stardust::Block).
     pub block: stardust::Block,
+    /// The raw bytes of the block.
+    pub raw: Vec<u8>,
 }
 
 impl TryFrom<proto::BlockWithMetadata> for BlockWithMetadata {
     type Error = Error;
 
     fn try_from(value: proto::BlockWithMetadata) -> Result<Self, Self::Error> {
-        let metadata = value.metadata.ok_or(Error::MissingField("metadata"))?.try_into()?;
-        let block = value.block.ok_or(Error::MissingField("block"))?.try_into()?;
-
-        Ok(BlockWithMetadata { metadata, block })
+        let raw = value.block.ok_or(Error::MissingField("block"))?;
+        Ok(BlockWithMetadata {
+            metadata: value.metadata.ok_or(Error::MissingField("metadata"))?.try_into()?,
+            block: raw.clone().try_into()?,
+            raw: raw.data,
+        })
     }
 }
 
