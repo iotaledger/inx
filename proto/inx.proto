@@ -208,6 +208,10 @@ message TipsMetric {
 }
 
 // UTXO
+message TransactionId {
+  bytes id = 1;
+}
+
 message OutputId {
   bytes id = 1;
 }
@@ -239,7 +243,7 @@ message LedgerOutput {
 
 message LedgerSpent {
   LedgerOutput output = 1;
-  bytes transactionIdSpent = 2;
+  TransactionId transactionIdSpent = 2;
   uint32 milestoneIndexSpent = 3;
   uint32 milestoneTimestampSpent = 4;
 }

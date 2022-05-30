@@ -64,14 +64,12 @@ impl TryFrom<proto::LedgerSpent> for LedgerSpent {
     type Error = Error;
 
     fn try_from(value: proto::LedgerSpent) -> Result<Self, Self::Error> {
-        let bytes: [u8; stardust::payload::transaction::TransactionId::LENGTH] = value
-            .transaction_id_spent
-            .try_into()
-            .map_err(|_| Error::InvalidBufferLength)?;
-
         Ok(LedgerSpent {
             output: value.output.ok_or(Error::MissingField("output"))?.try_into()?,
-            transaction_id_spent: stardust::payload::transaction::TransactionId::new(bytes),
+            transaction_id_spent: value
+                .transaction_id_spent
+                .ok_or(Error::MissingField("transaction_id"))?
+                .try_into()?,
             milestone_index_spent: value.milestone_index_spent,
             milestone_timestamp_spent: value.milestone_timestamp_spent,
         })
