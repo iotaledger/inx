@@ -26,8 +26,8 @@ func (x *ProtocolParameters) Unwrap() *iotago.ProtocolParameters {
 		Version:       byte(x.GetVersion()),
 		NetworkName:   x.GetNetworkName(),
 		Bech32HRP:     iotago.NetworkPrefix(x.GetBech32HRP()),
-		MinPoWScore:   float64(x.GetMinPoWScore()),
-		BelowMaxDepth: uint16(x.GetBelowMaxDepth()),
+		MinPoWScore:   x.GetMinPoWScore(),
+		BelowMaxDepth: uint8(x.GetBelowMaxDepth()),
 		RentStructure: iotago.RentStructure{
 			VByteCost:    x.GetRentStructure().GetVByteCost(),
 			VBFactorData: iotago.VByteCostFactor(x.GetRentStructure().GetVByteFactorData()),
@@ -96,6 +96,15 @@ func (x *BlockWithMetadata) UnwrapBlock(deSeriMode serializer.DeSerializationMod
 
 // Ledger
 
+func (x *TransactionId) Unwrap() iotago.TransactionID {
+	id := iotago.TransactionID{}
+	if len(x.GetId()) != iotago.TransactionIDLength {
+		return iotago.TransactionID{}
+	}
+	copy(id[:], x.GetId())
+	return id
+}
+
 func (x *OutputId) Unwrap() iotago.OutputID {
 	id := iotago.OutputID{}
 	if len(x.GetId()) != iotago.OutputIDLength {
@@ -154,12 +163,7 @@ func (x *RawOutput) Unwrap(deSeriMode serializer.DeSerializationMode, protoParas
 }
 
 func (x *LedgerSpent) UnwrapTransactionIDSpent() iotago.TransactionID {
-	id := iotago.TransactionID{}
-	if len(x.GetTransactionIdSpent()) != iotago.TransactionIDLength {
-		return id
-	}
-	copy(id[:], x.GetTransactionIdSpent())
-	return id
+	return x.GetTransactionIdSpent().Unwrap()
 }
 
 func (x *TreasuryOutput) UnwrapMilestoneID() iotago.MilestoneID {

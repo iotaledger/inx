@@ -31,6 +31,14 @@ func NewBlockWithBytes(blockID iotago.BlockID, data []byte) *Block {
 	return m
 }
 
+func NewTransactionId(transactionID iotago.TransactionID) *TransactionId {
+	id := &TransactionId{
+		Id: make([]byte, iotago.TransactionIDLength),
+	}
+	copy(id.Id, transactionID[:])
+	return id
+}
+
 func NewOutputId(outputID iotago.OutputID) *OutputId {
 	id := &OutputId{
 		Id: make([]byte, iotago.OutputIDLength),
@@ -60,12 +68,12 @@ func NewProtocolParameters(protoParas *iotago.ProtocolParameters) *ProtocolParam
 		Version:       uint32(protoParas.Version),
 		NetworkName:   protoParas.NetworkName,
 		Bech32HRP:     string(protoParas.Bech32HRP),
-		MinPoWScore:   float32(protoParas.MinPoWScore),
+		MinPoWScore:   protoParas.MinPoWScore,
 		BelowMaxDepth: uint32(protoParas.BelowMaxDepth),
 		RentStructure: &RentStructure{
 			VByteCost:       protoParas.RentStructure.VByteCost,
-			VByteFactorData: uint64(protoParas.RentStructure.VBFactorData),
-			VByteFactorKey:  uint64(protoParas.RentStructure.VBFactorKey),
+			VByteFactorData: uint32(protoParas.RentStructure.VBFactorData),
+			VByteFactorKey:  uint32(protoParas.RentStructure.VBFactorKey),
 		},
 		TokenSupply: protoParas.TokenSupply,
 	}
