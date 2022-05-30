@@ -14,6 +14,8 @@ pub struct Block {
     pub block_id: stardust::BlockId,
     /// The complete [`Block`](stardust::Block).
     pub block: stardust::Block,
+    /// The raw bytes of the block.
+    pub raw: Vec<u8>,
 }
 
 /// The [`BlockWithMetadata`] type.
@@ -57,9 +59,11 @@ impl TryFrom<proto::Block> for Block {
     type Error = Error;
 
     fn try_from(value: proto::Block) -> Result<Self, Self::Error> {
+        let raw = value.block.ok_or(Error::MissingField("block"))?;
         Ok(Block {
             block_id: value.block_id.ok_or(Error::MissingField("block_id"))?.try_into()?,
-            block: value.block.ok_or(Error::MissingField("block"))?.try_into()?,
+            block: raw.clone().try_into()?,
+            raw: raw.data,
         })
     }
 }

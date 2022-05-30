@@ -14,6 +14,7 @@ pub struct LedgerOutput {
     pub block_id: stardust::BlockId,
     pub milestone_index_booked: u32,
     pub milestone_timestamp_booked: u32,
+    pub output: stardust::output::Output,
 }
 
 /// Represents a spent output in the ledger.
@@ -54,6 +55,7 @@ impl TryFrom<proto::LedgerOutput> for LedgerOutput {
             block_id: value.block_id.ok_or(Error::MissingField("message_id"))?.try_into()?,
             milestone_index_booked: value.milestone_index_booked,
             milestone_timestamp_booked: value.milestone_timestamp_booked,
+            output: value.output.ok_or(Error::MissingField("output"))?.try_into()?,
         })
     }
 }
