@@ -7,5 +7,6 @@ mod ledger;
 mod metadata;
 mod milestone;
 mod node_status;
+mod treasury;
 
-pub use self::{block::*, error::*, ledger::*, metadata::*, milestone::*, node_status::*};
+pub use self::{block::*, error::*, ledger::*, metadata::*, milestone::*, node_status::*, treasury::*};
