@@ -46,7 +46,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         }
 
         println!(
-            "Milestone {} contained {count} blocks",
+            "Milestone {:?} contained {count} blocks",
             milestone.milestone_info.milestone_id
         );
     }
