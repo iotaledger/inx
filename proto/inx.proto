@@ -117,6 +117,7 @@ message MilestoneRangeRequest {
 }
 
 message MilestoneInfo {
+  // This field can be missing for example if there are no milestones yet in a network.
   MilestoneId milestoneId = 1;
   uint32 milestoneIndex = 2;
   uint32 milestoneTimestamp = 3;
