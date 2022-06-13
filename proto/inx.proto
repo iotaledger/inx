@@ -30,6 +30,8 @@ service INX {
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
+  
+  // A stream that yields updates to the ledger. A `LedgerUpdate` is sent for each milestone, even if `created` and `consumed` collections are empty for that milestone.
   rpc ListenToLedgerUpdates(MilestoneRangeRequest) returns (stream LedgerUpdate);
   rpc ListenToTreasuryUpdates(MilestoneRangeRequest) returns (stream TreasuryUpdate);
   rpc ReadOutput(OutputId) returns (OutputResponse);
