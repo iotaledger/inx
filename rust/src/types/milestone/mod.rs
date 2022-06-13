@@ -13,7 +13,7 @@ use packable::PackableExt;
 #[derive(Clone, Debug, PartialEq)]
 pub struct MilestoneInfo {
     /// The [`MilestoneId`](stardust::payload::milestone::MilestoneId) of the milestone.
-    pub milestone_id: stardust::payload::milestone::MilestoneId,
+    pub milestone_id: Option<stardust::payload::milestone::MilestoneId>,
     /// The milestone index.
     pub milestone_index: u32,
     /// The timestamp of the milestone.
@@ -52,10 +52,7 @@ impl TryFrom<proto::MilestoneInfo> for MilestoneInfo {
 
     fn try_from(value: proto::MilestoneInfo) -> Result<Self, Self::Error> {
         Ok(MilestoneInfo {
-            milestone_id: value
-                .milestone_id
-                .ok_or(Error::MissingField("milestone_id"))?
-                .try_into()?,
+            milestone_id: value.milestone_id.map(TryInto::try_into).transpose()?,
             milestone_index: value.milestone_index,
             milestone_timestamp: value.milestone_timestamp,
         })
