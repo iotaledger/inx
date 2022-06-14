@@ -120,6 +120,7 @@ message MilestoneInfo {
   // Optional. This field can be missing for example if there are no milestones yet in a network.
   MilestoneId milestoneId = 1;
   uint32 milestoneIndex = 2;
+  // Optional. This field can be missing for example if there are no milestones yet in a network.
   uint32 milestoneTimestamp = 3;
 }
 
