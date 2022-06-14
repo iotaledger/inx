@@ -26,7 +26,7 @@ pub struct Milestone {
     /// Information about the milestone.
     pub milestone_info: MilestoneInfo,
     /// The raw bytes of the milestone.
-    pub milestone: stardust::payload::MilestonePayload,
+    pub milestone: Option<stardust::payload::MilestonePayload>,
 }
 
 impl TryFrom<proto::MilestoneId> for stardust::payload::milestone::MilestoneId {
@@ -82,7 +82,7 @@ impl TryFrom<proto::Milestone> for Milestone {
                 .milestone_info
                 .ok_or(Error::MissingField("milestone_info"))?
                 .try_into()?,
-            milestone: value.milestone.ok_or(Error::MissingField("milestone"))?.try_into()?,
+            milestone: value.milestone.map(TryInto::try_into).transpose()?,
         })
     }
 }
