@@ -88,6 +88,18 @@ jobs:
           command: fmt
           args: --manifest-path rust/Cargo.toml --all -- --check
 
+      - name: Install cargo-license-template
+        uses: actions-rs/cargo@v1
+        with:
+          command: install
+          args: --force cargo-license-template
+
+      - name: Run cargo-license-template
+        uses: actions-rs/cargo@v1
+        with:
+          command: license-template
+          args: --manifest-path rust/Cargo.toml --template rust/.license_template
+
   clippy:
     runs-on: ubuntu-latest
     continue-on-error: ${{ (matrix.rust != 'stable') }}
