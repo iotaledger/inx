@@ -27,6 +27,7 @@ service INX {
   // Tips
   rpc RequestTips(TipsRequest) returns (TipsResponse);
   rpc ListenToTipsMetrics(TipsMetricRequest) returns (stream TipsMetric);
+  rpc ListenToTipScoreUpdates(NoParams) returns (stream BlockMetadata);
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
