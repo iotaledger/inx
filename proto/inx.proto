@@ -50,6 +50,7 @@ message NodeConfiguration {
   repeated MilestoneKeyRange milestoneKeyRanges = 3;
   BaseToken baseToken = 4;
   repeated uint32 SupportedProtocolVersions = 5;
+  repeated PendingProtocolParameters pendingProtocolParameters = 6;
 }
 
 message ProtocolParameters {
@@ -60,6 +61,12 @@ message ProtocolParameters {
   uint32 belowMaxDepth = 5;
   RentStructure rentStructure = 6;
   uint64 tokenSupply = 7;
+}
+
+message PendingProtocolParameters {
+  uint32 targetMilestoneIndex = 1;
+  uint32 version = 2;
+  bytes params = 3;
 }
 
 message BaseToken {
