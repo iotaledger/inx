@@ -50,7 +50,7 @@ message NodeConfiguration {
   uint32 milestonePublicKeyCount = 2;
   repeated MilestoneKeyRange milestoneKeyRanges = 3;
   BaseToken baseToken = 4;
-  repeated uint32 SupportedProtocolVersions = 5;
+  repeated uint32 supportedProtocolVersions = 5;
   repeated PendingProtocolParameters pendingProtocolParameters = 6;
 }
 
