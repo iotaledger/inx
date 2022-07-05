@@ -45,6 +45,7 @@ type INXClient interface {
 	ListenToTipScoreUpdates(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToTipScoreUpdatesClient, error)
 	// UTXO
 	ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error)
+	// A stream that yields updates to the ledger. A `LedgerUpdate` is sent for each milestone, even if `created` and `consumed` collections are empty for that milestone.
 	ListenToLedgerUpdates(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
 	ListenToTreasuryUpdates(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error)
 	ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputResponse, error)
@@ -614,6 +615,7 @@ type INXServer interface {
 	ListenToTipScoreUpdates(*NoParams, INX_ListenToTipScoreUpdatesServer) error
 	// UTXO
 	ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error
+	// A stream that yields updates to the ledger. A `LedgerUpdate` is sent for each milestone, even if `created` and `consumed` collections are empty for that milestone.
 	ListenToLedgerUpdates(*MilestoneRangeRequest, INX_ListenToLedgerUpdatesServer) error
 	ListenToTreasuryUpdates(*MilestoneRangeRequest, INX_ListenToTreasuryUpdatesServer) error
 	ReadOutput(context.Context, *OutputId) (*OutputResponse, error)

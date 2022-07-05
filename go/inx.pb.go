@@ -955,9 +955,11 @@ type MilestoneInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	MilestoneId        *MilestoneId `protobuf:"bytes,1,opt,name=milestoneId,proto3" json:"milestoneId,omitempty"`
-	MilestoneIndex     uint32       `protobuf:"varint,2,opt,name=milestoneIndex,proto3" json:"milestoneIndex,omitempty"`
-	MilestoneTimestamp uint32       `protobuf:"varint,3,opt,name=milestoneTimestamp,proto3" json:"milestoneTimestamp,omitempty"`
+	// Optional. This field can be missing for example if there are no milestones yet in a network.
+	MilestoneId    *MilestoneId `protobuf:"bytes,1,opt,name=milestoneId,proto3" json:"milestoneId,omitempty"`
+	MilestoneIndex uint32       `protobuf:"varint,2,opt,name=milestoneIndex,proto3" json:"milestoneIndex,omitempty"`
+	// Optional. This field can be missing for example if there are no milestones yet in a network.
+	MilestoneTimestamp uint32 `protobuf:"varint,3,opt,name=milestoneTimestamp,proto3" json:"milestoneTimestamp,omitempty"`
 }
 
 func (x *MilestoneInfo) Reset() {
@@ -1019,7 +1021,8 @@ type Milestone struct {
 	unknownFields protoimpl.UnknownFields
 
 	MilestoneInfo *MilestoneInfo `protobuf:"bytes,1,opt,name=milestoneInfo,proto3" json:"milestoneInfo,omitempty"`
-	Milestone     *RawMilestone  `protobuf:"bytes,2,opt,name=milestone,proto3" json:"milestone,omitempty"`
+	// Optional. This field can be missing for example if there are no milestones yet in a network.
+	Milestone *RawMilestone `protobuf:"bytes,2,opt,name=milestone,proto3" json:"milestone,omitempty"`
 }
 
 func (x *Milestone) Reset() {
