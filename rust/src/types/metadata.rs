@@ -38,7 +38,7 @@ pub enum ConflictReason {
 pub struct BlockMetadata {
     /// The id of the block.
     pub block_id: stardust::BlockId,
-    /// The parents of the messsage.
+    /// The parents of the message.
     pub parents: Vec<stardust::BlockId>,
     /// Status of the solidification process.
     pub is_solid: bool,
@@ -52,8 +52,10 @@ pub struct BlockMetadata {
     pub milestone_index: u32,
     /// Indicates if a block is part of the ledger state or not.
     pub ledger_inclusion_state: LedgerInclusionState,
-    /// Indicates if a conflict occured, and if so holds information about the reason for the conflict.
+    /// Indicates if a conflict occurred, and if so holds information about the reason for the conflict.
     pub conflict_reason: ConflictReason,
+    /// The whiteflag index of this block inside the milestone.
+    pub white_flag_index: u32,
 }
 
 impl TryFrom<proto::BlockMetadata> for BlockMetadata {
@@ -78,6 +80,7 @@ impl TryFrom<proto::BlockMetadata> for BlockMetadata {
             milestone_index: value.milestone_index,
             ledger_inclusion_state,
             conflict_reason,
+            white_flag_index: value.white_flag_index,
         })
     }
 }
