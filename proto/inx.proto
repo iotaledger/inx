@@ -200,6 +200,7 @@ message BlockMetadata {
     SEMANTIC_VALIDATION_FAILED = 255;
   }
   ConflictReason conflictReason = 9;
+  uint32 whiteFlagIndex = 10;
 }
 
 // Tips
