@@ -38,7 +38,7 @@ pub enum ConflictReason {
 pub struct BlockMetadata {
     /// The id of the block.
     pub block_id: stardust::BlockId,
-    /// The parents of the message.
+    /// The parents of the block.
     pub parents: Vec<stardust::BlockId>,
     /// Status of the solidification process.
     pub is_solid: bool,
