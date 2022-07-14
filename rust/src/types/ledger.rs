@@ -111,8 +111,7 @@ impl TryFrom<proto::UnspentOutput> for UnspentOutput {
     fn try_from(value: proto::UnspentOutput) -> Result<Self, Self::Error> {
         Ok(Self {
             ledger_index: value.ledger_index,
-            output: value.output.ok_or(Error::MissingField("output"))?
-            .try_into()?,
+            output: value.output.ok_or(Error::MissingField("output"))?.try_into()?,
         })
     }
 }
