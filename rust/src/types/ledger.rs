@@ -27,6 +27,13 @@ pub struct LedgerSpent {
     pub milestone_timestamp_spent: u32,
 }
 
+#[allow(missing_docs)]
+#[derive(Clone, Debug, PartialEq)]
+pub struct UnspentOutput {
+    pub ledger_index: u32,
+    pub output: LedgerOutput,
+}
+
 /// Represents an update to ledger.
 #[allow(missing_docs)]
 #[derive(Clone, Debug, PartialEq)]
@@ -50,7 +57,7 @@ impl TryFrom<proto::LedgerOutput> for LedgerOutput {
     type Error = Error;
 
     fn try_from(value: proto::LedgerOutput) -> Result<Self, Self::Error> {
-        Ok(LedgerOutput {
+        Ok(Self {
             output_id: value.output_id.ok_or(Error::MissingField("output_id"))?.try_into()?,
             block_id: value.block_id.ok_or(Error::MissingField("message_id"))?.try_into()?,
             milestone_index_booked: value.milestone_index_booked,
@@ -64,7 +71,7 @@ impl TryFrom<proto::LedgerSpent> for LedgerSpent {
     type Error = Error;
 
     fn try_from(value: proto::LedgerSpent) -> Result<Self, Self::Error> {
-        Ok(LedgerSpent {
+        Ok(Self {
             output: value.output.ok_or(Error::MissingField("output"))?.try_into()?,
             transaction_id_spent: value
                 .transaction_id_spent
@@ -90,10 +97,21 @@ impl TryFrom<proto::LedgerUpdate> for LedgerUpdate {
             consumed.push(c.try_into()?);
         }
 
-        Ok(LedgerUpdate {
+        Ok(Self {
             milestone_index: value.milestone_index,
             created: created.into_boxed_slice(),
             consumed: consumed.into_boxed_slice(),
+        })
+    }
+}
+
+impl TryFrom<proto::UnspentOutput> for UnspentOutput {
+    type Error = Error;
+
+    fn try_from(value: proto::UnspentOutput) -> Result<Self, Self::Error> {
+        Ok(Self {
+            ledger_index: value.ledger_index,
+            output: value.output.ok_or(Error::MissingField("output"))?.try_into()?,
         })
     }
 }
