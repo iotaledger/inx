@@ -27,9 +27,12 @@ service INX {
   // Tips
   rpc RequestTips(TipsRequest) returns (TipsResponse);
   rpc ListenToTipsMetrics(TipsMetricRequest) returns (stream TipsMetric);
+  rpc ListenToTipScoreUpdates(NoParams) returns (stream BlockMetadata);
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
+  
+  // A stream that yields updates to the ledger. A `LedgerUpdate` is sent for each milestone, even if `created` and `consumed` collections are empty for that milestone.
   rpc ListenToLedgerUpdates(MilestoneRangeRequest) returns (stream LedgerUpdate);
   rpc ListenToTreasuryUpdates(MilestoneRangeRequest) returns (stream TreasuryUpdate);
   rpc ReadOutput(OutputId) returns (OutputResponse);
@@ -49,7 +52,8 @@ message NodeConfiguration {
   uint32 milestonePublicKeyCount = 2;
   repeated MilestoneKeyRange milestoneKeyRanges = 3;
   BaseToken baseToken = 4;
-  repeated uint32 SupportedProtocolVersions = 5;
+  repeated uint32 supportedProtocolVersions = 5;
+  repeated PendingProtocolParameters pendingProtocolParameters = 6;
 }
 
 message ProtocolParameters {
@@ -60,6 +64,12 @@ message ProtocolParameters {
   uint32 belowMaxDepth = 5;
   RentStructure rentStructure = 6;
   uint64 tokenSupply = 7;
+}
+
+message PendingProtocolParameters {
+  uint32 targetMilestoneIndex = 1;
+  uint32 version = 2;
+  bytes params = 3;
 }
 
 message BaseToken {
@@ -115,13 +125,16 @@ message MilestoneRangeRequest {
 }
 
 message MilestoneInfo {
+  // Optional. This field can be missing for example if there are no milestones yet in a network.
   MilestoneId milestoneId = 1;
   uint32 milestoneIndex = 2;
+  // Optional. This field can be missing for example if there are no milestones yet in a network.
   uint32 milestoneTimestamp = 3;
 }
 
 message Milestone {
   MilestoneInfo milestoneInfo = 1;
+  // Optional. This field can be missing for example if there are no milestones yet in a network.
   RawMilestone milestone = 2;
 }
 
@@ -187,6 +200,7 @@ message BlockMetadata {
     SEMANTIC_VALIDATION_FAILED = 255;
   }
   ConflictReason conflictReason = 9;
+  uint32 whiteFlagIndex = 10;
 }
 
 // Tips
