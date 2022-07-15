@@ -2,5 +2,5 @@
 
 members = [
     "inx",
-    "bee-inx"
+    # "bee-inx"
 ]
