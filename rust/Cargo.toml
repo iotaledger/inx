@@ -1,31 +1,6 @@
-[package]
-name = "inx"
-version = "0.4.0"
-authors = [ "IOTA Stiftung" ]
-edition = "2021"
-description = "Rust bindings for IOTA node extensions (INX)"
-readme = "README.md"
-repository = "https://github.com/iotaledger/inx"
-license = "Apache-2.0"
-keywords = [ "iota", "plugin", "node", "inx" ]
-homepage = "https://www.iota.org"
+[workspace]
 
-[dependencies]
-prost = { version = "0.10", default-features = false, features = [ "prost-derive", "std" ] }
-tonic = { version = "0.7", default-features = false, features = [ "codegen", "prost", "transport" ] }
-thiserror = { version = "1.0", default-features = false }
-
-# optional
-bee-block-stardust = { package = "bee-block", version = "0.1", git = "https://github.com/iotaledger/bee", branch = "shimmer-develop", default-features = false, features = [ "std" ], optional = true }
-packable = { version = "0.4", default-features = false, optional = true }
-
-[build-dependencies]
-tonic-build = { version = "0.7", default-features = false, features = [ "transport", "prost" ] }
-
-[dev-dependencies]
-tokio = { version = "1.18", default-features = false, features = [ "rt-multi-thread" ] }
-futures = { version = "0.3", default-features = false }
-
-[features]
-default = [ "types" ]
-types = [ "bee-block-stardust", "packable" ]
+members = [
+    "inx",
+    # "bee-inx", Currently not working
+]
