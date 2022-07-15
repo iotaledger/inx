@@ -10,3 +10,6 @@ mod node_status;
 mod treasury;
 
 pub use self::{block::*, error::*, ledger::*, metadata::*, milestone::*, node_status::*, treasury::*};
+
+// We re-export the protobuf types as `proto`.
+pub use inx::proto as proto;

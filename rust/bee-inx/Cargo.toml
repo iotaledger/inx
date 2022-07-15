@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-inx = { path = "../inx", version = "0.1.0-beta.1", default-features = false }
+inx = { path = "../inx", version = "1.0.0-beta.1", default-features = false }
 bee-block-stardust = { package = "bee-block", version = "0.1", git = "https://github.com/iotaledger/bee", branch = "shimmer-develop", default-features = false, features = [ "std" ] }
 packable = { version = "0.4", default-features = false }
 
