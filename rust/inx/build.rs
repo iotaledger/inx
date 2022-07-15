@@ -2,5 +2,5 @@
 // SPDX-License-Identifier: Apache-2.0
 
 fn main() -> Result<(), std::io::Error> {
-    tonic_build::compile_protos("../proto/inx.proto")
+    tonic_build::compile_protos("../../proto/inx.proto")
 }
