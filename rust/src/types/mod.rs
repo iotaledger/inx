@@ -6,7 +6,8 @@ mod error;
 mod ledger;
 mod metadata;
 mod milestone;
-mod node_status;
+mod node;
+mod tangle;
 mod treasury;
 
-pub use self::{block::*, error::*, ledger::*, metadata::*, milestone::*, node_status::*, treasury::*};
+pub use self::{block::*, error::*, ledger::*, metadata::*, milestone::*, node::*, tangle::*, treasury::*};
