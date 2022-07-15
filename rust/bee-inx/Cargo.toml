@@ -1,9 +1,14 @@
 [package]
 name = "bee-inx"
 version = "0.1.0"
+authors = [ "IOTA Stiftung" ]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Bee bindings for IOTA node extensions (INX)"
+readme = "README.md"
+repository = "https://github.com/iotaledger/inx"
+license = "Apache-2.0"
+keywords = [ "iota", "plugin", "node", "inx", "bee" ]
+homepage = "https://www.iota.org"
 
 [dependencies]
 inx = { path = "../inx", version = "1.0.0-beta.1", default-features = false }
