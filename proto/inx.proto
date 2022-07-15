@@ -58,49 +58,49 @@ message NodeConfiguration {
 
 message ProtocolParameters {
   uint32 version = 1;
-  string networkName = 2;
-  string bech32HRP = 3;
-  uint32 minPoWScore = 4;
-  uint32 belowMaxDepth = 5;
-  RentStructure rentStructure = 6;
-  uint64 tokenSupply = 7;
+  string network_name = 2;
+  string bech32_hrp = 3;
+  uint32 min_pow_score = 4;
+  uint32 below_max_depth = 5;
+  RentStructure rent_structure = 6;
+  uint64 token_supply = 7;
 }
 
 message PendingProtocolParameters {
-  uint32 targetMilestoneIndex = 1;
+  uint32 target_milestone_index = 1;
   uint32 version = 2;
   bytes params = 3;
 }
 
 message BaseToken {
   string name = 1;
-  string tickerSymbol = 2;
+  string ticker_symbol = 2;
   string unit = 3;
   string subunit = 4;
   uint32 decimals = 5;
-  bool useMetricPrefix = 6;
+  bool use_metric_prefix = 6;
 }
 
 message MilestoneKeyRange {
-  bytes publicKey = 1;
-  uint32 startIndex = 2;
-  uint32 endIndex = 3;
+  bytes public_key = 1;
+  uint32 start_index = 2;
+  uint32 end_index = 3;
 }
 
 message RentStructure {
-  uint32 vByteCost = 1;
-  uint32 vByteFactorData = 2;
-  uint32 vByteFactorKey = 3;
+  uint32 v_byte_cost = 1;
+  uint32 v_byte_factor_data = 2;
+  uint32 v_byte_factor_key = 3;
 }
 
 message NodeStatus {
-  bool isHealthy = 1;
-  Milestone latestMilestone = 2;
-  Milestone confirmedMilestone = 3;
-  uint32 tanglePruningIndex = 4;
-  uint32 milestonesPruningIndex = 5;
-  uint32 ledgerPruningIndex = 6;
-  uint32 ledgerIndex = 7;
+  bool is_healthy = 1;
+  Milestone latest_milestone = 2;
+  Milestone confirmed_milestone = 3;
+  uint32 tangle_pruning_index = 4;
+  uint32 milestones_pruning_index = 5;
+  uint32 ledger_pruning_index = 6;
+  uint32 ledger_index = 7;
 }
 
 // Milestones
@@ -113,41 +113,41 @@ message MilestoneId {
 }
 
 message MilestoneRequest {
-  uint32 milestoneIndex = 1;
-  MilestoneId milestoneId = 2;
+  uint32 milestone_index = 1;
+  MilestoneId milestone_id = 2;
 }
 
 message MilestoneRangeRequest {
-  // startMilestoneIndex is the initial milestone to get. Use 0 to start from the current node status.
-  uint32 startMilestoneIndex = 1;
-  // endMilestoneIndex is the last milestone to get (inclusive). Use 0 to keep getting new confirmed milestones.
-  uint32 endMilestoneIndex = 2;
+  // start_milestone_index is the initial milestone to get. Use 0 to start from the current node status.
+  uint32 start_milestone_index = 1;
+  // end_milestone_index is the last milestone to get (inclusive). Use 0 to keep getting new confirmed milestones.
+  uint32 end_milestone_index = 2;
 }
 
 message MilestoneInfo {
   // Optional. This field can be missing for example if there are no milestones yet in a network.
-  MilestoneId milestoneId = 1;
-  uint32 milestoneIndex = 2;
+  MilestoneId milestone_id = 1;
+  uint32 milestone_index = 2;
   // Optional. This field can be missing for example if there are no milestones yet in a network.
-  uint32 milestoneTimestamp = 3;
+  uint32 milestone_timestamp = 3;
 }
 
 message Milestone {
-  MilestoneInfo milestoneInfo = 1;
+  MilestoneInfo milestone_info = 1;
   // Optional. This field can be missing for example if there are no milestones yet in a network.
   RawMilestone milestone = 2;
 }
 
 message WhiteFlagRequest {
-  uint32 milestoneIndex = 1;
-  uint32 milestoneTimestamp = 2;
+  uint32 milestone_index = 1;
+  uint32 milestone_timestamp = 2;
   repeated BlockId parents = 3;
-  MilestoneId previousMilestoneId = 4;
+  MilestoneId previous_milestone_id = 4;
 }
 
 message WhiteFlagResponse {
-  bytes milestoneInclusionMerkleRoot = 1;
-  bytes milestoneAppliedMerkleRoot = 2;
+  bytes milestone_inclusion_merkle_root = 1;
+  bytes milestone_applied_merkle_root = 2;
 }
 
 // Blocks
@@ -160,7 +160,7 @@ message BlockId {
 }
 
 message Block {
-  BlockId blockId = 1;
+  BlockId block_id = 1;
   RawBlock block = 2;
 }
 
@@ -170,43 +170,43 @@ message BlockWithMetadata {
 }
 
 message BlockMetadata {
-  BlockId blockId = 1;
+  BlockId block_id = 1;
   repeated BlockId parents = 2;
   bool solid = 3;
-  bool shouldPromote = 4;
-  bool shouldReattach = 5;
-  uint32 referencedByMilestoneIndex = 6;
-  uint32 milestoneIndex = 7;
+  bool should_promote = 4;
+  bool should_reattach = 5;
+  uint32 referenced_by_milestone_index = 6;
+  uint32 milestone_index = 7;
   enum LedgerInclusionState {
-    NO_TRANSACTION = 0;
-    INCLUDED = 1;
-    CONFLICTING = 2;
+    LEDGER_INCLUSION_STATE_NO_TRANSACTION = 0;
+    LEDGER_INCLUSION_STATE_INCLUDED = 1;
+    LEDGER_INCLUSION_STATE_CONFLICTING = 2;
   }
-  LedgerInclusionState ledgerInclusionState = 8;
+  LedgerInclusionState ledger_inclusion_state = 8;
   enum ConflictReason {
-    NONE = 0;
-    INPUT_ALREADY_SPENT = 1;
-    INPUT_ALREADY_SPENT_IN_THIS_MILESTONE = 2;
-    INPUT_NOT_FOUND = 3;
-    INPUT_OUTPUT_SUM_MISMATCH = 4;
-    INVALID_SIGNATURE = 5;
-    TIMELOCK_NOT_EXPIRED = 6;
-    INVALID_NATIVE_TOKENS = 7;
-    RETURN_AMOUNT_NOT_FULFILLED = 8;
-    INVALID_INPUT_UNLOCK = 9;
-    INVALID_INPUTS_COMMITMENT = 10;
-    INVALID_SENDER = 11;
-    INVALID_CHAIN_STATE_TRANSITION = 12;
-    SEMANTIC_VALIDATION_FAILED = 255;
+    CONFLICT_REASON_NONE = 0;
+    CONFLICT_REASON_INPUT_ALREADY_SPENT = 1;
+    CONFLICT_REASON_INPUT_ALREADY_SPENT_IN_THIS_MILESTONE = 2;
+    CONFLICT_REASON_INPUT_NOT_FOUND = 3;
+    CONFLICT_REASON_INPUT_OUTPUT_SUM_MISMATCH = 4;
+    CONFLICT_REASON_INVALID_SIGNATURE = 5;
+    CONFLICT_REASON_TIMELOCK_NOT_EXPIRED = 6;
+    CONFLICT_REASON_INVALID_NATIVE_TOKENS = 7;
+    CONFLICT_REASON_RETURN_AMOUNT_NOT_FULFILLED = 8;
+    CONFLICT_REASON_INVALID_INPUT_UNLOCK = 9;
+    CONFLICT_REASON_INVALID_INPUTS_COMMITMENT = 10;
+    CONFLICT_REASON_INVALID_SENDER = 11;
+    CONFLICT_REASON_INVALID_CHAIN_STATE_TRANSITION = 12;
+    CONFLICT_REASON_SEMANTIC_VALIDATION_FAILED = 255;
   }
-  ConflictReason conflictReason = 9;
-  uint32 whiteFlagIndex = 10;
+  ConflictReason conflict_reason = 9;
+  uint32 white_flag_index = 10;
 }
 
 // Tips
 message TipsRequest {
   uint32 count = 1;
-  bool allowSemiLazy = 2;
+  bool allow_semiLazy = 2;
 }
 
 message TipsResponse {
@@ -214,12 +214,12 @@ message TipsResponse {
 }
 
 message TipsMetricRequest {
-  uint32 intervalInMilliseconds = 1;
+  uint32 interval_in_milliseconds = 1;
 }
 
 message TipsMetric {
-  uint32 nonLazyPoolSize = 1;
-  uint32 semiLazyPoolSize = 2;
+  uint32 non_lazy_pool_size = 1;
+  uint32 semi_lazy_pool_size = 2;
 }
 
 // UTXO
@@ -232,7 +232,7 @@ message OutputId {
 }
 
 message OutputResponse {
-  uint32 ledgerIndex = 1;
+  uint32 ledger_index = 1;
   oneof payload {
     LedgerOutput output = 2;
     LedgerSpent spent = 3;
@@ -249,33 +249,33 @@ message RawOutput {
 }
 
 message LedgerOutput {
-  OutputId outputId = 1;
+  OutputId output_id = 1;
   BlockId blockId = 2;
-  uint32 milestoneIndexBooked = 3;
-  uint32 milestoneTimestampBooked = 4;
+  uint32 milestone_index_booked = 3;
+  uint32 milestone_timestamp_booked = 4;
   RawOutput output = 5;
 }
 
 message LedgerSpent {
   LedgerOutput output = 1;
-  TransactionId transactionIdSpent = 2;
-  uint32 milestoneIndexSpent = 3;
-  uint32 milestoneTimestampSpent = 4;
+  TransactionId transaction_id_spent = 2;
+  uint32 milestone_index_spent = 3;
+  uint32 milestone_timestamp_spent = 4;
 }
 
 message TreasuryOutput {
-  MilestoneId milestoneId = 1;
+  MilestoneId milestone_id = 1;
   uint64 amount = 2;
 }
 
 message LedgerUpdate {
-  uint32 milestoneIndex = 1;
+  uint32 milestone_index = 1;
   repeated LedgerOutput created = 2;
   repeated LedgerSpent consumed = 3;
 }
 
 message TreasuryUpdate {
-  uint32 milestoneIndex = 1;
+  uint32 milestone_index = 1;
   TreasuryOutput created = 2;
   TreasuryOutput consumed = 3;
 }

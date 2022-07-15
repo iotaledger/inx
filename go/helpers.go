@@ -67,8 +67,8 @@ func NewProtocolParameters(protoParas *iotago.ProtocolParameters) *ProtocolParam
 	return &ProtocolParameters{
 		Version:       uint32(protoParas.Version),
 		NetworkName:   protoParas.NetworkName,
-		Bech32HRP:     string(protoParas.Bech32HRP),
-		MinPoWScore:   protoParas.MinPoWScore,
+		Bech32Hrp:     string(protoParas.Bech32HRP),
+		MinPowScore:   protoParas.MinPoWScore,
 		BelowMaxDepth: uint32(protoParas.BelowMaxDepth),
 		RentStructure: &RentStructure{
 			VByteCost:       protoParas.RentStructure.VByteCost,
