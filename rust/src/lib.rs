@@ -17,7 +17,7 @@ pub mod tonic {
     };
 }
 
-pub use self::proto::{inx_client as client};
+pub use self::proto::inx_client as client;
 
 impl proto::MilestoneRequest {
     /// Creates a [`MilestoneRequest`](proto::MilestoneRequest) from an milestone index.
