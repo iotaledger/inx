@@ -22,9 +22,3 @@ tonic = { version = "0.7", default-features = false, features = [ "codegen", "pr
 
 [build-dependencies]
 tonic-build = { version = "0.7", default-features = false, features = [ "transport", "prost" ] }
-
-[workspace]
-members = [
-    ".",
-    #"rust/bee-inx",
-]
