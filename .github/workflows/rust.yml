@@ -58,20 +58,20 @@ jobs:
       - name: Build
         uses: actions-rs/cargo@v1
         with:
-          command: build
-          args: --manifest-path rust/Cargo.toml --all-targets --all-features --release
+          command: check
+          args: --all-targets --all-features
 
       - name: Test
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --manifest-path rust/Cargo.toml --all-targets --all-features --release
+          args: --all-targets --all-features
 
       - name: Doc Test
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --manifest-path rust/Cargo.toml --doc --all-features --release
+          args: --doc --all-features
 
   format:
     runs-on: ubuntu-latest
@@ -88,7 +88,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: fmt
-          args: --manifest-path rust/Cargo.toml --all -- --check
+          args: --all -- --check
 
       - name: Install cargo-license-template
         uses: actions-rs/cargo@v1
@@ -100,7 +100,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: license-template
-          args: --manifest-path rust/Cargo.toml --template rust/.license_template
+          args: --template rust/.license_template
 
   clippy:
     runs-on: ubuntu-latest
@@ -124,7 +124,7 @@ jobs:
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --manifest-path rust/Cargo.toml --all-targets --all-features -- -D warnings
+          args: --all-targets --all-features -- -D warnings
 
   udeps:
     runs-on: ubuntu-latest
@@ -147,7 +147,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: udeps
-          args: --manifest-path rust/Cargo.toml --all-targets --all-features --backend=depinfo
+          args: --all-targets --all-features --backend=depinfo
 
   docs:
     runs-on: ubuntu-latest
@@ -167,4 +167,4 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: doc
-          args: --manifest-path rust/Cargo.toml --no-deps --document-private-items
+          args: --no-deps --document-private-items
