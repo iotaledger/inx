@@ -10,11 +10,11 @@ license = "Apache-2.0"
 keywords = [ "iota", "plugin", "node", "inx" ]
 homepage = "https://www.iota.org"
 exclude = ["go", ".github", "examples", "rust/bee-inx"]
-build = "rust/inx/build.rs"
+build = "rust/build.rs"
 
 [lib]
 name = "inx"
-path = "rust/inx/lib.rs"
+path = "rust/src/lib.rs"
 
 [dependencies]
 prost = { version = "0.10", default-features = false, features = [ "prost-derive", "std" ] }

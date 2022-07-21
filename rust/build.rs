@@ -5,6 +5,11 @@ use std::env;
 
 fn main() -> Result<(), std::io::Error> {
     let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    tonic_build::compile_protos(format!("{manifest_dir}/proto/inx.proto"))?;
+
+    let includes: &[String] = &[];
+
+    tonic_build::configure()
+        .build_server(false)
+        .compile(&[format!("{manifest_dir}/proto/inx.proto")], includes)?;
     Ok(())
 }
