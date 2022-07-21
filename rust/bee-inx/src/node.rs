@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use super::{Error, Milestone};
-use crate::proto;
+use inx::proto;
 
 /// The [`NodeStatus`] type.
 #[derive(Clone, Debug, PartialEq)]

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use super::Error;
-use crate::proto;
+use inx::proto;
 
 use bee_block_stardust as stardust;
 

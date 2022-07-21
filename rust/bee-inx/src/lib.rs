@@ -7,7 +7,10 @@ mod ledger;
 mod metadata;
 mod milestone;
 mod node;
-mod tangle;
 mod treasury;
 
-pub use self::{block::*, error::*, ledger::*, metadata::*, milestone::*, node::*, tangle::*, treasury::*};
+pub use self::{block::*, error::*, ledger::*, metadata::*, milestone::*, node::*, treasury::*};
+
+pub mod proto {
+    pub use inx::proto;
+}

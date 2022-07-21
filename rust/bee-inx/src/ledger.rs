@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use super::Error;
-use crate::proto;
+use inx::proto;
 
 use bee_block_stardust as stardust;
 
@@ -41,16 +41,6 @@ pub struct LedgerUpdate {
     pub milestone_index: u32,
     pub created: Box<[LedgerOutput]>,
     pub consumed: Box<[LedgerSpent]>,
-}
-
-impl TryFrom<proto::OutputId> for stardust::output::OutputId {
-    type Error = Error;
-
-    fn try_from(value: proto::OutputId) -> Result<Self, Self::Error> {
-        let bytes: [u8; stardust::output::OutputId::LENGTH] =
-            value.id.try_into().map_err(|_| Error::InvalidBufferLength)?;
-        stardust::output::OutputId::try_from(bytes).map_err(|_| Error::InvalidBufferLength)
-    }
 }
 
 impl TryFrom<proto::LedgerOutput> for LedgerOutput {

@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use super::Error;
-use crate::proto;
+use inx::proto;
 
 use bee_block_stardust as stardust;
+use stardust::semantic::ConflictReason;
 
 #[allow(missing_docs)]
 #[derive(Clone, Debug, PartialEq)]
@@ -12,25 +13,6 @@ pub enum LedgerInclusionState {
     NoTransaction,
     Included,
     Conflicting,
-}
-
-#[allow(missing_docs)]
-#[derive(Clone, Debug, PartialEq)]
-pub enum ConflictReason {
-    None,
-    InputAlreadySpent,
-    InputAlreadySpentInThisMilestone,
-    InputNotFound,
-    InputOutputSumMismatch,
-    InvalidSignature,
-    TimelockNotExpired,
-    InvalidNativeTokens,
-    ReturnAmountNotFulfilled,
-    InvalidInputUnlock,
-    InvalidInputsCommitment,
-    InvalidSender,
-    InvalidChainStateTransition,
-    SemanticValidationFailed,
 }
 
 /// The metadata for a block with a given [`BlockId`](stardust::BlockId).
@@ -91,31 +73,6 @@ impl From<proto::block_metadata::LedgerInclusionState> for LedgerInclusionState 
             proto::block_metadata::LedgerInclusionState::NoTransaction => LedgerInclusionState::NoTransaction,
             proto::block_metadata::LedgerInclusionState::Included => LedgerInclusionState::Included,
             proto::block_metadata::LedgerInclusionState::Conflicting => LedgerInclusionState::Conflicting,
-        }
-    }
-}
-
-impl From<proto::block_metadata::ConflictReason> for ConflictReason {
-    fn from(value: proto::block_metadata::ConflictReason) -> Self {
-        match value {
-            proto::block_metadata::ConflictReason::None => ConflictReason::None,
-            proto::block_metadata::ConflictReason::InputAlreadySpent => ConflictReason::InputAlreadySpent,
-            proto::block_metadata::ConflictReason::InputAlreadySpentInThisMilestone => {
-                ConflictReason::InputAlreadySpentInThisMilestone
-            }
-            proto::block_metadata::ConflictReason::InputNotFound => ConflictReason::InputNotFound,
-            proto::block_metadata::ConflictReason::InputOutputSumMismatch => ConflictReason::InputOutputSumMismatch,
-            proto::block_metadata::ConflictReason::InvalidSignature => ConflictReason::InvalidSignature,
-            proto::block_metadata::ConflictReason::TimelockNotExpired => ConflictReason::TimelockNotExpired,
-            proto::block_metadata::ConflictReason::InvalidNativeTokens => ConflictReason::InvalidNativeTokens,
-            proto::block_metadata::ConflictReason::ReturnAmountNotFulfilled => ConflictReason::ReturnAmountNotFulfilled,
-            proto::block_metadata::ConflictReason::InvalidInputUnlock => ConflictReason::InvalidInputUnlock,
-            proto::block_metadata::ConflictReason::InvalidInputsCommitment => ConflictReason::InvalidInputsCommitment,
-            proto::block_metadata::ConflictReason::InvalidSender => ConflictReason::InvalidSender,
-            proto::block_metadata::ConflictReason::InvalidChainStateTransition => {
-                ConflictReason::InvalidChainStateTransition
-            }
-            proto::block_metadata::ConflictReason::SemanticValidationFailed => ConflictReason::SemanticValidationFailed,
         }
     }
 }

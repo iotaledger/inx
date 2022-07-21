@@ -29,6 +29,7 @@ pub struct Milestone {
     pub milestone: Option<stardust::payload::MilestonePayload>,
 }
 
+// Remove
 impl TryFrom<proto::MilestoneId> for stardust::payload::milestone::MilestoneId {
     type Error = Error;
 
@@ -39,6 +40,7 @@ impl TryFrom<proto::MilestoneId> for stardust::payload::milestone::MilestoneId {
     }
 }
 
+// Remove
 impl From<stardust::payload::milestone::MilestoneId> for proto::MilestoneId {
     fn from(value: stardust::payload::milestone::MilestoneId) -> Self {
         proto::MilestoneId {
@@ -59,6 +61,7 @@ impl TryFrom<proto::MilestoneInfo> for MilestoneInfo {
     }
 }
 
+// Remove
 impl TryFrom<proto::RawMilestone> for stardust::payload::MilestonePayload {
     type Error = Error;
 

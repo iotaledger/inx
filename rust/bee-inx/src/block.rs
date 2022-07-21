@@ -42,6 +42,7 @@ impl TryFrom<proto::BlockWithMetadata> for BlockWithMetadata {
     }
 }
 
+// TODO: Remove
 impl From<stardust::BlockId> for proto::BlockId {
     fn from(value: stardust::BlockId) -> Self {
         Self {
@@ -50,6 +51,7 @@ impl From<stardust::BlockId> for proto::BlockId {
     }
 }
 
+// TODO: Remove
 impl TryFrom<proto::BlockId> for stardust::BlockId {
     type Error = Error;
 
@@ -59,6 +61,7 @@ impl TryFrom<proto::BlockId> for stardust::BlockId {
     }
 }
 
+// TODO: Remove
 impl TryFrom<proto::TransactionId> for stardust::payload::transaction::TransactionId {
     type Error = Error;
 
@@ -94,6 +97,7 @@ impl TryFrom<proto::Block> for (Block, Vec<u8>) {
     }
 }
 
+// Remove
 macro_rules! impl_try_from_raw {
     ($from_type:ty, $to_type:ty) => {
         impl TryFrom<$from_type> for $to_type {
@@ -106,5 +110,6 @@ macro_rules! impl_try_from_raw {
     };
 }
 
+// Remove
 impl_try_from_raw!(proto::RawBlock, stardust::Block);
 impl_try_from_raw!(proto::RawOutput, stardust::output::Output);

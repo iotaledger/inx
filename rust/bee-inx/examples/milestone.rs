@@ -4,7 +4,7 @@
 use std::error::Error;
 
 use futures::StreamExt;
-use inx::proto::{self};
+use inx::proto;
 
 const INX_ADDRESS: &str = "http://localhost:9029";
 
