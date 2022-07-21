@@ -4,14 +4,14 @@
 use super::Error;
 use crate::proto;
 use bee_block_stardust as stardust;
-use stardust::output::ByteCostConfigBuilder;
+use stardust::output::RentStructureBuilder;
 
-impl From<proto::RentStructure> for stardust::output::ByteCostConfig {
+impl From<proto::RentStructure> for stardust::output::RentStructure {
     fn from(value: proto::RentStructure) -> Self {
-        ByteCostConfigBuilder::new()
-            .byte_cost(value.v_byte_cost as u64)
-            .data_factor(value.v_byte_factor_data as u64)
-            .key_factor(value.v_byte_factor_key as u64)
+        RentStructureBuilder::new()
+            .byte_cost(value.v_byte_cost as u32)
+            .data_factor(value.v_byte_factor_data as u8)
+            .key_factor(value.v_byte_factor_key as u8)
             .finish()
     }
 }
@@ -30,7 +30,7 @@ pub struct ProtocolParameters {
     /// The below max depth (BMD) parameter of the tip selection algorithm.
     pub below_max_depth: u32,
     /// Defines the parameters for the byte cost calculation
-    pub rent_structure: stardust::output::ByteCostConfig,
+    pub rent_structure: stardust::output::RentStructure,
     /// The overall token supply.
     pub token_supply: u64,
 }
