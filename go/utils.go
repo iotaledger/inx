@@ -15,28 +15,6 @@ func blockIDsFromSlice(slice []*BlockId) iotago.BlockIDs {
 	return result
 }
 
-// Node
-
-func (x *NodeConfiguration) UnwrapProtocolParameters() *iotago.ProtocolParameters {
-	return x.GetProtocolParameters().Unwrap()
-}
-
-func (x *ProtocolParameters) Unwrap() *iotago.ProtocolParameters {
-	return &iotago.ProtocolParameters{
-		Version:       byte(x.GetVersion()),
-		NetworkName:   x.GetNetworkName(),
-		Bech32HRP:     iotago.NetworkPrefix(x.GetBech32Hrp()),
-		MinPoWScore:   x.GetMinPowScore(),
-		BelowMaxDepth: uint8(x.GetBelowMaxDepth()),
-		RentStructure: iotago.RentStructure{
-			VByteCost:    x.GetRentStructure().GetVByteCost(),
-			VBFactorData: iotago.VByteCostFactor(x.GetRentStructure().GetVByteFactorData()),
-			VBFactorKey:  iotago.VByteCostFactor(x.GetRentStructure().GetVByteFactorKey()),
-		},
-		TokenSupply: x.GetTokenSupply(),
-	}
-}
-
 // Block
 
 func WrapBlock(msg *iotago.Block) (*RawBlock, error) {

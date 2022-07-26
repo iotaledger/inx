@@ -25,6 +25,7 @@ type INXClient interface {
 	// Node
 	ReadNodeStatus(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeStatus, error)
 	ReadNodeConfiguration(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeConfiguration, error)
+	ReadProtocolParameters(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (*RawProtocolParameters, error)
 	// Milestones
 	ReadMilestone(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (*Milestone, error)
 	ListenToLatestMilestones(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToLatestMilestonesClient, error)
@@ -76,6 +77,15 @@ func (c *iNXClient) ReadNodeStatus(ctx context.Context, in *NoParams, opts ...gr
 func (c *iNXClient) ReadNodeConfiguration(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeConfiguration, error) {
 	out := new(NodeConfiguration)
 	err := c.cc.Invoke(ctx, "/inx.INX/ReadNodeConfiguration", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iNXClient) ReadProtocolParameters(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (*RawProtocolParameters, error) {
+	out := new(RawProtocolParameters)
+	err := c.cc.Invoke(ctx, "/inx.INX/ReadProtocolParameters", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +149,7 @@ func (c *iNXClient) ListenToConfirmedMilestones(ctx context.Context, in *Milesto
 }
 
 type INX_ListenToConfirmedMilestonesClient interface {
-	Recv() (*Milestone, error)
+	Recv() (*MilestoneAndProtocolParameters, error)
 	grpc.ClientStream
 }
 
@@ -147,8 +157,8 @@ type iNXListenToConfirmedMilestonesClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNXListenToConfirmedMilestonesClient) Recv() (*Milestone, error) {
-	m := new(Milestone)
+func (x *iNXListenToConfirmedMilestonesClient) Recv() (*MilestoneAndProtocolParameters, error) {
+	m := new(MilestoneAndProtocolParameters)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -595,6 +605,7 @@ type INXServer interface {
 	// Node
 	ReadNodeStatus(context.Context, *NoParams) (*NodeStatus, error)
 	ReadNodeConfiguration(context.Context, *NoParams) (*NodeConfiguration, error)
+	ReadProtocolParameters(context.Context, *MilestoneRequest) (*RawProtocolParameters, error)
 	// Milestones
 	ReadMilestone(context.Context, *MilestoneRequest) (*Milestone, error)
 	ListenToLatestMilestones(*NoParams, INX_ListenToLatestMilestonesServer) error
@@ -636,6 +647,9 @@ func (UnimplementedINXServer) ReadNodeStatus(context.Context, *NoParams) (*NodeS
 }
 func (UnimplementedINXServer) ReadNodeConfiguration(context.Context, *NoParams) (*NodeConfiguration, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadNodeConfiguration not implemented")
+}
+func (UnimplementedINXServer) ReadProtocolParameters(context.Context, *MilestoneRequest) (*RawProtocolParameters, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadProtocolParameters not implemented")
 }
 func (UnimplementedINXServer) ReadMilestone(context.Context, *MilestoneRequest) (*Milestone, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadMilestone not implemented")
@@ -755,6 +769,24 @@ func _INX_ReadNodeConfiguration_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _INX_ReadProtocolParameters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MilestoneRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(INXServer).ReadProtocolParameters(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/inx.INX/ReadProtocolParameters",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(INXServer).ReadProtocolParameters(ctx, req.(*MilestoneRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _INX_ReadMilestone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MilestoneRequest)
 	if err := dec(in); err != nil {
@@ -803,7 +835,7 @@ func _INX_ListenToConfirmedMilestones_Handler(srv interface{}, stream grpc.Serve
 }
 
 type INX_ListenToConfirmedMilestonesServer interface {
-	Send(*Milestone) error
+	Send(*MilestoneAndProtocolParameters) error
 	grpc.ServerStream
 }
 
@@ -811,7 +843,7 @@ type iNXListenToConfirmedMilestonesServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNXListenToConfirmedMilestonesServer) Send(m *Milestone) error {
+func (x *iNXListenToConfirmedMilestonesServer) Send(m *MilestoneAndProtocolParameters) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -1222,6 +1254,10 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReadNodeConfiguration",
 			Handler:    _INX_ReadNodeConfiguration_Handler,
+		},
+		{
+			MethodName: "ReadProtocolParameters",
+			Handler:    _INX_ReadProtocolParameters_Handler,
 		},
 		{
 			MethodName: "ReadMilestone",

@@ -31,7 +31,7 @@ func main() {
 		panic(err)
 	}
 	for {
-		milestone, err := stream.Recv()
+		milestoneAndParams, err := stream.Recv()
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -39,7 +39,7 @@ func main() {
 			panic(err)
 		}
 		// Fetch all messages included by this milestone
-		if err := fetchMilestoneCone(client, milestone); err != nil {
+		if err := fetchMilestoneCone(client, milestoneAndParams.GetMilestone()); err != nil {
 			panic(err)
 		}
 	}
