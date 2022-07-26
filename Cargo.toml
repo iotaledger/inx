@@ -1,6 +1,6 @@
 [package]
 name = "inx"
-version = "1.0.0-beta.2"
+version = "1.0.0-beta.3"
 authors = [ "IOTA Stiftung" ]
 edition = "2021"
 description = "Rust bindings for IOTA node extensions (INX)"
