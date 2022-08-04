@@ -46,7 +46,10 @@ type INXClient interface {
 	ListenToTipScoreUpdates(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToTipScoreUpdatesClient, error)
 	// UTXO
 	ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error)
-	// A stream that yields updates to the ledger. A `LedgerUpdate` is sent for each milestone, even if `created` and `consumed` collections are empty for that milestone.
+	// A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
+	// It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
+	// `BEGIN` and `END` will also be sent for milestones that did not mutate the ledger.
+	// The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
 	ListenToLedgerUpdates(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
 	ListenToTreasuryUpdates(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error)
 	ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputResponse, error)
@@ -626,7 +629,10 @@ type INXServer interface {
 	ListenToTipScoreUpdates(*NoParams, INX_ListenToTipScoreUpdatesServer) error
 	// UTXO
 	ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error
-	// A stream that yields updates to the ledger. A `LedgerUpdate` is sent for each milestone, even if `created` and `consumed` collections are empty for that milestone.
+	// A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
+	// It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
+	// `BEGIN` and `END` will also be sent for milestones that did not mutate the ledger.
+	// The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
 	ListenToLedgerUpdates(*MilestoneRangeRequest, INX_ListenToLedgerUpdatesServer) error
 	ListenToTreasuryUpdates(*MilestoneRangeRequest, INX_ListenToTreasuryUpdatesServer) error
 	ReadOutput(context.Context, *OutputId) (*OutputResponse, error)
