@@ -33,7 +33,10 @@ service INX {
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
   
-  // A stream that yields updates to the ledger. A `LedgerUpdate` is sent for each milestone, even if `created` and `consumed` collections are empty for that milestone.
+  // A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
+  // It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
+  // `BEGIN` and `END` will also be sent for milestones that did not mutate the ledger.
+  // The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
   rpc ListenToLedgerUpdates(MilestoneRangeRequest) returns (stream LedgerUpdate);
   rpc ListenToTreasuryUpdates(MilestoneRangeRequest) returns (stream TreasuryUpdate);
   rpc ReadOutput(OutputId) returns (OutputResponse);
@@ -256,9 +259,22 @@ message TreasuryOutput {
 }
 
 message LedgerUpdate {
-  uint32 milestone_index = 1;
-  repeated LedgerOutput created = 2;
-  repeated LedgerSpent consumed = 3;
+  message Marker {
+    uint32 milestone_index = 1;
+    enum MarkerType {
+      BEGIN = 0;
+      END = 1;
+    }
+    MarkerType marker_type = 2;
+    uint32 consumed_count = 3;
+    uint32 created_count = 4;
+  }
+
+  oneof op {
+    Marker batch_marker = 1;
+    LedgerSpent consumed = 2;
+    LedgerOutput created = 3;
+  }
 }
 
 message TreasuryUpdate {
