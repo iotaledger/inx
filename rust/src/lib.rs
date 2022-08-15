@@ -6,15 +6,13 @@
 /// The raw protobuf definitions.
 pub mod proto {
     #![allow(missing_docs)]
+    #![allow(clippy::derive_partial_eq_without_eq)]
     tonic::include_proto!("inx");
 }
 
 /// Rexports of [`tonic`] types.
 pub mod tonic {
-    pub use tonic::{
-        transport::{Channel, Error},
-        Code, Request, Response, Status,
-    };
+    pub use tonic::*;
 }
 
 pub use self::proto::inx_client as client;
