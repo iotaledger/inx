@@ -44,7 +44,7 @@ jobs:
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }} 
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
         uses: actions-rs/cargo@v1
@@ -112,6 +112,11 @@ jobs:
 
       - uses: Swatinem/rust-cache@v1
 
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -129,6 +134,11 @@ jobs:
           override: true
 
       - uses: Swatinem/rust-cache@v1
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions-rs/cargo@v1
         with:
@@ -154,6 +164,11 @@ jobs:
             override: true
 
       - uses: Swatinem/rust-cache@v1
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions-rs/cargo@v1
         with:
