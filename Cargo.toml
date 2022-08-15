@@ -1,6 +1,6 @@
 [package]
 name = "inx"
-version = "1.0.0-beta.4"
+version = "1.0.0-beta.5"
 authors = [ "IOTA Stiftung" ]
 edition = "2021"
 description = "Rust bindings for IOTA node extensions (INX)"
@@ -17,8 +17,8 @@ name = "inx"
 path = "rust/src/lib.rs"
 
 [dependencies]
-prost = { version = "0.10", default-features = false, features = [ "prost-derive", "std" ] }
-tonic = { version = "0.7", default-features = false, features = [ "codegen", "prost", "transport" ] }
+prost = { version = "0.11", default-features = false, features = [ "prost-derive", "std" ] }
+tonic = { version = "0.8", default-features = false, features = [ "codegen", "prost", "transport" ] }
 
 [build-dependencies]
-tonic-build = { version = "0.7", default-features = false, features = [ "transport", "prost" ] }
+tonic-build = { version = "0.8", default-features = false, features = [ "transport", "prost" ] }
