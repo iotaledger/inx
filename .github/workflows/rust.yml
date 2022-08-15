@@ -41,19 +41,10 @@ jobs:
 
       - uses: Swatinem/rust-cache@v1
 
-      - name: Install protoc (Ubuntu)
-        if: contains(matrix.os, 'ubuntu')
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y protobuf-compiler
-
-      - name: Install protoc (macOS)
-        if: contains(matrix.os, 'macos')
-        run: brew install protobuf
-
-      - name: Install protoc (Windows)
-        if: contains(matrix.os, 'windows')
-        run: choco install protoc
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }} 
 
       - name: Build
         uses: actions-rs/cargo@v1
