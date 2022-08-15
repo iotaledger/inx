@@ -6,6 +6,7 @@
 /// The raw protobuf definitions.
 pub mod proto {
     #![allow(missing_docs)]
+    #![allow(clippy::derive_partial_eq_without_eq)]
     tonic::include_proto!("inx");
 }
 
