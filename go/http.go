@@ -33,8 +33,16 @@ func (r *APIRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	if req.Body != nil {
 		buf := new(bytes.Buffer)
-		buf.ReadFrom(req.Body)
-		req.Body.Close()
+		if _, err := buf.ReadFrom(req.Body); err != nil {
+			_ = req.Body.Close()
+
+			return nil, err
+		}
+
+		if err := req.Body.Close(); err != nil {
+			return nil, err
+		}
+
 		apiReq.Body = buf.Bytes()
 	}
 
