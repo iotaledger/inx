@@ -4,6 +4,7 @@ import (
 	iotago "github.com/iotaledger/iota.go/v3"
 )
 
+// nolint:revive,stylecheck // this name is auto generated
 func NewBlockId(blockID iotago.BlockID) *BlockId {
 	id := &BlockId{
 		Id: make([]byte, iotago.BlockIDLength),
@@ -34,6 +35,7 @@ func NewBlockWithBytes(blockID iotago.BlockID, data []byte) *Block {
 	return m
 }
 
+// nolint:revive,stylecheck // this name is auto generated
 func NewTransactionId(transactionID iotago.TransactionID) *TransactionId {
 	id := &TransactionId{
 		Id: make([]byte, iotago.TransactionIDLength),
@@ -43,6 +45,7 @@ func NewTransactionId(transactionID iotago.TransactionID) *TransactionId {
 	return id
 }
 
+// nolint:revive,stylecheck // this name is auto generated
 func NewOutputId(outputID iotago.OutputID) *OutputId {
 	id := &OutputId{
 		Id: make([]byte, iotago.OutputIDLength),
@@ -52,6 +55,7 @@ func NewOutputId(outputID iotago.OutputID) *OutputId {
 	return id
 }
 
+// nolint:revive,stylecheck // this name is auto generated
 func NewMilestoneId(milestoneID iotago.MilestoneID) *MilestoneId {
 	id := &MilestoneId{
 		Id: make([]byte, iotago.MilestoneIDLength),
