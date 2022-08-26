@@ -67,6 +67,7 @@ func (x *APIRequest) HttpHeader() http.Header {
 			httpHeader.Add(k, i)
 		}
 	}
+
 	return httpHeader
 }
 
@@ -77,6 +78,7 @@ func (x *APIResponse) HttpHeader() http.Header {
 			httpHeader.Add(k, i)
 		}
 	}
+
 	return httpHeader
 }
 
@@ -85,6 +87,7 @@ func HeadersFromHttpHeader(headers http.Header) map[string]string {
 	for k := range headers {
 		h[http.CanonicalHeaderKey(k)] = strings.Join(headers.Values(k), ", ")
 	}
+
 	return h
 }
 

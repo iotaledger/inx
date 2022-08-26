@@ -12,6 +12,7 @@ func blockIDsFromSlice(slice []*BlockId) iotago.BlockIDs {
 	for i := range slice {
 		result[i] = slice[i].Unwrap()
 	}
+
 	return result
 }
 
@@ -22,6 +23,7 @@ func WrapBlock(msg *iotago.Block) (*RawBlock, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &RawBlock{
 		Data: bytes,
 	}, nil
@@ -32,6 +34,7 @@ func (x *RawBlock) UnwrapBlock(deSeriMode serializer.DeSerializationMode, protoP
 	if _, err := msg.Deserialize(x.GetData(), deSeriMode, protoParas); err != nil {
 		return nil, err
 	}
+
 	return msg, nil
 }
 
@@ -41,6 +44,7 @@ func (x *BlockId) Unwrap() iotago.BlockID {
 		return id
 	}
 	copy(id[:], x.GetId())
+
 	return id
 }
 
@@ -57,6 +61,7 @@ func (x *Block) MustUnwrapBlock(deSeriMode serializer.DeSerializationMode, proto
 	if err != nil {
 		panic(err)
 	}
+
 	return msg
 }
 
@@ -80,6 +85,7 @@ func (x *TransactionId) Unwrap() iotago.TransactionID {
 		return iotago.TransactionID{}
 	}
 	copy(id[:], x.GetId())
+
 	return id
 }
 
@@ -89,6 +95,7 @@ func (x *OutputId) Unwrap() iotago.OutputID {
 		return iotago.OutputID{}
 	}
 	copy(id[:], x.GetId())
+
 	return id
 }
 
@@ -109,6 +116,7 @@ func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMod
 	if err != nil {
 		panic(err)
 	}
+
 	return output
 }
 
@@ -117,6 +125,7 @@ func WrapOutput(output iotago.Output) (*RawOutput, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &RawOutput{
 		Data: bytes,
 	}, nil
@@ -137,6 +146,7 @@ func (x *RawOutput) Unwrap(deSeriMode serializer.DeSerializationMode, protoParas
 	if err != nil {
 		return nil, err
 	}
+
 	return output, nil
 }
 
@@ -156,6 +166,7 @@ func (x *MilestoneId) Unwrap() iotago.MilestoneID {
 		return id
 	}
 	copy(id[:], x.GetId())
+
 	return id
 }
 
@@ -169,6 +180,7 @@ func (x *RawMilestone) Unwrap(deSeriMode serializer.DeSerializationMode, protoPa
 	if err != nil {
 		return nil, err
 	}
+
 	return milestone, nil
 }
 
@@ -177,6 +189,7 @@ func WrapReceipt(receipt *iotago.ReceiptMilestoneOpt) (*RawReceipt, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &RawReceipt{
 		Data: bytes,
 	}, nil
@@ -187,6 +200,7 @@ func (x *RawReceipt) UnwrapReceipt(deSeriMode serializer.DeSerializationMode, pr
 	if _, err := r.Deserialize(x.GetData(), deSeriMode, protoParas); err != nil {
 		return nil, err
 	}
+
 	return r, nil
 }
 

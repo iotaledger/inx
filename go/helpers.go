@@ -9,6 +9,7 @@ func NewBlockId(blockID iotago.BlockID) *BlockId {
 		Id: make([]byte, iotago.BlockIDLength),
 	}
 	copy(id.Id, blockID[:])
+
 	return id
 }
 
@@ -17,6 +18,7 @@ func NewBlockIds(blockIDs iotago.BlockIDs) []*BlockId {
 	for i := range blockIDs {
 		result[i] = NewBlockId(blockIDs[i])
 	}
+
 	return result
 }
 
@@ -28,6 +30,7 @@ func NewBlockWithBytes(blockID iotago.BlockID, data []byte) *Block {
 		},
 	}
 	copy(m.Block.Data, data)
+
 	return m
 }
 
@@ -36,6 +39,7 @@ func NewTransactionId(transactionID iotago.TransactionID) *TransactionId {
 		Id: make([]byte, iotago.TransactionIDLength),
 	}
 	copy(id.Id, transactionID[:])
+
 	return id
 }
 
@@ -44,6 +48,7 @@ func NewOutputId(outputID iotago.OutputID) *OutputId {
 		Id: make([]byte, iotago.OutputIDLength),
 	}
 	copy(id.Id, outputID[:])
+
 	return id
 }
 
@@ -52,6 +57,7 @@ func NewMilestoneId(milestoneID iotago.MilestoneID) *MilestoneId {
 		Id: make([]byte, iotago.MilestoneIDLength),
 	}
 	copy(id.Id, milestoneID[:])
+
 	return id
 }
 
