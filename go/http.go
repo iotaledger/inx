@@ -28,13 +28,21 @@ func (r *APIRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	apiReq := &APIRequest{
 		Method:  req.Method,
 		Path:    req.URL.RequestURI(),
-		Headers: HeadersFromHttpHeader(req.Header),
+		Headers: HeadersFromHTTPHeader(req.Header),
 	}
 
 	if req.Body != nil {
 		buf := new(bytes.Buffer)
-		buf.ReadFrom(req.Body)
-		req.Body.Close()
+		if _, err := buf.ReadFrom(req.Body); err != nil {
+			_ = req.Body.Close()
+
+			return nil, err
+		}
+
+		if err := req.Body.Close(); err != nil {
+			return nil, err
+		}
+
 		apiReq.Body = buf.Bytes()
 	}
 
@@ -47,7 +55,7 @@ func (r *APIRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 		StatusCode:    int(apiResp.GetCode()),
 		ProtoMajor:    1,
 		ProtoMinor:    0,
-		Header:        apiResp.HttpHeader(),
+		Header:        apiResp.HTTPHeader(),
 		Body:          io.NopCloser(bytes.NewBuffer(apiResp.GetBody())),
 		ContentLength: int64(len(apiResp.GetBody())),
 		Request:       req,
@@ -60,31 +68,34 @@ func NewHTTPClientOverINX(client INXClient) *http.Client {
 	}
 }
 
-func (x *APIRequest) HttpHeader() http.Header {
+func (x *APIRequest) HTTPHeader() http.Header {
 	httpHeader := http.Header{}
 	for k, v := range x.GetHeaders() {
 		for _, i := range strings.Split(v, ", ") {
 			httpHeader.Add(k, i)
 		}
 	}
+
 	return httpHeader
 }
 
-func (x *APIResponse) HttpHeader() http.Header {
+func (x *APIResponse) HTTPHeader() http.Header {
 	httpHeader := http.Header{}
 	for k, v := range x.GetHeaders() {
 		for _, i := range strings.Split(v, ", ") {
 			httpHeader.Add(k, i)
 		}
 	}
+
 	return httpHeader
 }
 
-func HeadersFromHttpHeader(headers http.Header) map[string]string {
+func HeadersFromHTTPHeader(headers http.Header) map[string]string {
 	h := map[string]string{}
 	for k := range headers {
 		h[http.CanonicalHeaderKey(k)] = strings.Join(headers.Values(k), ", ")
 	}
+
 	return h
 }
 
