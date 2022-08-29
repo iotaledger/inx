@@ -3,29 +3,30 @@ module github.com/iotaledger/inx/go
 go 1.18
 
 require (
-	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-beta.1
-	github.com/iotaledger/iota.go/v3 v3.0.0-beta.6
+	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-beta.3
+	github.com/iotaledger/iota.go/v3 v3.0.0-beta.8
 	github.com/pkg/errors v0.9.1
-	google.golang.org/grpc v1.48.0
+	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 )
 
 require (
 	filippo.io/edwards25519 v1.0.0 // indirect
-	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
-	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1 // indirect
+	github.com/btcsuite/btcd/btcec/v2 v2.2.1 // indirect
+	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
 	github.com/eclipse/paho.mqtt.golang v1.4.1 // indirect
-	github.com/ethereum/go-ethereum v1.10.21 // indirect
+	github.com/ethereum/go-ethereum v1.10.23 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/iotaledger/iota.go v1.0.0 // indirect
 	github.com/onsi/ginkgo v1.16.5 // indirect
-	github.com/onsi/gomega v1.16.0 // indirect
+	github.com/onsi/gomega v1.20.1 // indirect
 	github.com/pasztorpisti/qs v0.0.0-20171216220353-8d6c33ee906c // indirect
-	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
-	golang.org/x/net v0.0.0-20220809012201-f428fae20770 // indirect
-	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
-	golang.org/x/sys v0.0.0-20220808155132-1c4a2a72c664 // indirect
+	golang.org/x/crypto v0.0.0-20220826181053-bd7e27e6170d // indirect
+	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b // indirect
+	golang.org/x/sync v0.0.0-20220819030929-7fc1605a5dde // indirect
+	golang.org/x/sys v0.0.0-20220825204002-c680a09ffe64 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20220808204814-fd01256a5276 // indirect
+	google.golang.org/genproto v0.0.0-20220829144015-23454907ede3 // indirect
 )
