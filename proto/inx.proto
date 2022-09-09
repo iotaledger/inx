@@ -6,6 +6,7 @@ option go_package = "github.com/iotaledger/inx/go;inx";
 service INX {
   // Node
   rpc ReadNodeStatus(NoParams) returns (NodeStatus);
+  rpc ListenToNodeStatus(NodeStatusRequest) returns (stream NodeStatus);
   rpc ReadNodeConfiguration(NoParams) returns (NodeConfiguration);
   rpc ReadProtocolParameters(MilestoneRequest) returns (RawProtocolParameters);
 
@@ -75,12 +76,19 @@ message MilestoneKeyRange {
 
 message NodeStatus {
   bool is_healthy = 1;
-  Milestone latest_milestone = 2;
-  Milestone confirmed_milestone = 3;
-  uint32 tangle_pruning_index = 4;
-  uint32 milestones_pruning_index = 5;
-  uint32 ledger_pruning_index = 6;
-  uint32 ledger_index = 7;
+  bool is_synced = 2;
+  bool is_almost_synced = 3;
+  Milestone latest_milestone = 4;
+  Milestone confirmed_milestone = 5;
+  RawProtocolParameters current_protocol_parameters = 6;
+  uint32 tangle_pruning_index = 7;
+  uint32 milestones_pruning_index = 8;
+  uint32 ledger_pruning_index = 9;
+  uint32 ledger_index = 10;
+}
+
+message NodeStatusRequest {
+  uint32 cooldown_in_milliseconds = 1;
 }
 
 message RawProtocolParameters {
