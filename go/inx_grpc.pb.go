@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type INXClient interface {
 	// Node
 	ReadNodeStatus(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeStatus, error)
+	ListenToNodeStatus(ctx context.Context, in *NodeStatusRequest, opts ...grpc.CallOption) (INX_ListenToNodeStatusClient, error)
 	ReadNodeConfiguration(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeConfiguration, error)
 	ReadProtocolParameters(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (*RawProtocolParameters, error)
 	// Milestones
@@ -77,6 +78,38 @@ func (c *iNXClient) ReadNodeStatus(ctx context.Context, in *NoParams, opts ...gr
 	return out, nil
 }
 
+func (c *iNXClient) ListenToNodeStatus(ctx context.Context, in *NodeStatusRequest, opts ...grpc.CallOption) (INX_ListenToNodeStatusClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[0], "/inx.INX/ListenToNodeStatus", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &iNXListenToNodeStatusClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type INX_ListenToNodeStatusClient interface {
+	Recv() (*NodeStatus, error)
+	grpc.ClientStream
+}
+
+type iNXListenToNodeStatusClient struct {
+	grpc.ClientStream
+}
+
+func (x *iNXListenToNodeStatusClient) Recv() (*NodeStatus, error) {
+	m := new(NodeStatus)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *iNXClient) ReadNodeConfiguration(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeConfiguration, error) {
 	out := new(NodeConfiguration)
 	err := c.cc.Invoke(ctx, "/inx.INX/ReadNodeConfiguration", in, out, opts...)
@@ -105,7 +138,7 @@ func (c *iNXClient) ReadMilestone(ctx context.Context, in *MilestoneRequest, opt
 }
 
 func (c *iNXClient) ListenToLatestMilestones(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToLatestMilestonesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[0], "/inx.INX/ListenToLatestMilestones", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[1], "/inx.INX/ListenToLatestMilestones", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +170,7 @@ func (x *iNXListenToLatestMilestonesClient) Recv() (*Milestone, error) {
 }
 
 func (c *iNXClient) ListenToConfirmedMilestones(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToConfirmedMilestonesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[1], "/inx.INX/ListenToConfirmedMilestones", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[2], "/inx.INX/ListenToConfirmedMilestones", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -178,7 +211,7 @@ func (c *iNXClient) ComputeWhiteFlag(ctx context.Context, in *WhiteFlagRequest, 
 }
 
 func (c *iNXClient) ReadMilestoneCone(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (INX_ReadMilestoneConeClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[2], "/inx.INX/ReadMilestoneCone", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[3], "/inx.INX/ReadMilestoneCone", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +243,7 @@ func (x *iNXReadMilestoneConeClient) Recv() (*BlockWithMetadata, error) {
 }
 
 func (c *iNXClient) ReadMilestoneConeMetadata(ctx context.Context, in *MilestoneRequest, opts ...grpc.CallOption) (INX_ReadMilestoneConeMetadataClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[3], "/inx.INX/ReadMilestoneConeMetadata", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[4], "/inx.INX/ReadMilestoneConeMetadata", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -242,7 +275,7 @@ func (x *iNXReadMilestoneConeMetadataClient) Recv() (*BlockMetadata, error) {
 }
 
 func (c *iNXClient) ListenToBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToBlocksClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[4], "/inx.INX/ListenToBlocks", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[5], "/inx.INX/ListenToBlocks", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -274,7 +307,7 @@ func (x *iNXListenToBlocksClient) Recv() (*Block, error) {
 }
 
 func (c *iNXClient) ListenToSolidBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToSolidBlocksClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[5], "/inx.INX/ListenToSolidBlocks", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[6], "/inx.INX/ListenToSolidBlocks", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -306,7 +339,7 @@ func (x *iNXListenToSolidBlocksClient) Recv() (*BlockMetadata, error) {
 }
 
 func (c *iNXClient) ListenToReferencedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToReferencedBlocksClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[6], "/inx.INX/ListenToReferencedBlocks", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[7], "/inx.INX/ListenToReferencedBlocks", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -374,7 +407,7 @@ func (c *iNXClient) RequestTips(ctx context.Context, in *TipsRequest, opts ...gr
 }
 
 func (c *iNXClient) ListenToTipsMetrics(ctx context.Context, in *TipsMetricRequest, opts ...grpc.CallOption) (INX_ListenToTipsMetricsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[7], "/inx.INX/ListenToTipsMetrics", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[8], "/inx.INX/ListenToTipsMetrics", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -406,7 +439,7 @@ func (x *iNXListenToTipsMetricsClient) Recv() (*TipsMetric, error) {
 }
 
 func (c *iNXClient) ListenToTipScoreUpdates(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToTipScoreUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[8], "/inx.INX/ListenToTipScoreUpdates", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[9], "/inx.INX/ListenToTipScoreUpdates", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -438,7 +471,7 @@ func (x *iNXListenToTipScoreUpdatesClient) Recv() (*BlockMetadata, error) {
 }
 
 func (c *iNXClient) ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[9], "/inx.INX/ReadUnspentOutputs", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[10], "/inx.INX/ReadUnspentOutputs", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -470,7 +503,7 @@ func (x *iNXReadUnspentOutputsClient) Recv() (*UnspentOutput, error) {
 }
 
 func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[10], "/inx.INX/ListenToLedgerUpdates", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[11], "/inx.INX/ListenToLedgerUpdates", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -502,7 +535,7 @@ func (x *iNXListenToLedgerUpdatesClient) Recv() (*LedgerUpdate, error) {
 }
 
 func (c *iNXClient) ListenToTreasuryUpdates(ctx context.Context, in *MilestoneRangeRequest, opts ...grpc.CallOption) (INX_ListenToTreasuryUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[11], "/inx.INX/ListenToTreasuryUpdates", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[12], "/inx.INX/ListenToTreasuryUpdates", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -543,7 +576,7 @@ func (c *iNXClient) ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.C
 }
 
 func (c *iNXClient) ListenToMigrationReceipts(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToMigrationReceiptsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[12], "/inx.INX/ListenToMigrationReceipts", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[13], "/inx.INX/ListenToMigrationReceipts", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -607,6 +640,7 @@ func (c *iNXClient) PerformAPIRequest(ctx context.Context, in *APIRequest, opts 
 type INXServer interface {
 	// Node
 	ReadNodeStatus(context.Context, *NoParams) (*NodeStatus, error)
+	ListenToNodeStatus(*NodeStatusRequest, INX_ListenToNodeStatusServer) error
 	ReadNodeConfiguration(context.Context, *NoParams) (*NodeConfiguration, error)
 	ReadProtocolParameters(context.Context, *MilestoneRequest) (*RawProtocolParameters, error)
 	// Milestones
@@ -650,6 +684,9 @@ type UnimplementedINXServer struct {
 
 func (UnimplementedINXServer) ReadNodeStatus(context.Context, *NoParams) (*NodeStatus, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadNodeStatus not implemented")
+}
+func (UnimplementedINXServer) ListenToNodeStatus(*NodeStatusRequest, INX_ListenToNodeStatusServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListenToNodeStatus not implemented")
 }
 func (UnimplementedINXServer) ReadNodeConfiguration(context.Context, *NoParams) (*NodeConfiguration, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadNodeConfiguration not implemented")
@@ -755,6 +792,27 @@ func _INX_ReadNodeStatus_Handler(srv interface{}, ctx context.Context, dec func(
 		return srv.(INXServer).ReadNodeStatus(ctx, req.(*NoParams))
 	}
 	return interceptor(ctx, in, info, handler)
+}
+
+func _INX_ListenToNodeStatus_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(NodeStatusRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(INXServer).ListenToNodeStatus(m, &iNXListenToNodeStatusServer{stream})
+}
+
+type INX_ListenToNodeStatusServer interface {
+	Send(*NodeStatus) error
+	grpc.ServerStream
+}
+
+type iNXListenToNodeStatusServer struct {
+	grpc.ServerStream
+}
+
+func (x *iNXListenToNodeStatusServer) Send(m *NodeStatus) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 func _INX_ReadNodeConfiguration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1307,6 +1365,11 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "ListenToNodeStatus",
+			Handler:       _INX_ListenToNodeStatus_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "ListenToLatestMilestones",
 			Handler:       _INX_ListenToLatestMilestones_Handler,
