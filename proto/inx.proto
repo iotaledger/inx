@@ -8,15 +8,14 @@ service INX {
   rpc ReadNodeStatus(NoParams) returns (NodeStatus);
   rpc ListenToNodeStatus(NodeStatusRequest) returns (stream NodeStatus);
   rpc ReadNodeConfiguration(NoParams) returns (NodeConfiguration);
-  rpc ReadProtocolParameters(MilestoneRequest) returns (RawProtocolParameters);
+  rpc ReadProtocolParameters(CommitmentRequest) returns (RawProtocolParameters);
 
-  // Milestones
-  rpc ReadMilestone(MilestoneRequest) returns (Milestone);
-  rpc ListenToLatestMilestones(NoParams) returns (stream Milestone);
-  rpc ListenToConfirmedMilestones(MilestoneRangeRequest) returns (stream MilestoneAndProtocolParameters);
-  rpc ComputeWhiteFlag(WhiteFlagRequest) returns (WhiteFlagResponse);
-  rpc ReadMilestoneCone(MilestoneRequest) returns (stream BlockWithMetadata);
-  rpc ReadMilestoneConeMetadata(MilestoneRequest) returns (stream BlockMetadata);
+  // Commitments
+  rpc ReadCommitment(CommitmentRequest) returns (Commitment);
+  rpc ListenToLatestCommitments(NoParams) returns (stream Commitment);
+  rpc ListenToConfirmedCommitments(CommitmentRangeRequest) returns (stream CommitmentAndProtocolParameters);
+  rpc ReadCommitmentCone(CommitmentRequest) returns (stream BlockWithMetadata);
+  rpc ReadCommitmentConeMetadata(CommitmentRequest) returns (stream BlockMetadata);
 
   // Blocks
   rpc ListenToBlocks(NoParams) returns (stream Block);
@@ -38,10 +37,8 @@ service INX {
   // It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
   // `BEGIN` and `END` will also be sent for milestones that did not mutate the ledger.
   // The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
-  rpc ListenToLedgerUpdates(MilestoneRangeRequest) returns (stream LedgerUpdate);
-  rpc ListenToTreasuryUpdates(MilestoneRangeRequest) returns (stream TreasuryUpdate);
+  rpc ListenToLedgerUpdates(CommitmentRangeRequest) returns (stream LedgerUpdate);
   rpc ReadOutput(OutputId) returns (OutputResponse);
-  rpc ListenToMigrationReceipts(NoParams) returns (stream RawReceipt);
 
   // REST API
   rpc RegisterAPIRoute(APIRouteRequest) returns (NoParams);
@@ -53,10 +50,8 @@ message NoParams {}
 
 // Node
 message NodeConfiguration {
-  uint32 milestone_public_key_count = 1;
-  repeated MilestoneKeyRange milestone_key_ranges = 2;
-  BaseToken base_token = 3;
-  repeated uint32 supported_protocol_versions = 4;
+  BaseToken base_token = 1;
+  repeated uint32 supported_protocol_versions = 2;
 }
 
 message BaseToken {
@@ -68,21 +63,15 @@ message BaseToken {
   bool use_metric_prefix = 6;
 }
 
-message MilestoneKeyRange {
-  bytes public_key = 1;
-  uint32 start_index = 2;
-  uint32 end_index = 3;
-}
-
 message NodeStatus {
   bool is_healthy = 1;
   bool is_synced = 2;
   bool is_almost_synced = 3;
-  Milestone latest_milestone = 4;
-  Milestone confirmed_milestone = 5;
+  Commitment latest_commitment = 4;
+  Commitment confirmed_commitment = 5;
   RawProtocolParameters current_protocol_parameters = 6;
   uint32 tangle_pruning_index = 7;
-  uint32 milestones_pruning_index = 8;
+  uint32 commitment_pruning_index = 8;
   uint32 ledger_pruning_index = 9;
   uint32 ledger_index = 10;
 }
@@ -96,56 +85,44 @@ message RawProtocolParameters {
   bytes params = 2;
 }
 
-// Milestones
-message RawMilestone {
+// Commitments
+message RawCommitment {
   bytes data = 1;
 }
 
-message MilestoneId {
+message CommitmentId {
   bytes id = 1;
 }
 
-message MilestoneRequest {
-  uint32 milestone_index = 1;
-  MilestoneId milestone_id = 2;
+message CommitmentRequest {
+  uint32 commitment_index = 1;
+  CommitmentId commitment_id = 2;
 }
 
-message MilestoneRangeRequest {
-  // start_milestone_index is the initial milestone to get. Use 0 to start from the current node status.
-  uint32 start_milestone_index = 1;
-  // end_milestone_index is the last milestone to get (inclusive). Use 0 to keep getting new confirmed milestones.
-  uint32 end_milestone_index = 2;
+message CommitmentRangeRequest {
+  // start_slot_index is the initial slot to get. Use 0 to start from the current node status.
+  uint32 start_slot_index = 1;
+  // end_slot_index is the last slot to get (inclusive). Use 0 to keep getting new confirmed slots.
+  uint32 end_slot_index = 2;
 }
 
-message MilestoneInfo {
+message CommitmentInfo {
   // Optional. This field can be missing for example if there are no milestones yet in a network.
-  MilestoneId milestone_id = 1;
-  uint32 milestone_index = 2;
+  CommitmentId commitment_id = 1;
+  uint32 commitment_index = 2;
   // Optional. This field can be missing for example if there are no milestones yet in a network.
-  uint32 milestone_timestamp = 3;
+  uint32 commitment_timestamp = 3;
 }
 
-message Milestone {
-  MilestoneInfo milestone_info = 1;
+message Commitment {
+  CommitmentInfo commitment_info = 1;
   // Optional. This field can be missing for example if there are no milestones yet in a network.
-  RawMilestone milestone = 2;
+  RawCommitment commitment = 2;
 }
 
-message MilestoneAndProtocolParameters {
-  Milestone milestone = 1;
+message CommitmentAndProtocolParameters {
+  Commitment commitment = 1;
   RawProtocolParameters current_protocol_parameters = 2;
-}
-
-message WhiteFlagRequest {
-  uint32 milestone_index = 1;
-  uint32 milestone_timestamp = 2;
-  repeated BlockId parents = 3;
-  MilestoneId previous_milestone_id = 4;
-}
-
-message WhiteFlagResponse {
-  bytes milestone_inclusion_merkle_root = 1;
-  bytes milestone_applied_merkle_root = 2;
 }
 
 // Blocks
@@ -198,7 +175,6 @@ message BlockMetadata {
     CONFLICT_REASON_SEMANTIC_VALIDATION_FAILED = 255;
   }
   ConflictReason conflict_reason = 9;
-  uint32 white_flag_index = 10;
 }
 
 // Tips
@@ -249,21 +225,16 @@ message RawOutput {
 message LedgerOutput {
   OutputId output_id = 1;
   BlockId blockId = 2;
-  uint32 milestone_index_booked = 3;
-  uint32 milestone_timestamp_booked = 4;
+  uint32 commitment_index_booked = 3;
+  uint32 timestamp_booked = 4;
   RawOutput output = 5;
 }
 
 message LedgerSpent {
   LedgerOutput output = 1;
   TransactionId transaction_id_spent = 2;
-  uint32 milestone_index_spent = 3;
-  uint32 milestone_timestamp_spent = 4;
-}
-
-message TreasuryOutput {
-  MilestoneId milestone_id = 1;
-  uint64 amount = 2;
+  uint32 commitment_index_spent = 3;
+  uint32 timestamp_spent = 4;
 }
 
 message LedgerUpdate {
@@ -283,16 +254,6 @@ message LedgerUpdate {
     LedgerSpent consumed = 2;
     LedgerOutput created = 3;
   }
-}
-
-message TreasuryUpdate {
-  uint32 milestone_index = 1;
-  TreasuryOutput created = 2;
-  TreasuryOutput consumed = 3;
-}
-
-message RawReceipt {
-  bytes data = 1;
 }
 
 // REST API

@@ -1,7 +1,7 @@
 package inx
 
 import (
-	iotago "github.com/iotaledger/iota.go/v3"
+	iotago "github.com/iotaledger/iota.go/v4"
 )
 
 // nolint:revive,stylecheck // this name is auto generated
@@ -56,19 +56,19 @@ func NewOutputId(outputID iotago.OutputID) *OutputId {
 }
 
 // nolint:revive,stylecheck // this name is auto generated
-func NewMilestoneId(milestoneID iotago.MilestoneID) *MilestoneId {
-	id := &MilestoneId{
-		Id: make([]byte, iotago.MilestoneIDLength),
+func NewCommitmentId(commitmentID iotago.CommitmentID) *CommitmentId {
+	id := &CommitmentId{
+		Id: make([]byte, iotago.CommitmentIDLength),
 	}
-	copy(id.Id, milestoneID[:])
+	copy(id.Id, commitmentID[:])
 
 	return id
 }
 
-func NewMilestoneInfo(milestoneID iotago.MilestoneID, index uint32, timestamp uint32) *MilestoneInfo {
-	return &MilestoneInfo{
-		MilestoneId:        NewMilestoneId(milestoneID),
-		MilestoneIndex:     index,
-		MilestoneTimestamp: timestamp,
+func NewCommitmentInfo(commitmentID iotago.CommitmentID, index uint32, timestamp uint32) *CommitmentInfo {
+	return &CommitmentInfo{
+		CommitmentId:        NewCommitmentId(commitmentID),
+		CommitmentIndex:     index,
+		CommitmentTimestamp: timestamp,
 	}
 }

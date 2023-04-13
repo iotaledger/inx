@@ -3,8 +3,8 @@ package inx
 import (
 	"github.com/pkg/errors"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
-	iotago "github.com/iotaledger/iota.go/v3"
+	"github.com/iotaledger/hive.go/serializer/v2/serix"
+	iotago "github.com/iotaledger/iota.go/v4"
 )
 
 func blockIDsFromSlice(slice []*BlockId) iotago.BlockIDs {
@@ -18,8 +18,8 @@ func blockIDsFromSlice(slice []*BlockId) iotago.BlockIDs {
 
 // Block
 
-func WrapBlock(msg *iotago.Block) (*RawBlock, error) {
-	bytes, err := msg.Serialize(serializer.DeSeriModeNoValidation, nil)
+func WrapBlock(block *iotago.Block, api iotago.API) (*RawBlock, error) {
+	bytes, err := api.Encode(block)
 	if err != nil {
 		return nil, err
 	}
@@ -29,35 +29,33 @@ func WrapBlock(msg *iotago.Block) (*RawBlock, error) {
 	}, nil
 }
 
-func (x *RawBlock) UnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Block, error) {
-	msg := &iotago.Block{}
-	if _, err := msg.Deserialize(x.GetData(), deSeriMode, protoParas); err != nil {
+func (x *RawBlock) UnwrapBlock(api iotago.API, opts ...serix.Option) (*iotago.Block, error) {
+	block := &iotago.Block{}
+	if _, err := api.Decode(x.GetData(), block, opts...); err != nil {
 		return nil, err
 	}
 
-	return msg, nil
+	return block, nil
 }
 
 func (x *BlockId) Unwrap() iotago.BlockID {
-	id := iotago.BlockID{}
 	if len(x.GetId()) != iotago.BlockIDLength {
-		return id
+		return iotago.EmptyBlockID()
 	}
-	copy(id[:], x.GetId())
 
-	return id
+	return iotago.BlockID(x.GetId())
 }
 
 func (x *Block) UnwrapBlockID() iotago.BlockID {
 	return x.GetBlockId().Unwrap()
 }
 
-func (x *Block) UnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Block, error) {
-	return x.GetBlock().UnwrapBlock(deSeriMode, protoParas)
+func (x *Block) UnwrapBlock(api iotago.API, opts ...serix.Option) (*iotago.Block, error) {
+	return x.GetBlock().UnwrapBlock(api, opts...)
 }
 
-func (x *Block) MustUnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) *iotago.Block {
-	msg, err := x.GetBlock().UnwrapBlock(deSeriMode, protoParas)
+func (x *Block) MustUnwrapBlock(api iotago.API, opts ...serix.Option) *iotago.Block {
+	msg, err := x.GetBlock().UnwrapBlock(api, opts...)
 	if err != nil {
 		panic(err)
 	}
@@ -73,8 +71,8 @@ func (x *BlockMetadata) UnwrapParents() iotago.BlockIDs {
 	return blockIDsFromSlice(x.GetParents())
 }
 
-func (x *BlockWithMetadata) UnwrapBlock(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Block, error) {
-	return x.GetBlock().UnwrapBlock(deSeriMode, protoParas)
+func (x *BlockWithMetadata) UnwrapBlock(api iotago.API, opts ...serix.Option) (*iotago.Block, error) {
+	return x.GetBlock().UnwrapBlock(api, opts...)
 }
 
 // Ledger
@@ -107,12 +105,12 @@ func (x *LedgerOutput) UnwrapBlockID() iotago.BlockID {
 	return x.BlockId.Unwrap()
 }
 
-func (x *LedgerOutput) UnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (iotago.Output, error) {
-	return x.GetOutput().Unwrap(deSeriMode, protoParas)
+func (x *LedgerOutput) UnwrapOutput(api iotago.API, opts ...serix.Option) (iotago.Output, error) {
+	return x.GetOutput().Unwrap(api, opts...)
 }
 
-func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) iotago.Output {
-	output, err := x.UnwrapOutput(deSeriMode, protoParas)
+func (x *LedgerOutput) MustUnwrapOutput(api iotago.API, opts ...serix.Option) iotago.Output {
+	output, err := x.UnwrapOutput(api, opts...)
 	if err != nil {
 		panic(err)
 	}
@@ -120,8 +118,8 @@ func (x *LedgerOutput) MustUnwrapOutput(deSeriMode serializer.DeSerializationMod
 	return output
 }
 
-func WrapOutput(output iotago.Output) (*RawOutput, error) {
-	bytes, err := output.Serialize(serializer.DeSeriModeNoValidation, nil)
+func WrapOutput(output iotago.Output, api iotago.API) (*RawOutput, error) {
+	bytes, err := api.Encode(output)
 	if err != nil {
 		return nil, err
 	}
@@ -131,18 +129,14 @@ func WrapOutput(output iotago.Output) (*RawOutput, error) {
 	}, nil
 }
 
-func (x *RawOutput) Unwrap(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (iotago.Output, error) {
+func (x *RawOutput) Unwrap(api iotago.API, opts ...serix.Option) (iotago.Output, error) {
 	data := x.GetData()
 	if len(data) == 0 {
 		return nil, errors.New("invalid output length")
 	}
 
-	output, err := iotago.OutputSelector(uint32(data[0]))
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = output.Deserialize(data, deSeriMode, protoParas)
+	var output iotago.TxEssenceOutput
+	_, err := api.Decode(data, &output, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -154,58 +148,28 @@ func (x *LedgerSpent) UnwrapTransactionIDSpent() iotago.TransactionID {
 	return x.GetTransactionIdSpent().Unwrap()
 }
 
-func (x *TreasuryOutput) UnwrapMilestoneID() iotago.MilestoneID {
-	return x.GetMilestoneId().Unwrap()
-}
-
 // Milestones
 
-func (x *MilestoneId) Unwrap() iotago.MilestoneID {
-	id := iotago.MilestoneID{}
-	if len(x.GetId()) != iotago.MilestoneIDLength {
-		return id
+func (x *CommitmentId) Unwrap() iotago.CommitmentID {
+	if len(x.GetId()) != iotago.CommitmentIDLength {
+		return iotago.CommitmentID{}
 	}
-	copy(id[:], x.GetId())
 
-	return id
+	return iotago.CommitmentID(x.GetId())
 }
 
-func (x *Milestone) UnwrapMilestone(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Milestone, error) {
-	return x.GetMilestone().Unwrap(deSeriMode, protoParas)
+func (x *Commitment) UnwrapCommitment(api iotago.API, opts ...serix.Option) (*iotago.Commitment, error) {
+	return x.GetCommitment().Unwrap(api, opts...)
 }
 
-func (x *RawMilestone) Unwrap(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.Milestone, error) {
-	milestone := &iotago.Milestone{}
-	_, err := milestone.Deserialize(x.GetData(), deSeriMode, protoParas)
+func (x *RawCommitment) Unwrap(api iotago.API, opts ...serix.Option) (*iotago.Commitment, error) {
+	commitment := &iotago.Commitment{}
+	_, err := api.Decode(x.GetData(), commitment, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return milestone, nil
-}
-
-func WrapReceipt(receipt *iotago.ReceiptMilestoneOpt) (*RawReceipt, error) {
-	bytes, err := receipt.Serialize(serializer.DeSeriModeNoValidation, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return &RawReceipt{
-		Data: bytes,
-	}, nil
-}
-
-func (x *RawReceipt) UnwrapReceipt(deSeriMode serializer.DeSerializationMode, protoParas *iotago.ProtocolParameters) (*iotago.ReceiptMilestoneOpt, error) {
-	r := &iotago.ReceiptMilestoneOpt{}
-	if _, err := r.Deserialize(x.GetData(), deSeriMode, protoParas); err != nil {
-		return nil, err
-	}
-
-	return r, nil
-}
-
-func (x *WhiteFlagRequest) UnwrapParents() iotago.BlockIDs {
-	return blockIDsFromSlice(x.GetParents())
+	return commitment, nil
 }
 
 // Tips

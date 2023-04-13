@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"github.com/iotaledger/hive.go/serializer/v2"
 	inx "github.com/iotaledger/inx/go"
+	iotago "github.com/iotaledger/iota.go/v4"
 )
 
 const (
@@ -26,32 +26,39 @@ func main() {
 	client := inx.NewINXClient(conn)
 
 	// Listen to all confirmed milestones
-	stream, err := client.ListenToConfirmedMilestones(context.Background(), &inx.MilestoneRangeRequest{})
+	stream, err := client.ListenToConfirmedCommitments(context.Background(), &inx.CommitmentRangeRequest{})
 	if err != nil {
 		panic(err)
 	}
 	for {
-		milestoneAndParams, err := stream.Recv()
+		commitmentAndParams, err := stream.Recv()
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
 			panic(err)
 		}
+
+		api := iotago.V3API(&iotago.ProtocolParameters{})
+		protoParams := &iotago.ProtocolParameters{}
+		if _, err := api.Decode(commitmentAndParams.GetCurrentProtocolParameters().GetParams(), protoParams); err != nil {
+			panic(err)
+		}
+
 		// Fetch all messages included by this milestone
-		if err := fetchMilestoneCone(client, milestoneAndParams.GetMilestone()); err != nil {
+		if err := fetchCommitmentCone(client, commitmentAndParams.GetCommitment(), iotago.V3API(protoParams)); err != nil {
 			panic(err)
 		}
 	}
 }
 
-func fetchMilestoneCone(client inx.INXClient, milestone *inx.Milestone) error {
-	index := milestone.GetMilestoneInfo().GetMilestoneIndex()
+func fetchCommitmentCone(client inx.INXClient, commitment *inx.Commitment, api iotago.API) error {
+	index := commitment.GetCommitmentInfo().GetCommitmentIndex()
 	fmt.Printf("Fetch cone of milestone %d\n", index)
-	req := &inx.MilestoneRequest{
-		MilestoneIndex: index,
+	req := &inx.CommitmentRequest{
+		CommitmentIndex: index,
 	}
-	stream, err := client.ReadMilestoneCone(context.Background(), req)
+	stream, err := client.ReadCommitmentCone(context.Background(), req)
 	if err != nil {
 		return err
 	}
@@ -67,7 +74,7 @@ func fetchMilestoneCone(client inx.INXClient, milestone *inx.Milestone) error {
 		}
 
 		// Deserialize the raw bytes into an iota.go Block
-		block, err := payload.UnwrapBlock(serializer.DeSeriModeNoValidation, nil)
+		block, err := payload.UnwrapBlock(api)
 		if err != nil {
 			return err
 		}

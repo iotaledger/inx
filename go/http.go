@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/iotaledger/iota.go/v3/nodeclient"
+	"github.com/iotaledger/iota.go/v4/nodeclient"
 )
 
 const (
@@ -99,6 +99,6 @@ func HeadersFromHTTPHeader(headers http.Header) map[string]string {
 	return h
 }
 
-func NewNodeclientOverINX(client INXClient) *nodeclient.Client {
+func NewNodeclientOverINX(client INXClient) (*nodeclient.Client, error) {
 	return nodeclient.New(APIRoundTripperBaseURL, nodeclient.WithHTTPClient(NewHTTPClientOverINX(client)))
 }
