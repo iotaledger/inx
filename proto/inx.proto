@@ -199,6 +199,7 @@ message BlockMetadata {
   }
   ConflictReason conflict_reason = 9;
   uint32 white_flag_index = 10;
+  TransactionId transaction_id = 11;
 }
 
 // Tips
