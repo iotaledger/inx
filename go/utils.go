@@ -1,8 +1,7 @@
 package inx
 
 import (
-	"github.com/pkg/errors"
-
+	"github.com/iotaledger/hive.go/ierrors"
 	"github.com/iotaledger/hive.go/serializer/v2/serix"
 	iotago "github.com/iotaledger/iota.go/v4"
 )
@@ -132,7 +131,7 @@ func WrapOutput(output iotago.Output, api iotago.API) (*RawOutput, error) {
 func (x *RawOutput) Unwrap(api iotago.API, opts ...serix.Option) (iotago.Output, error) {
 	data := x.GetData()
 	if len(data) == 0 {
-		return nil, errors.New("invalid output length")
+		return nil, ierrors.New("invalid output length")
 	}
 
 	var output iotago.TxEssenceOutput
