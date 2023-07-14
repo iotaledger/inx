@@ -26,31 +26,22 @@ type INXClient interface {
 	ReadNodeStatus(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeStatus, error)
 	ListenToNodeStatus(ctx context.Context, in *NodeStatusRequest, opts ...grpc.CallOption) (INX_ListenToNodeStatusClient, error)
 	ReadNodeConfiguration(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeConfiguration, error)
-	ReadProtocolParameters(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (*RawProtocolParameters, error)
 	// Commitments
 	ReadCommitment(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (*Commitment, error)
-	ListenToLatestCommitments(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToLatestCommitmentsClient, error)
-	ListenToConfirmedCommitments(ctx context.Context, in *CommitmentRangeRequest, opts ...grpc.CallOption) (INX_ListenToConfirmedCommitmentsClient, error)
-	ReadCommitmentCone(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (INX_ReadCommitmentConeClient, error)
-	ReadCommitmentConeMetadata(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (INX_ReadCommitmentConeMetadataClient, error)
 	// Blocks
 	ListenToBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToBlocksClient, error)
-	ListenToSolidBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToSolidBlocksClient, error)
-	ListenToReferencedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToReferencedBlocksClient, error)
+	ListenToAcceptedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToAcceptedBlocksClient, error)
+	ListenToConfirmedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToConfirmedBlocksClient, error)
 	SubmitBlock(ctx context.Context, in *RawBlock, opts ...grpc.CallOption) (*BlockId, error)
 	ReadBlock(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*RawBlock, error)
 	ReadBlockMetadata(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*BlockMetadata, error)
-	// Tips
-	RequestTips(ctx context.Context, in *TipsRequest, opts ...grpc.CallOption) (*TipsResponse, error)
-	ListenToTipsMetrics(ctx context.Context, in *TipsMetricRequest, opts ...grpc.CallOption) (INX_ListenToTipsMetricsClient, error)
-	ListenToTipScoreUpdates(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToTipScoreUpdatesClient, error)
 	// UTXO
 	ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error)
 	// A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
 	// It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
-	// `BEGIN` and `END` will also be sent for milestones that did not mutate the ledger.
+	// `BEGIN` and `END` will also be sent for slots that did not mutate the ledger.
 	// The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
-	ListenToLedgerUpdates(ctx context.Context, in *CommitmentRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
+	ListenToLedgerUpdates(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
 	ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputResponse, error)
 	// REST API
 	RegisterAPIRoute(ctx context.Context, in *APIRouteRequest, opts ...grpc.CallOption) (*NoParams, error)
@@ -116,15 +107,6 @@ func (c *iNXClient) ReadNodeConfiguration(ctx context.Context, in *NoParams, opt
 	return out, nil
 }
 
-func (c *iNXClient) ReadProtocolParameters(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (*RawProtocolParameters, error) {
-	out := new(RawProtocolParameters)
-	err := c.cc.Invoke(ctx, "/inx.INX/ReadProtocolParameters", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *iNXClient) ReadCommitment(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (*Commitment, error) {
 	out := new(Commitment)
 	err := c.cc.Invoke(ctx, "/inx.INX/ReadCommitment", in, out, opts...)
@@ -134,136 +116,8 @@ func (c *iNXClient) ReadCommitment(ctx context.Context, in *CommitmentRequest, o
 	return out, nil
 }
 
-func (c *iNXClient) ListenToLatestCommitments(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToLatestCommitmentsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[1], "/inx.INX/ListenToLatestCommitments", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &iNXListenToLatestCommitmentsClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type INX_ListenToLatestCommitmentsClient interface {
-	Recv() (*Commitment, error)
-	grpc.ClientStream
-}
-
-type iNXListenToLatestCommitmentsClient struct {
-	grpc.ClientStream
-}
-
-func (x *iNXListenToLatestCommitmentsClient) Recv() (*Commitment, error) {
-	m := new(Commitment)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *iNXClient) ListenToConfirmedCommitments(ctx context.Context, in *CommitmentRangeRequest, opts ...grpc.CallOption) (INX_ListenToConfirmedCommitmentsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[2], "/inx.INX/ListenToConfirmedCommitments", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &iNXListenToConfirmedCommitmentsClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type INX_ListenToConfirmedCommitmentsClient interface {
-	Recv() (*CommitmentAndProtocolParameters, error)
-	grpc.ClientStream
-}
-
-type iNXListenToConfirmedCommitmentsClient struct {
-	grpc.ClientStream
-}
-
-func (x *iNXListenToConfirmedCommitmentsClient) Recv() (*CommitmentAndProtocolParameters, error) {
-	m := new(CommitmentAndProtocolParameters)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *iNXClient) ReadCommitmentCone(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (INX_ReadCommitmentConeClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[3], "/inx.INX/ReadCommitmentCone", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &iNXReadCommitmentConeClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type INX_ReadCommitmentConeClient interface {
-	Recv() (*BlockWithMetadata, error)
-	grpc.ClientStream
-}
-
-type iNXReadCommitmentConeClient struct {
-	grpc.ClientStream
-}
-
-func (x *iNXReadCommitmentConeClient) Recv() (*BlockWithMetadata, error) {
-	m := new(BlockWithMetadata)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *iNXClient) ReadCommitmentConeMetadata(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (INX_ReadCommitmentConeMetadataClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[4], "/inx.INX/ReadCommitmentConeMetadata", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &iNXReadCommitmentConeMetadataClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type INX_ReadCommitmentConeMetadataClient interface {
-	Recv() (*BlockMetadata, error)
-	grpc.ClientStream
-}
-
-type iNXReadCommitmentConeMetadataClient struct {
-	grpc.ClientStream
-}
-
-func (x *iNXReadCommitmentConeMetadataClient) Recv() (*BlockMetadata, error) {
-	m := new(BlockMetadata)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 func (c *iNXClient) ListenToBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToBlocksClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[5], "/inx.INX/ListenToBlocks", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[1], "/inx.INX/ListenToBlocks", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -294,12 +148,12 @@ func (x *iNXListenToBlocksClient) Recv() (*Block, error) {
 	return m, nil
 }
 
-func (c *iNXClient) ListenToSolidBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToSolidBlocksClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[6], "/inx.INX/ListenToSolidBlocks", opts...)
+func (c *iNXClient) ListenToAcceptedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToAcceptedBlocksClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[2], "/inx.INX/ListenToAcceptedBlocks", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &iNXListenToSolidBlocksClient{stream}
+	x := &iNXListenToAcceptedBlocksClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -309,29 +163,29 @@ func (c *iNXClient) ListenToSolidBlocks(ctx context.Context, in *NoParams, opts 
 	return x, nil
 }
 
-type INX_ListenToSolidBlocksClient interface {
-	Recv() (*BlockMetadata, error)
+type INX_ListenToAcceptedBlocksClient interface {
+	Recv() (*Block, error)
 	grpc.ClientStream
 }
 
-type iNXListenToSolidBlocksClient struct {
+type iNXListenToAcceptedBlocksClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNXListenToSolidBlocksClient) Recv() (*BlockMetadata, error) {
-	m := new(BlockMetadata)
+func (x *iNXListenToAcceptedBlocksClient) Recv() (*Block, error) {
+	m := new(Block)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *iNXClient) ListenToReferencedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToReferencedBlocksClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[7], "/inx.INX/ListenToReferencedBlocks", opts...)
+func (c *iNXClient) ListenToConfirmedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToConfirmedBlocksClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[3], "/inx.INX/ListenToConfirmedBlocks", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &iNXListenToReferencedBlocksClient{stream}
+	x := &iNXListenToConfirmedBlocksClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -341,17 +195,17 @@ func (c *iNXClient) ListenToReferencedBlocks(ctx context.Context, in *NoParams, 
 	return x, nil
 }
 
-type INX_ListenToReferencedBlocksClient interface {
-	Recv() (*BlockMetadata, error)
+type INX_ListenToConfirmedBlocksClient interface {
+	Recv() (*Block, error)
 	grpc.ClientStream
 }
 
-type iNXListenToReferencedBlocksClient struct {
+type iNXListenToConfirmedBlocksClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNXListenToReferencedBlocksClient) Recv() (*BlockMetadata, error) {
-	m := new(BlockMetadata)
+func (x *iNXListenToConfirmedBlocksClient) Recv() (*Block, error) {
+	m := new(Block)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -385,81 +239,8 @@ func (c *iNXClient) ReadBlockMetadata(ctx context.Context, in *BlockId, opts ...
 	return out, nil
 }
 
-func (c *iNXClient) RequestTips(ctx context.Context, in *TipsRequest, opts ...grpc.CallOption) (*TipsResponse, error) {
-	out := new(TipsResponse)
-	err := c.cc.Invoke(ctx, "/inx.INX/RequestTips", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *iNXClient) ListenToTipsMetrics(ctx context.Context, in *TipsMetricRequest, opts ...grpc.CallOption) (INX_ListenToTipsMetricsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[8], "/inx.INX/ListenToTipsMetrics", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &iNXListenToTipsMetricsClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type INX_ListenToTipsMetricsClient interface {
-	Recv() (*TipsMetric, error)
-	grpc.ClientStream
-}
-
-type iNXListenToTipsMetricsClient struct {
-	grpc.ClientStream
-}
-
-func (x *iNXListenToTipsMetricsClient) Recv() (*TipsMetric, error) {
-	m := new(TipsMetric)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *iNXClient) ListenToTipScoreUpdates(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToTipScoreUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[9], "/inx.INX/ListenToTipScoreUpdates", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &iNXListenToTipScoreUpdatesClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type INX_ListenToTipScoreUpdatesClient interface {
-	Recv() (*BlockMetadata, error)
-	grpc.ClientStream
-}
-
-type iNXListenToTipScoreUpdatesClient struct {
-	grpc.ClientStream
-}
-
-func (x *iNXListenToTipScoreUpdatesClient) Recv() (*BlockMetadata, error) {
-	m := new(BlockMetadata)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 func (c *iNXClient) ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[10], "/inx.INX/ReadUnspentOutputs", opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[4], "/inx.INX/ReadUnspentOutputs", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -490,8 +271,8 @@ func (x *iNXReadUnspentOutputsClient) Recv() (*UnspentOutput, error) {
 	return m, nil
 }
 
-func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *CommitmentRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[11], "/inx.INX/ListenToLedgerUpdates", opts...)
+func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[5], "/inx.INX/ListenToLedgerUpdates", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -566,31 +347,22 @@ type INXServer interface {
 	ReadNodeStatus(context.Context, *NoParams) (*NodeStatus, error)
 	ListenToNodeStatus(*NodeStatusRequest, INX_ListenToNodeStatusServer) error
 	ReadNodeConfiguration(context.Context, *NoParams) (*NodeConfiguration, error)
-	ReadProtocolParameters(context.Context, *CommitmentRequest) (*RawProtocolParameters, error)
 	// Commitments
 	ReadCommitment(context.Context, *CommitmentRequest) (*Commitment, error)
-	ListenToLatestCommitments(*NoParams, INX_ListenToLatestCommitmentsServer) error
-	ListenToConfirmedCommitments(*CommitmentRangeRequest, INX_ListenToConfirmedCommitmentsServer) error
-	ReadCommitmentCone(*CommitmentRequest, INX_ReadCommitmentConeServer) error
-	ReadCommitmentConeMetadata(*CommitmentRequest, INX_ReadCommitmentConeMetadataServer) error
 	// Blocks
 	ListenToBlocks(*NoParams, INX_ListenToBlocksServer) error
-	ListenToSolidBlocks(*NoParams, INX_ListenToSolidBlocksServer) error
-	ListenToReferencedBlocks(*NoParams, INX_ListenToReferencedBlocksServer) error
+	ListenToAcceptedBlocks(*NoParams, INX_ListenToAcceptedBlocksServer) error
+	ListenToConfirmedBlocks(*NoParams, INX_ListenToConfirmedBlocksServer) error
 	SubmitBlock(context.Context, *RawBlock) (*BlockId, error)
 	ReadBlock(context.Context, *BlockId) (*RawBlock, error)
 	ReadBlockMetadata(context.Context, *BlockId) (*BlockMetadata, error)
-	// Tips
-	RequestTips(context.Context, *TipsRequest) (*TipsResponse, error)
-	ListenToTipsMetrics(*TipsMetricRequest, INX_ListenToTipsMetricsServer) error
-	ListenToTipScoreUpdates(*NoParams, INX_ListenToTipScoreUpdatesServer) error
 	// UTXO
 	ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error
 	// A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
 	// It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
-	// `BEGIN` and `END` will also be sent for milestones that did not mutate the ledger.
+	// `BEGIN` and `END` will also be sent for slots that did not mutate the ledger.
 	// The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
-	ListenToLedgerUpdates(*CommitmentRangeRequest, INX_ListenToLedgerUpdatesServer) error
+	ListenToLedgerUpdates(*SlotRangeRequest, INX_ListenToLedgerUpdatesServer) error
 	ReadOutput(context.Context, *OutputId) (*OutputResponse, error)
 	// REST API
 	RegisterAPIRoute(context.Context, *APIRouteRequest) (*NoParams, error)
@@ -612,32 +384,17 @@ func (UnimplementedINXServer) ListenToNodeStatus(*NodeStatusRequest, INX_ListenT
 func (UnimplementedINXServer) ReadNodeConfiguration(context.Context, *NoParams) (*NodeConfiguration, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadNodeConfiguration not implemented")
 }
-func (UnimplementedINXServer) ReadProtocolParameters(context.Context, *CommitmentRequest) (*RawProtocolParameters, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadProtocolParameters not implemented")
-}
 func (UnimplementedINXServer) ReadCommitment(context.Context, *CommitmentRequest) (*Commitment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadCommitment not implemented")
-}
-func (UnimplementedINXServer) ListenToLatestCommitments(*NoParams, INX_ListenToLatestCommitmentsServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToLatestCommitments not implemented")
-}
-func (UnimplementedINXServer) ListenToConfirmedCommitments(*CommitmentRangeRequest, INX_ListenToConfirmedCommitmentsServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToConfirmedCommitments not implemented")
-}
-func (UnimplementedINXServer) ReadCommitmentCone(*CommitmentRequest, INX_ReadCommitmentConeServer) error {
-	return status.Errorf(codes.Unimplemented, "method ReadCommitmentCone not implemented")
-}
-func (UnimplementedINXServer) ReadCommitmentConeMetadata(*CommitmentRequest, INX_ReadCommitmentConeMetadataServer) error {
-	return status.Errorf(codes.Unimplemented, "method ReadCommitmentConeMetadata not implemented")
 }
 func (UnimplementedINXServer) ListenToBlocks(*NoParams, INX_ListenToBlocksServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToBlocks not implemented")
 }
-func (UnimplementedINXServer) ListenToSolidBlocks(*NoParams, INX_ListenToSolidBlocksServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToSolidBlocks not implemented")
+func (UnimplementedINXServer) ListenToAcceptedBlocks(*NoParams, INX_ListenToAcceptedBlocksServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListenToAcceptedBlocks not implemented")
 }
-func (UnimplementedINXServer) ListenToReferencedBlocks(*NoParams, INX_ListenToReferencedBlocksServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToReferencedBlocks not implemented")
+func (UnimplementedINXServer) ListenToConfirmedBlocks(*NoParams, INX_ListenToConfirmedBlocksServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListenToConfirmedBlocks not implemented")
 }
 func (UnimplementedINXServer) SubmitBlock(context.Context, *RawBlock) (*BlockId, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitBlock not implemented")
@@ -648,19 +405,10 @@ func (UnimplementedINXServer) ReadBlock(context.Context, *BlockId) (*RawBlock, e
 func (UnimplementedINXServer) ReadBlockMetadata(context.Context, *BlockId) (*BlockMetadata, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadBlockMetadata not implemented")
 }
-func (UnimplementedINXServer) RequestTips(context.Context, *TipsRequest) (*TipsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RequestTips not implemented")
-}
-func (UnimplementedINXServer) ListenToTipsMetrics(*TipsMetricRequest, INX_ListenToTipsMetricsServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToTipsMetrics not implemented")
-}
-func (UnimplementedINXServer) ListenToTipScoreUpdates(*NoParams, INX_ListenToTipScoreUpdatesServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToTipScoreUpdates not implemented")
-}
 func (UnimplementedINXServer) ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReadUnspentOutputs not implemented")
 }
-func (UnimplementedINXServer) ListenToLedgerUpdates(*CommitmentRangeRequest, INX_ListenToLedgerUpdatesServer) error {
+func (UnimplementedINXServer) ListenToLedgerUpdates(*SlotRangeRequest, INX_ListenToLedgerUpdatesServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToLedgerUpdates not implemented")
 }
 func (UnimplementedINXServer) ReadOutput(context.Context, *OutputId) (*OutputResponse, error) {
@@ -745,24 +493,6 @@ func _INX_ReadNodeConfiguration_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _INX_ReadProtocolParameters_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CommitmentRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(INXServer).ReadProtocolParameters(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/inx.INX/ReadProtocolParameters",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(INXServer).ReadProtocolParameters(ctx, req.(*CommitmentRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _INX_ReadCommitment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CommitmentRequest)
 	if err := dec(in); err != nil {
@@ -779,90 +509,6 @@ func _INX_ReadCommitment_Handler(srv interface{}, ctx context.Context, dec func(
 		return srv.(INXServer).ReadCommitment(ctx, req.(*CommitmentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
-}
-
-func _INX_ListenToLatestCommitments_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(NoParams)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(INXServer).ListenToLatestCommitments(m, &iNXListenToLatestCommitmentsServer{stream})
-}
-
-type INX_ListenToLatestCommitmentsServer interface {
-	Send(*Commitment) error
-	grpc.ServerStream
-}
-
-type iNXListenToLatestCommitmentsServer struct {
-	grpc.ServerStream
-}
-
-func (x *iNXListenToLatestCommitmentsServer) Send(m *Commitment) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _INX_ListenToConfirmedCommitments_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(CommitmentRangeRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(INXServer).ListenToConfirmedCommitments(m, &iNXListenToConfirmedCommitmentsServer{stream})
-}
-
-type INX_ListenToConfirmedCommitmentsServer interface {
-	Send(*CommitmentAndProtocolParameters) error
-	grpc.ServerStream
-}
-
-type iNXListenToConfirmedCommitmentsServer struct {
-	grpc.ServerStream
-}
-
-func (x *iNXListenToConfirmedCommitmentsServer) Send(m *CommitmentAndProtocolParameters) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _INX_ReadCommitmentCone_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(CommitmentRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(INXServer).ReadCommitmentCone(m, &iNXReadCommitmentConeServer{stream})
-}
-
-type INX_ReadCommitmentConeServer interface {
-	Send(*BlockWithMetadata) error
-	grpc.ServerStream
-}
-
-type iNXReadCommitmentConeServer struct {
-	grpc.ServerStream
-}
-
-func (x *iNXReadCommitmentConeServer) Send(m *BlockWithMetadata) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _INX_ReadCommitmentConeMetadata_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(CommitmentRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(INXServer).ReadCommitmentConeMetadata(m, &iNXReadCommitmentConeMetadataServer{stream})
-}
-
-type INX_ReadCommitmentConeMetadataServer interface {
-	Send(*BlockMetadata) error
-	grpc.ServerStream
-}
-
-type iNXReadCommitmentConeMetadataServer struct {
-	grpc.ServerStream
-}
-
-func (x *iNXReadCommitmentConeMetadataServer) Send(m *BlockMetadata) error {
-	return x.ServerStream.SendMsg(m)
 }
 
 func _INX_ListenToBlocks_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -886,45 +532,45 @@ func (x *iNXListenToBlocksServer) Send(m *Block) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _INX_ListenToSolidBlocks_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _INX_ListenToAcceptedBlocks_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(NoParams)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(INXServer).ListenToSolidBlocks(m, &iNXListenToSolidBlocksServer{stream})
+	return srv.(INXServer).ListenToAcceptedBlocks(m, &iNXListenToAcceptedBlocksServer{stream})
 }
 
-type INX_ListenToSolidBlocksServer interface {
-	Send(*BlockMetadata) error
+type INX_ListenToAcceptedBlocksServer interface {
+	Send(*Block) error
 	grpc.ServerStream
 }
 
-type iNXListenToSolidBlocksServer struct {
+type iNXListenToAcceptedBlocksServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNXListenToSolidBlocksServer) Send(m *BlockMetadata) error {
+func (x *iNXListenToAcceptedBlocksServer) Send(m *Block) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _INX_ListenToReferencedBlocks_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _INX_ListenToConfirmedBlocks_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(NoParams)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(INXServer).ListenToReferencedBlocks(m, &iNXListenToReferencedBlocksServer{stream})
+	return srv.(INXServer).ListenToConfirmedBlocks(m, &iNXListenToConfirmedBlocksServer{stream})
 }
 
-type INX_ListenToReferencedBlocksServer interface {
-	Send(*BlockMetadata) error
+type INX_ListenToConfirmedBlocksServer interface {
+	Send(*Block) error
 	grpc.ServerStream
 }
 
-type iNXListenToReferencedBlocksServer struct {
+type iNXListenToConfirmedBlocksServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNXListenToReferencedBlocksServer) Send(m *BlockMetadata) error {
+func (x *iNXListenToConfirmedBlocksServer) Send(m *Block) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -982,66 +628,6 @@ func _INX_ReadBlockMetadata_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
-func _INX_RequestTips_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TipsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(INXServer).RequestTips(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/inx.INX/RequestTips",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(INXServer).RequestTips(ctx, req.(*TipsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _INX_ListenToTipsMetrics_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(TipsMetricRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(INXServer).ListenToTipsMetrics(m, &iNXListenToTipsMetricsServer{stream})
-}
-
-type INX_ListenToTipsMetricsServer interface {
-	Send(*TipsMetric) error
-	grpc.ServerStream
-}
-
-type iNXListenToTipsMetricsServer struct {
-	grpc.ServerStream
-}
-
-func (x *iNXListenToTipsMetricsServer) Send(m *TipsMetric) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _INX_ListenToTipScoreUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(NoParams)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(INXServer).ListenToTipScoreUpdates(m, &iNXListenToTipScoreUpdatesServer{stream})
-}
-
-type INX_ListenToTipScoreUpdatesServer interface {
-	Send(*BlockMetadata) error
-	grpc.ServerStream
-}
-
-type iNXListenToTipScoreUpdatesServer struct {
-	grpc.ServerStream
-}
-
-func (x *iNXListenToTipScoreUpdatesServer) Send(m *BlockMetadata) error {
-	return x.ServerStream.SendMsg(m)
-}
-
 func _INX_ReadUnspentOutputs_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(NoParams)
 	if err := stream.RecvMsg(m); err != nil {
@@ -1064,7 +650,7 @@ func (x *iNXReadUnspentOutputsServer) Send(m *UnspentOutput) error {
 }
 
 func _INX_ListenToLedgerUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(CommitmentRangeRequest)
+	m := new(SlotRangeRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -1172,10 +758,6 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _INX_ReadNodeConfiguration_Handler,
 		},
 		{
-			MethodName: "ReadProtocolParameters",
-			Handler:    _INX_ReadProtocolParameters_Handler,
-		},
-		{
 			MethodName: "ReadCommitment",
 			Handler:    _INX_ReadCommitment_Handler,
 		},
@@ -1190,10 +772,6 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReadBlockMetadata",
 			Handler:    _INX_ReadBlockMetadata_Handler,
-		},
-		{
-			MethodName: "RequestTips",
-			Handler:    _INX_RequestTips_Handler,
 		},
 		{
 			MethodName: "ReadOutput",
@@ -1219,48 +797,18 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "ListenToLatestCommitments",
-			Handler:       _INX_ListenToLatestCommitments_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "ListenToConfirmedCommitments",
-			Handler:       _INX_ListenToConfirmedCommitments_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "ReadCommitmentCone",
-			Handler:       _INX_ReadCommitmentCone_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "ReadCommitmentConeMetadata",
-			Handler:       _INX_ReadCommitmentConeMetadata_Handler,
-			ServerStreams: true,
-		},
-		{
 			StreamName:    "ListenToBlocks",
 			Handler:       _INX_ListenToBlocks_Handler,
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "ListenToSolidBlocks",
-			Handler:       _INX_ListenToSolidBlocks_Handler,
+			StreamName:    "ListenToAcceptedBlocks",
+			Handler:       _INX_ListenToAcceptedBlocks_Handler,
 			ServerStreams: true,
 		},
 		{
-			StreamName:    "ListenToReferencedBlocks",
-			Handler:       _INX_ListenToReferencedBlocks_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "ListenToTipsMetrics",
-			Handler:       _INX_ListenToTipsMetrics_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "ListenToTipScoreUpdates",
-			Handler:       _INX_ListenToTipScoreUpdates_Handler,
+			StreamName:    "ListenToConfirmedBlocks",
+			Handler:       _INX_ListenToConfirmedBlocks_Handler,
 			ServerStreams: true,
 		},
 		{

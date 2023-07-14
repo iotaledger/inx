@@ -64,11 +64,3 @@ func NewCommitmentId(commitmentID iotago.CommitmentID) *CommitmentId {
 
 	return id
 }
-
-func NewCommitmentInfo(commitmentID iotago.CommitmentID, index uint32, timestamp uint32) *CommitmentInfo {
-	return &CommitmentInfo{
-		CommitmentId:        NewCommitmentId(commitmentID),
-		CommitmentIndex:     index,
-		CommitmentTimestamp: timestamp,
-	}
-}

@@ -8,36 +8,26 @@ service INX {
   rpc ReadNodeStatus(NoParams) returns (NodeStatus);
   rpc ListenToNodeStatus(NodeStatusRequest) returns (stream NodeStatus);
   rpc ReadNodeConfiguration(NoParams) returns (NodeConfiguration);
-  rpc ReadProtocolParameters(CommitmentRequest) returns (RawProtocolParameters);
 
   // Commitments
   rpc ReadCommitment(CommitmentRequest) returns (Commitment);
-  rpc ListenToLatestCommitments(NoParams) returns (stream Commitment);
-  rpc ListenToConfirmedCommitments(CommitmentRangeRequest) returns (stream CommitmentAndProtocolParameters);
-  rpc ReadCommitmentCone(CommitmentRequest) returns (stream BlockWithMetadata);
-  rpc ReadCommitmentConeMetadata(CommitmentRequest) returns (stream BlockMetadata);
 
   // Blocks
   rpc ListenToBlocks(NoParams) returns (stream Block);
-  rpc ListenToSolidBlocks(NoParams) returns (stream BlockMetadata);
-  rpc ListenToReferencedBlocks(NoParams) returns (stream BlockMetadata);
+  rpc ListenToAcceptedBlocks(NoParams) returns (stream Block);
+  rpc ListenToConfirmedBlocks(NoParams) returns (stream Block);
   rpc SubmitBlock(RawBlock) returns (BlockId);
   rpc ReadBlock(BlockId) returns (RawBlock);
   rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
-
-  // Tips
-  rpc RequestTips(TipsRequest) returns (TipsResponse);
-  rpc ListenToTipsMetrics(TipsMetricRequest) returns (stream TipsMetric);
-  rpc ListenToTipScoreUpdates(NoParams) returns (stream BlockMetadata);
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
   
   // A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
   // It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
-  // `BEGIN` and `END` will also be sent for milestones that did not mutate the ledger.
+  // `BEGIN` and `END` will also be sent for slots that did not mutate the ledger.
   // The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
-  rpc ListenToLedgerUpdates(CommitmentRangeRequest) returns (stream LedgerUpdate);
+  rpc ListenToLedgerUpdates(SlotRangeRequest) returns (stream LedgerUpdate);
   rpc ReadOutput(OutputId) returns (OutputResponse);
 
   // REST API
@@ -51,7 +41,7 @@ message NoParams {}
 // Node
 message NodeConfiguration {
   BaseToken base_token = 1;
-  repeated uint32 supported_protocol_versions = 2;
+  repeated RawProtocolParameters protocol_parameters = 2;
 }
 
 message BaseToken {
@@ -67,13 +57,10 @@ message NodeStatus {
   bool is_healthy = 1;
   bool is_synced = 2;
   bool is_almost_synced = 3;
-  Commitment latest_commitment = 4;
-  Commitment confirmed_commitment = 5;
-  RawProtocolParameters current_protocol_parameters = 6;
-  uint32 tangle_pruning_index = 7;
-  uint32 commitment_pruning_index = 8;
-  uint32 ledger_pruning_index = 9;
-  uint32 ledger_index = 10;
+  uint64 last_accepted_block_slot = 4;
+  uint64 last_confirmed_block_slot = 5;
+  Commitment latest_commitment = 6;
+  uint64 latest_finalized_slot = 7;
 }
 
 message NodeStatusRequest {
@@ -82,7 +69,8 @@ message NodeStatusRequest {
 
 message RawProtocolParameters {
   uint32 protocol_version = 1;
-  bytes params = 2;
+  uint64 start_epoch = 2;
+  bytes params = 3;
 }
 
 // Commitments
@@ -95,28 +83,19 @@ message CommitmentId {
 }
 
 message CommitmentRequest {
-  uint32 commitment_index = 1;
+  uint64 commitment_index = 1;
   CommitmentId commitment_id = 2;
 }
 
-message CommitmentRangeRequest {
-  // start_slot_index is the initial slot to get. Use 0 to start from the current node status.
-  uint32 start_slot_index = 1;
-  // end_slot_index is the last slot to get (inclusive). Use 0 to keep getting new confirmed slots.
-  uint32 end_slot_index = 2;
-}
-
-message CommitmentInfo {
-  // Optional. This field can be missing for example if there are no milestones yet in a network.
-  CommitmentId commitment_id = 1;
-  uint32 commitment_index = 2;
-  // Optional. This field can be missing for example if there are no milestones yet in a network.
-  uint32 commitment_timestamp = 3;
+message SlotRangeRequest {
+  // start_slot is the initial slot to get. Use 0 to start from the current node status.
+  uint64 start_slot = 1;
+  // end_slot is the last slot to get (inclusive). Use 0 to keep getting new confirmed slots.
+  uint64 end_slot = 2;
 }
 
 message Commitment {
-  CommitmentInfo commitment_info = 1;
-  // Optional. This field can be missing for example if there are no milestones yet in a network.
+  CommitmentId commitment_id = 1;
   RawCommitment commitment = 2;
 }
 
@@ -146,35 +125,32 @@ message BlockWithMetadata {
 
 message BlockMetadata {
   BlockId block_id = 1;
-  repeated BlockId parents = 2;
-  bool solid = 3;
-  bool should_promote = 4;
-  bool should_reattach = 5;
-  uint32 referenced_by_milestone_index = 6;
-  uint32 milestone_index = 7;
-  enum LedgerInclusionState {
-    LEDGER_INCLUSION_STATE_NO_TRANSACTION = 0;
-    LEDGER_INCLUSION_STATE_INCLUDED = 1;
-    LEDGER_INCLUSION_STATE_CONFLICTING = 2;
-  }
-  LedgerInclusionState ledger_inclusion_state = 8;
-  enum ConflictReason {
-    CONFLICT_REASON_NONE = 0;
-    CONFLICT_REASON_INPUT_ALREADY_SPENT = 1;
-    CONFLICT_REASON_INPUT_ALREADY_SPENT_IN_THIS_MILESTONE = 2;
-    CONFLICT_REASON_INPUT_NOT_FOUND = 3;
-    CONFLICT_REASON_INPUT_OUTPUT_SUM_MISMATCH = 4;
-    CONFLICT_REASON_INVALID_SIGNATURE = 5;
-    CONFLICT_REASON_TIMELOCK_NOT_EXPIRED = 6;
-    CONFLICT_REASON_INVALID_NATIVE_TOKENS = 7;
-    CONFLICT_REASON_RETURN_AMOUNT_NOT_FULFILLED = 8;
-    CONFLICT_REASON_INVALID_INPUT_UNLOCK = 9;
-    CONFLICT_REASON_INVALID_INPUTS_COMMITMENT = 10;
-    CONFLICT_REASON_INVALID_SENDER = 11;
-    CONFLICT_REASON_INVALID_CHAIN_STATE_TRANSITION = 12;
-    CONFLICT_REASON_SEMANTIC_VALIDATION_FAILED = 255;
-  }
-  ConflictReason conflict_reason = 9;
+  bool accepted = 2;
+  bool confirmed = 3;
+  bool finalized = 4;
+//  enum LedgerInclusionState {
+//    LEDGER_INCLUSION_STATE_NO_TRANSACTION = 0;
+//    LEDGER_INCLUSION_STATE_INCLUDED = 1;
+//    LEDGER_INCLUSION_STATE_CONFLICTING = 2;
+//  }
+//  LedgerInclusionState ledger_inclusion_state = 8;
+//  enum ConflictReason {
+//    CONFLICT_REASON_NONE = 0;
+//    CONFLICT_REASON_INPUT_ALREADY_SPENT = 1;
+//    CONFLICT_REASON_INPUT_ALREADY_SPENT_IN_THIS_MILESTONE = 2;
+//    CONFLICT_REASON_INPUT_NOT_FOUND = 3;
+//    CONFLICT_REASON_INPUT_OUTPUT_SUM_MISMATCH = 4;
+//    CONFLICT_REASON_INVALID_SIGNATURE = 5;
+//    CONFLICT_REASON_TIMELOCK_NOT_EXPIRED = 6;
+//    CONFLICT_REASON_INVALID_NATIVE_TOKENS = 7;
+//    CONFLICT_REASON_RETURN_AMOUNT_NOT_FULFILLED = 8;
+//    CONFLICT_REASON_INVALID_INPUT_UNLOCK = 9;
+//    CONFLICT_REASON_INVALID_INPUTS_COMMITMENT = 10;
+//    CONFLICT_REASON_INVALID_SENDER = 11;
+//    CONFLICT_REASON_INVALID_CHAIN_STATE_TRANSITION = 12;
+//    CONFLICT_REASON_SEMANTIC_VALIDATION_FAILED = 255;
+//  }
+//  ConflictReason conflict_reason = 9;
 }
 
 // Tips
@@ -196,6 +172,8 @@ message TipsMetric {
   uint32 semi_lazy_pool_size = 2;
 }
 
+
+
 // UTXO
 message TransactionId {
   bytes id = 1;
@@ -206,7 +184,7 @@ message OutputId {
 }
 
 message OutputResponse {
-  uint32 ledger_index = 1;
+  CommitmentId latest_commitment_id = 1;
   oneof payload {
     LedgerOutput output = 2;
     LedgerSpent spent = 3;
@@ -214,7 +192,7 @@ message OutputResponse {
 }
 
 message UnspentOutput {
-  uint32 ledgerIndex = 1;
+  CommitmentId latest_commitment_id = 1;
   LedgerOutput output = 2;
 }
 
@@ -225,21 +203,20 @@ message RawOutput {
 message LedgerOutput {
   OutputId output_id = 1;
   BlockId blockId = 2;
-  uint32 commitment_index_booked = 3;
-  uint32 timestamp_booked = 4;
+  uint64 slot_booked = 3;
+  uint64 slot_created = 4;
   RawOutput output = 5;
 }
 
 message LedgerSpent {
   LedgerOutput output = 1;
   TransactionId transaction_id_spent = 2;
-  uint32 commitment_index_spent = 3;
-  uint32 timestamp_spent = 4;
+  uint64 slot_spent = 3;
 }
 
 message LedgerUpdate {
   message Marker {
-    uint32 milestone_index = 1;
+    uint64 slot = 1;
     enum MarkerType {
       BEGIN = 0;
       END = 1;

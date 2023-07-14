@@ -17,7 +17,7 @@ func blockIDsFromSlice(slice []*BlockId) iotago.BlockIDs {
 
 // Block
 
-func WrapBlock(block *iotago.Block, api iotago.API) (*RawBlock, error) {
+func WrapBlock(block *iotago.ProtocolBlock, api iotago.API) (*RawBlock, error) {
 	bytes, err := api.Encode(block)
 	if err != nil {
 		return nil, err
@@ -28,8 +28,8 @@ func WrapBlock(block *iotago.Block, api iotago.API) (*RawBlock, error) {
 	}, nil
 }
 
-func (x *RawBlock) UnwrapBlock(api iotago.API, opts ...serix.Option) (*iotago.Block, error) {
-	block := &iotago.Block{}
+func (x *RawBlock) UnwrapBlock(api iotago.API, opts ...serix.Option) (*iotago.ProtocolBlock, error) {
+	block := new(iotago.ProtocolBlock)
 	if _, err := api.Decode(x.GetData(), block, opts...); err != nil {
 		return nil, err
 	}
@@ -49,29 +49,17 @@ func (x *Block) UnwrapBlockID() iotago.BlockID {
 	return x.GetBlockId().Unwrap()
 }
 
-func (x *Block) UnwrapBlock(api iotago.API, opts ...serix.Option) (*iotago.Block, error) {
+func (x *Block) UnwrapBlock(api iotago.API, opts ...serix.Option) (*iotago.ProtocolBlock, error) {
 	return x.GetBlock().UnwrapBlock(api, opts...)
 }
 
-func (x *Block) MustUnwrapBlock(api iotago.API, opts ...serix.Option) *iotago.Block {
+func (x *Block) MustUnwrapBlock(api iotago.API, opts ...serix.Option) *iotago.ProtocolBlock {
 	msg, err := x.GetBlock().UnwrapBlock(api, opts...)
 	if err != nil {
 		panic(err)
 	}
 
 	return msg
-}
-
-func (x *BlockMetadata) UnwrapBlockID() iotago.BlockID {
-	return x.GetBlockId().Unwrap()
-}
-
-func (x *BlockMetadata) UnwrapParents() iotago.BlockIDs {
-	return blockIDsFromSlice(x.GetParents())
-}
-
-func (x *BlockWithMetadata) UnwrapBlock(api iotago.API, opts ...serix.Option) (*iotago.Block, error) {
-	return x.GetBlock().UnwrapBlock(api, opts...)
 }
 
 // Ledger
@@ -147,7 +135,7 @@ func (x *LedgerSpent) UnwrapTransactionIDSpent() iotago.TransactionID {
 	return x.GetTransactionIdSpent().Unwrap()
 }
 
-// Milestones
+// Commitment
 
 func (x *CommitmentId) Unwrap() iotago.CommitmentID {
 	if len(x.GetId()) != iotago.CommitmentIDLength {
@@ -169,10 +157,4 @@ func (x *RawCommitment) Unwrap(api iotago.API, opts ...serix.Option) (*iotago.Co
 	}
 
 	return commitment, nil
-}
-
-// Tips
-
-func (x *TipsResponse) UnwrapTips() iotago.BlockIDs {
-	return blockIDsFromSlice(x.GetTips())
 }
