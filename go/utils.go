@@ -158,3 +158,27 @@ func (x *RawCommitment) Unwrap(api iotago.API, opts ...serix.Option) (*iotago.Co
 
 	return commitment, nil
 }
+
+// ProtocolParameters
+
+func WrapProtocolParameters(startEpoch iotago.EpochIndex, params iotago.ProtocolParameters) (*RawProtocolParameters, error) {
+	bytes, err := params.Bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	return &RawProtocolParameters{
+		ProtocolVersion: uint32(params.Version()),
+		StartEpoch:      uint64(startEpoch),
+		Params:          bytes,
+	}, nil
+}
+
+func (x *RawProtocolParameters) Unwrap() (iotago.EpochIndex, iotago.ProtocolParameters, error) {
+	params, _, err := iotago.ProtocolParametersFromBytes(x.Params)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return iotago.EpochIndex(x.StartEpoch), params, nil
+}
