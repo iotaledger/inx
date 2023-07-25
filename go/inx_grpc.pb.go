@@ -35,6 +35,8 @@ type INXClient interface {
 	SubmitBlock(ctx context.Context, in *RawBlock, opts ...grpc.CallOption) (*BlockId, error)
 	ReadBlock(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*RawBlock, error)
 	ReadBlockMetadata(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*BlockMetadata, error)
+	// Payload
+	SubmitPayload(ctx context.Context, in *RawPayload, opts ...grpc.CallOption) (*BlockId, error)
 	// UTXO
 	ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error)
 	// A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
@@ -239,6 +241,15 @@ func (c *iNXClient) ReadBlockMetadata(ctx context.Context, in *BlockId, opts ...
 	return out, nil
 }
 
+func (c *iNXClient) SubmitPayload(ctx context.Context, in *RawPayload, opts ...grpc.CallOption) (*BlockId, error) {
+	out := new(BlockId)
+	err := c.cc.Invoke(ctx, "/inx.INX/SubmitPayload", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *iNXClient) ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error) {
 	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[4], "/inx.INX/ReadUnspentOutputs", opts...)
 	if err != nil {
@@ -356,6 +367,8 @@ type INXServer interface {
 	SubmitBlock(context.Context, *RawBlock) (*BlockId, error)
 	ReadBlock(context.Context, *BlockId) (*RawBlock, error)
 	ReadBlockMetadata(context.Context, *BlockId) (*BlockMetadata, error)
+	// Payload
+	SubmitPayload(context.Context, *RawPayload) (*BlockId, error)
 	// UTXO
 	ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error
 	// A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
@@ -404,6 +417,9 @@ func (UnimplementedINXServer) ReadBlock(context.Context, *BlockId) (*RawBlock, e
 }
 func (UnimplementedINXServer) ReadBlockMetadata(context.Context, *BlockId) (*BlockMetadata, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadBlockMetadata not implemented")
+}
+func (UnimplementedINXServer) SubmitPayload(context.Context, *RawPayload) (*BlockId, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitPayload not implemented")
 }
 func (UnimplementedINXServer) ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReadUnspentOutputs not implemented")
@@ -628,6 +644,24 @@ func _INX_ReadBlockMetadata_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _INX_SubmitPayload_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RawPayload)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(INXServer).SubmitPayload(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/inx.INX/SubmitPayload",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(INXServer).SubmitPayload(ctx, req.(*RawPayload))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _INX_ReadUnspentOutputs_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(NoParams)
 	if err := stream.RecvMsg(m); err != nil {
@@ -772,6 +806,10 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReadBlockMetadata",
 			Handler:    _INX_ReadBlockMetadata_Handler,
+		},
+		{
+			MethodName: "SubmitPayload",
+			Handler:    _INX_SubmitPayload_Handler,
 		},
 		{
 			MethodName: "ReadOutput",

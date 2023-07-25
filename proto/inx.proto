@@ -20,6 +20,9 @@ service INX {
   rpc ReadBlock(BlockId) returns (RawBlock);
   rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
 
+  // Payload
+  rpc SubmitPayload(RawPayload) returns (BlockId);
+
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
   
@@ -152,6 +155,12 @@ message BlockMetadata {
 //  }
 //  ConflictReason conflict_reason = 9;
 }
+
+// Payload
+message RawPayload {
+  bytes data = 1;
+}
+
 
 // Tips
 message TipsRequest {
