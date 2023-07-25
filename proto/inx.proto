@@ -128,9 +128,7 @@ message BlockWithMetadata {
 
 message BlockMetadata {
   BlockId block_id = 1;
-  bool accepted = 2;
-  bool confirmed = 3;
-  bool finalized = 4;
+  uint32 block_status = 2;
 //  enum LedgerInclusionState {
 //    LEDGER_INCLUSION_STATE_NO_TRANSACTION = 0;
 //    LEDGER_INCLUSION_STATE_INCLUDED = 1;
