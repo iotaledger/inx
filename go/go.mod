@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/iotaledger/hive.go/ierrors v0.0.0-20230706083020-ef6c3248369d
 	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20230706083020-ef6c3248369d
-	github.com/iotaledger/iota.go/v4 v4.0.0-20230725120148-f6b95a8ad40a
+	github.com/iotaledger/iota.go/v4 v4.0.0-20230726065214-ae527d50eee7
 	google.golang.org/grpc v1.56.2
 	google.golang.org/protobuf v1.31.0
 )
