@@ -1,14 +1,14 @@
 name: Go
 
 on:
-   push:
-     paths-ignore: 
-       - 'rust/**'
-       - '**.md'
-   pull_request:
-     paths-ignore: 
-       - 'rust/**'
-       - '**.md'
+  push:
+    paths-ignore: 
+      - 'rust/**'
+      - '**.md'
+  pull_request:
+    paths-ignore: 
+      - 'rust/**'
+      - '**.md'
 
 defaults:
    run:
