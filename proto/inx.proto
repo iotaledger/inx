@@ -58,12 +58,11 @@ message BaseToken {
 
 message NodeStatus {
   bool is_healthy = 1;
-  bool is_synced = 2;
-  bool is_almost_synced = 3;
   uint64 last_accepted_block_slot = 4;
   uint64 last_confirmed_block_slot = 5;
   Commitment latest_commitment = 6;
   uint64 latest_finalized_slot = 7;
+  uint64 pruning_slot = 8;
 }
 
 message NodeStatusRequest {
