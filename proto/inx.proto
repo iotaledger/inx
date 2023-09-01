@@ -14,8 +14,8 @@ service INX {
 
   // Blocks
   rpc ListenToBlocks(NoParams) returns (stream Block);
-  rpc ListenToAcceptedBlocks(NoParams) returns (stream Block);
-  rpc ListenToConfirmedBlocks(NoParams) returns (stream Block);
+  rpc ListenToAcceptedBlocks(NoParams) returns (stream BlockMetadata);
+  rpc ListenToConfirmedBlocks(NoParams) returns (stream BlockMetadata);
   rpc SubmitBlock(RawBlock) returns (BlockId);
   rpc ReadBlock(BlockId) returns (RawBlock);
   rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
@@ -32,6 +32,7 @@ service INX {
   // The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
   rpc ListenToLedgerUpdates(SlotRangeRequest) returns (stream LedgerUpdate);
   rpc ReadOutput(OutputId) returns (OutputResponse);
+  rpc ReadOutputMetadata(OutputId) returns (OutputMetadata);
 
   // REST API
   rpc RegisterAPIRoute(APIRouteRequest) returns (NoParams);
@@ -269,6 +270,19 @@ message LedgerUpdate {
     LedgerOutput created = 3;
   }
 }
+
+// OutputMetadata
+message OutputMetadata {
+  BlockId block_id = 1;
+  TransactionId transaction_id = 2;
+  uint32 output_index = 3;
+  bool is_spent = 4;
+  CommitmentId commitment_id_spent = 5;
+  TransactionId transaction_id_spent = 6;
+  CommitmentId commitment_id_included = 7;
+  CommitmentId latest_commitment_id = 8;
+}
+
 
 // REST API
 message APIRouteRequest {
