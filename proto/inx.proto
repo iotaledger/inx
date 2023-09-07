@@ -11,8 +11,8 @@ service INX {
 
   // Commitments
   rpc ReadCommitment(CommitmentRequest) returns (Commitment);
-  rpc ListenToLatestCommitments(NoParams) returns (stream CommitmentInfo);
-  rpc ListenToFinalizedCommitments(NoParams) returns (stream CommitmentInfo);
+  rpc ListenToLatestCommitments(NoParams) returns (stream Commitment);
+  rpc ListenToFinalizedCommitments(NoParams) returns (stream Commitment);
 
   // Blocks
   rpc ListenToBlocks(NoParams) returns (stream Block);
@@ -102,11 +102,6 @@ message SlotRangeRequest {
 message Commitment {
   CommitmentId commitment_id = 1;
   RawCommitment commitment = 2;
-}
-
-message CommitmentInfo {
-  uint64 commitment_index = 1;
-  CommitmentId commitment_id = 2;
 }
 
 message CommitmentAndProtocolParameters {

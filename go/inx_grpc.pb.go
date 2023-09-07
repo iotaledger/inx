@@ -160,7 +160,7 @@ func (c *iNXClient) ListenToLatestCommitments(ctx context.Context, in *NoParams,
 }
 
 type INX_ListenToLatestCommitmentsClient interface {
-	Recv() (*CommitmentInfo, error)
+	Recv() (*Commitment, error)
 	grpc.ClientStream
 }
 
@@ -168,8 +168,8 @@ type iNXListenToLatestCommitmentsClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNXListenToLatestCommitmentsClient) Recv() (*CommitmentInfo, error) {
-	m := new(CommitmentInfo)
+func (x *iNXListenToLatestCommitmentsClient) Recv() (*Commitment, error) {
+	m := new(Commitment)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -192,7 +192,7 @@ func (c *iNXClient) ListenToFinalizedCommitments(ctx context.Context, in *NoPara
 }
 
 type INX_ListenToFinalizedCommitmentsClient interface {
-	Recv() (*CommitmentInfo, error)
+	Recv() (*Commitment, error)
 	grpc.ClientStream
 }
 
@@ -200,8 +200,8 @@ type iNXListenToFinalizedCommitmentsClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNXListenToFinalizedCommitmentsClient) Recv() (*CommitmentInfo, error) {
-	m := new(CommitmentInfo)
+func (x *iNXListenToFinalizedCommitmentsClient) Recv() (*Commitment, error) {
+	m := new(Commitment)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -647,7 +647,7 @@ func _INX_ListenToLatestCommitments_Handler(srv interface{}, stream grpc.ServerS
 }
 
 type INX_ListenToLatestCommitmentsServer interface {
-	Send(*CommitmentInfo) error
+	Send(*Commitment) error
 	grpc.ServerStream
 }
 
@@ -655,7 +655,7 @@ type iNXListenToLatestCommitmentsServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNXListenToLatestCommitmentsServer) Send(m *CommitmentInfo) error {
+func (x *iNXListenToLatestCommitmentsServer) Send(m *Commitment) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -668,7 +668,7 @@ func _INX_ListenToFinalizedCommitments_Handler(srv interface{}, stream grpc.Serv
 }
 
 type INX_ListenToFinalizedCommitmentsServer interface {
-	Send(*CommitmentInfo) error
+	Send(*Commitment) error
 	grpc.ServerStream
 }
 
@@ -676,7 +676,7 @@ type iNXListenToFinalizedCommitmentsServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNXListenToFinalizedCommitmentsServer) Send(m *CommitmentInfo) error {
+func (x *iNXListenToFinalizedCommitmentsServer) Send(m *Commitment) error {
 	return x.ServerStream.SendMsg(m)
 }
 
