@@ -65,7 +65,7 @@ message NodeStatus {
   uint64 last_confirmed_block_slot = 5;
   Commitment latest_commitment = 6;
   Commitment latest_finalized_commitment = 7;
-  uint64 pruning_slot = 8;
+  uint64 pruning_epoch = 8;
 }
 
 message NodeStatusRequest {
