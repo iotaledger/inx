@@ -11,8 +11,6 @@ service INX {
 
   // Commitments
   rpc ReadCommitment(CommitmentRequest) returns (Commitment);
-  rpc ListenToLatestCommitments(NoParams) returns (stream Commitment);
-  rpc ListenToFinalizedCommitments(NoParams) returns (stream Commitment);
 
   // Blocks
   rpc ListenToBlocks(NoParams) returns (stream Block);
@@ -64,7 +62,7 @@ message NodeStatus {
   uint64 last_accepted_block_slot = 4;
   uint64 last_confirmed_block_slot = 5;
   Commitment latest_commitment = 6;
-  Commitment latest_finalized_commitment = 7;
+  CommitmentId latest_finalized_commitment_id = 7;
   uint64 pruning_epoch = 8;
 }
 

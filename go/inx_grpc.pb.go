@@ -19,26 +19,24 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	INX_ReadNodeStatus_FullMethodName               = "/inx.INX/ReadNodeStatus"
-	INX_ListenToNodeStatus_FullMethodName           = "/inx.INX/ListenToNodeStatus"
-	INX_ReadNodeConfiguration_FullMethodName        = "/inx.INX/ReadNodeConfiguration"
-	INX_ReadCommitment_FullMethodName               = "/inx.INX/ReadCommitment"
-	INX_ListenToLatestCommitments_FullMethodName    = "/inx.INX/ListenToLatestCommitments"
-	INX_ListenToFinalizedCommitments_FullMethodName = "/inx.INX/ListenToFinalizedCommitments"
-	INX_ListenToBlocks_FullMethodName               = "/inx.INX/ListenToBlocks"
-	INX_ListenToAcceptedBlocks_FullMethodName       = "/inx.INX/ListenToAcceptedBlocks"
-	INX_ListenToConfirmedBlocks_FullMethodName      = "/inx.INX/ListenToConfirmedBlocks"
-	INX_SubmitBlock_FullMethodName                  = "/inx.INX/SubmitBlock"
-	INX_ReadBlock_FullMethodName                    = "/inx.INX/ReadBlock"
-	INX_ReadBlockMetadata_FullMethodName            = "/inx.INX/ReadBlockMetadata"
-	INX_SubmitPayload_FullMethodName                = "/inx.INX/SubmitPayload"
-	INX_ReadUnspentOutputs_FullMethodName           = "/inx.INX/ReadUnspentOutputs"
-	INX_ListenToLedgerUpdates_FullMethodName        = "/inx.INX/ListenToLedgerUpdates"
-	INX_ReadOutput_FullMethodName                   = "/inx.INX/ReadOutput"
-	INX_ReadOutputMetadata_FullMethodName           = "/inx.INX/ReadOutputMetadata"
-	INX_RegisterAPIRoute_FullMethodName             = "/inx.INX/RegisterAPIRoute"
-	INX_UnregisterAPIRoute_FullMethodName           = "/inx.INX/UnregisterAPIRoute"
-	INX_PerformAPIRequest_FullMethodName            = "/inx.INX/PerformAPIRequest"
+	INX_ReadNodeStatus_FullMethodName          = "/inx.INX/ReadNodeStatus"
+	INX_ListenToNodeStatus_FullMethodName      = "/inx.INX/ListenToNodeStatus"
+	INX_ReadNodeConfiguration_FullMethodName   = "/inx.INX/ReadNodeConfiguration"
+	INX_ReadCommitment_FullMethodName          = "/inx.INX/ReadCommitment"
+	INX_ListenToBlocks_FullMethodName          = "/inx.INX/ListenToBlocks"
+	INX_ListenToAcceptedBlocks_FullMethodName  = "/inx.INX/ListenToAcceptedBlocks"
+	INX_ListenToConfirmedBlocks_FullMethodName = "/inx.INX/ListenToConfirmedBlocks"
+	INX_SubmitBlock_FullMethodName             = "/inx.INX/SubmitBlock"
+	INX_ReadBlock_FullMethodName               = "/inx.INX/ReadBlock"
+	INX_ReadBlockMetadata_FullMethodName       = "/inx.INX/ReadBlockMetadata"
+	INX_SubmitPayload_FullMethodName           = "/inx.INX/SubmitPayload"
+	INX_ReadUnspentOutputs_FullMethodName      = "/inx.INX/ReadUnspentOutputs"
+	INX_ListenToLedgerUpdates_FullMethodName   = "/inx.INX/ListenToLedgerUpdates"
+	INX_ReadOutput_FullMethodName              = "/inx.INX/ReadOutput"
+	INX_ReadOutputMetadata_FullMethodName      = "/inx.INX/ReadOutputMetadata"
+	INX_RegisterAPIRoute_FullMethodName        = "/inx.INX/RegisterAPIRoute"
+	INX_UnregisterAPIRoute_FullMethodName      = "/inx.INX/UnregisterAPIRoute"
+	INX_PerformAPIRequest_FullMethodName       = "/inx.INX/PerformAPIRequest"
 )
 
 // INXClient is the client API for INX service.
@@ -51,8 +49,6 @@ type INXClient interface {
 	ReadNodeConfiguration(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeConfiguration, error)
 	// Commitments
 	ReadCommitment(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (*Commitment, error)
-	ListenToLatestCommitments(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToLatestCommitmentsClient, error)
-	ListenToFinalizedCommitments(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToFinalizedCommitmentsClient, error)
 	// Blocks
 	ListenToBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToBlocksClient, error)
 	ListenToAcceptedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToAcceptedBlocksClient, error)
@@ -144,72 +140,8 @@ func (c *iNXClient) ReadCommitment(ctx context.Context, in *CommitmentRequest, o
 	return out, nil
 }
 
-func (c *iNXClient) ListenToLatestCommitments(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToLatestCommitmentsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[1], INX_ListenToLatestCommitments_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &iNXListenToLatestCommitmentsClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type INX_ListenToLatestCommitmentsClient interface {
-	Recv() (*Commitment, error)
-	grpc.ClientStream
-}
-
-type iNXListenToLatestCommitmentsClient struct {
-	grpc.ClientStream
-}
-
-func (x *iNXListenToLatestCommitmentsClient) Recv() (*Commitment, error) {
-	m := new(Commitment)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
-func (c *iNXClient) ListenToFinalizedCommitments(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToFinalizedCommitmentsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[2], INX_ListenToFinalizedCommitments_FullMethodName, opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &iNXListenToFinalizedCommitmentsClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type INX_ListenToFinalizedCommitmentsClient interface {
-	Recv() (*Commitment, error)
-	grpc.ClientStream
-}
-
-type iNXListenToFinalizedCommitmentsClient struct {
-	grpc.ClientStream
-}
-
-func (x *iNXListenToFinalizedCommitmentsClient) Recv() (*Commitment, error) {
-	m := new(Commitment)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 func (c *iNXClient) ListenToBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToBlocksClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[3], INX_ListenToBlocks_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[1], INX_ListenToBlocks_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -241,7 +173,7 @@ func (x *iNXListenToBlocksClient) Recv() (*Block, error) {
 }
 
 func (c *iNXClient) ListenToAcceptedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToAcceptedBlocksClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[4], INX_ListenToAcceptedBlocks_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[2], INX_ListenToAcceptedBlocks_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -273,7 +205,7 @@ func (x *iNXListenToAcceptedBlocksClient) Recv() (*BlockMetadata, error) {
 }
 
 func (c *iNXClient) ListenToConfirmedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToConfirmedBlocksClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[5], INX_ListenToConfirmedBlocks_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[3], INX_ListenToConfirmedBlocks_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -341,7 +273,7 @@ func (c *iNXClient) SubmitPayload(ctx context.Context, in *RawPayload, opts ...g
 }
 
 func (c *iNXClient) ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[6], INX_ReadUnspentOutputs_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[4], INX_ReadUnspentOutputs_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -373,7 +305,7 @@ func (x *iNXReadUnspentOutputsClient) Recv() (*UnspentOutput, error) {
 }
 
 func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[7], INX_ListenToLedgerUpdates_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[5], INX_ListenToLedgerUpdates_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -459,8 +391,6 @@ type INXServer interface {
 	ReadNodeConfiguration(context.Context, *NoParams) (*NodeConfiguration, error)
 	// Commitments
 	ReadCommitment(context.Context, *CommitmentRequest) (*Commitment, error)
-	ListenToLatestCommitments(*NoParams, INX_ListenToLatestCommitmentsServer) error
-	ListenToFinalizedCommitments(*NoParams, INX_ListenToFinalizedCommitmentsServer) error
 	// Blocks
 	ListenToBlocks(*NoParams, INX_ListenToBlocksServer) error
 	ListenToAcceptedBlocks(*NoParams, INX_ListenToAcceptedBlocksServer) error
@@ -501,12 +431,6 @@ func (UnimplementedINXServer) ReadNodeConfiguration(context.Context, *NoParams) 
 }
 func (UnimplementedINXServer) ReadCommitment(context.Context, *CommitmentRequest) (*Commitment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadCommitment not implemented")
-}
-func (UnimplementedINXServer) ListenToLatestCommitments(*NoParams, INX_ListenToLatestCommitmentsServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToLatestCommitments not implemented")
-}
-func (UnimplementedINXServer) ListenToFinalizedCommitments(*NoParams, INX_ListenToFinalizedCommitmentsServer) error {
-	return status.Errorf(codes.Unimplemented, "method ListenToFinalizedCommitments not implemented")
 }
 func (UnimplementedINXServer) ListenToBlocks(*NoParams, INX_ListenToBlocksServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToBlocks not implemented")
@@ -636,48 +560,6 @@ func _INX_ReadCommitment_Handler(srv interface{}, ctx context.Context, dec func(
 		return srv.(INXServer).ReadCommitment(ctx, req.(*CommitmentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
-}
-
-func _INX_ListenToLatestCommitments_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(NoParams)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(INXServer).ListenToLatestCommitments(m, &iNXListenToLatestCommitmentsServer{stream})
-}
-
-type INX_ListenToLatestCommitmentsServer interface {
-	Send(*Commitment) error
-	grpc.ServerStream
-}
-
-type iNXListenToLatestCommitmentsServer struct {
-	grpc.ServerStream
-}
-
-func (x *iNXListenToLatestCommitmentsServer) Send(m *Commitment) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func _INX_ListenToFinalizedCommitments_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(NoParams)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(INXServer).ListenToFinalizedCommitments(m, &iNXListenToFinalizedCommitmentsServer{stream})
-}
-
-type INX_ListenToFinalizedCommitmentsServer interface {
-	Send(*Commitment) error
-	grpc.ServerStream
-}
-
-type iNXListenToFinalizedCommitmentsServer struct {
-	grpc.ServerStream
-}
-
-func (x *iNXListenToFinalizedCommitmentsServer) Send(m *Commitment) error {
-	return x.ServerStream.SendMsg(m)
 }
 
 func _INX_ListenToBlocks_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -1007,16 +889,6 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ListenToNodeStatus",
 			Handler:       _INX_ListenToNodeStatus_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "ListenToLatestCommitments",
-			Handler:       _INX_ListenToLatestCommitments_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "ListenToFinalizedCommitments",
-			Handler:       _INX_ListenToFinalizedCommitments_Handler,
 			ServerStreams: true,
 		},
 		{
