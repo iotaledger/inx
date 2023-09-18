@@ -33,7 +33,6 @@ const (
 	INX_ReadUnspentOutputs_FullMethodName      = "/inx.INX/ReadUnspentOutputs"
 	INX_ListenToLedgerUpdates_FullMethodName   = "/inx.INX/ListenToLedgerUpdates"
 	INX_ReadOutput_FullMethodName              = "/inx.INX/ReadOutput"
-	INX_ReadOutputMetadata_FullMethodName      = "/inx.INX/ReadOutputMetadata"
 	INX_RegisterAPIRoute_FullMethodName        = "/inx.INX/RegisterAPIRoute"
 	INX_UnregisterAPIRoute_FullMethodName      = "/inx.INX/UnregisterAPIRoute"
 	INX_PerformAPIRequest_FullMethodName       = "/inx.INX/PerformAPIRequest"
@@ -66,7 +65,6 @@ type INXClient interface {
 	// The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
 	ListenToLedgerUpdates(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
 	ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputResponse, error)
-	ReadOutputMetadata(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputMetadata, error)
 	// REST API
 	RegisterAPIRoute(ctx context.Context, in *APIRouteRequest, opts ...grpc.CallOption) (*NoParams, error)
 	UnregisterAPIRoute(ctx context.Context, in *APIRouteRequest, opts ...grpc.CallOption) (*NoParams, error)
@@ -345,15 +343,6 @@ func (c *iNXClient) ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.C
 	return out, nil
 }
 
-func (c *iNXClient) ReadOutputMetadata(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputMetadata, error) {
-	out := new(OutputMetadata)
-	err := c.cc.Invoke(ctx, INX_ReadOutputMetadata_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *iNXClient) RegisterAPIRoute(ctx context.Context, in *APIRouteRequest, opts ...grpc.CallOption) (*NoParams, error) {
 	out := new(NoParams)
 	err := c.cc.Invoke(ctx, INX_RegisterAPIRoute_FullMethodName, in, out, opts...)
@@ -408,7 +397,6 @@ type INXServer interface {
 	// The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
 	ListenToLedgerUpdates(*SlotRangeRequest, INX_ListenToLedgerUpdatesServer) error
 	ReadOutput(context.Context, *OutputId) (*OutputResponse, error)
-	ReadOutputMetadata(context.Context, *OutputId) (*OutputMetadata, error)
 	// REST API
 	RegisterAPIRoute(context.Context, *APIRouteRequest) (*NoParams, error)
 	UnregisterAPIRoute(context.Context, *APIRouteRequest) (*NoParams, error)
@@ -461,9 +449,6 @@ func (UnimplementedINXServer) ListenToLedgerUpdates(*SlotRangeRequest, INX_Liste
 }
 func (UnimplementedINXServer) ReadOutput(context.Context, *OutputId) (*OutputResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadOutput not implemented")
-}
-func (UnimplementedINXServer) ReadOutputMetadata(context.Context, *OutputId) (*OutputMetadata, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReadOutputMetadata not implemented")
 }
 func (UnimplementedINXServer) RegisterAPIRoute(context.Context, *APIRouteRequest) (*NoParams, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterAPIRoute not implemented")
@@ -757,24 +742,6 @@ func _INX_ReadOutput_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _INX_ReadOutputMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OutputId)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(INXServer).ReadOutputMetadata(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: INX_ReadOutputMetadata_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(INXServer).ReadOutputMetadata(ctx, req.(*OutputId))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _INX_RegisterAPIRoute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(APIRouteRequest)
 	if err := dec(in); err != nil {
@@ -867,10 +834,6 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReadOutput",
 			Handler:    _INX_ReadOutput_Handler,
-		},
-		{
-			MethodName: "ReadOutputMetadata",
-			Handler:    _INX_ReadOutputMetadata_Handler,
 		},
 		{
 			MethodName: "RegisterAPIRoute",
