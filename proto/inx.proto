@@ -14,8 +14,8 @@ service INX {
 
   // Blocks
   rpc ListenToBlocks(NoParams) returns (stream Block);
-  rpc ListenToAcceptedBlocks(NoParams) returns (stream Block);
-  rpc ListenToConfirmedBlocks(NoParams) returns (stream Block);
+  rpc ListenToAcceptedBlocks(NoParams) returns (stream BlockMetadata);
+  rpc ListenToConfirmedBlocks(NoParams) returns (stream BlockMetadata);
   rpc SubmitBlock(RawBlock) returns (BlockId);
   rpc ReadBlock(BlockId) returns (RawBlock);
   rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
@@ -61,8 +61,8 @@ message NodeStatus {
   uint64 last_accepted_block_slot = 4;
   uint64 last_confirmed_block_slot = 5;
   Commitment latest_commitment = 6;
-  uint64 latest_finalized_slot = 7;
-  uint64 pruning_slot = 8;
+  CommitmentId latest_finalized_commitment_id = 7;
+  uint64 pruning_epoch = 8;
 }
 
 message NodeStatusRequest {
@@ -242,13 +242,15 @@ message LedgerOutput {
   BlockId blockId = 2;
   uint64 slot_booked = 3;
   uint64 slot_created = 4;
-  RawOutput output = 5;
+  CommitmentId commitment_id_included = 5;
+  RawOutput output = 6;
 }
 
 message LedgerSpent {
   LedgerOutput output = 1;
-  TransactionId transaction_id_spent = 2;
-  uint64 slot_spent = 3;
+  CommitmentId commitment_id_spent = 2;
+  TransactionId transaction_id_spent = 3;
+  uint64 slot_spent = 4;
 }
 
 message LedgerUpdate {
@@ -269,6 +271,7 @@ message LedgerUpdate {
     LedgerOutput created = 3;
   }
 }
+
 
 // REST API
 message APIRouteRequest {

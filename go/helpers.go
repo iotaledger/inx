@@ -64,3 +64,15 @@ func NewCommitmentId(commitmentID iotago.CommitmentID) *CommitmentId {
 
 	return id
 }
+
+func NewCommitmentWithBytes(commitmentID iotago.CommitmentID, data []byte) *Commitment {
+	c := &Commitment{
+		CommitmentId: NewCommitmentId(commitmentID),
+		Commitment: &RawCommitment{
+			Data: make([]byte, len(data)),
+		},
+	}
+	copy(c.Commitment.Data, data)
+
+	return c
+}
