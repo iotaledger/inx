@@ -185,11 +185,6 @@ message BlockMetadata {
   TransactionFailureReason tx_failure_reason = 5;
 }
 
-// Payload
-message RawPayload {
-  bytes data = 1;
-}
-
 // Tips
 message TipsRequest {
   uint32 count = 1;

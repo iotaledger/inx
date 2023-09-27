@@ -2,6 +2,7 @@ package inx
 
 import (
 	"github.com/iotaledger/hive.go/ierrors"
+	"github.com/iotaledger/hive.go/lo"
 	"github.com/iotaledger/hive.go/serializer/v2/serix"
 	iotago "github.com/iotaledger/iota.go/v4"
 	"github.com/iotaledger/iota.go/v4/nodeclient/apimodels"
@@ -18,8 +19,8 @@ func blockIDsFromSlice(slice []*BlockId) iotago.BlockIDs {
 
 // Block
 
-func WrapBlock(block *iotago.ProtocolBlock, api iotago.API) (*RawBlock, error) {
-	bytes, err := api.Encode(block)
+func WrapBlock(block *iotago.ProtocolBlock) (*RawBlock, error) {
+	bytes, err := block.API.Encode(block)
 	if err != nil {
 		return nil, err
 	}
@@ -29,13 +30,8 @@ func WrapBlock(block *iotago.ProtocolBlock, api iotago.API) (*RawBlock, error) {
 	}, nil
 }
 
-func (x *RawBlock) UnwrapBlock(api iotago.API, opts ...serix.Option) (*iotago.ProtocolBlock, error) {
-	block := new(iotago.ProtocolBlock)
-	if _, err := api.Decode(x.GetData(), block, opts...); err != nil {
-		return nil, err
-	}
-
-	return block, nil
+func (x *RawBlock) UnwrapBlock(apiProvider iotago.APIProvider) (*iotago.ProtocolBlock, error) {
+	return lo.DropCount(iotago.ProtocolBlockFromBytes(apiProvider)(x.GetData()))
 }
 
 func (x *BlockId) Unwrap() iotago.BlockID {
@@ -50,39 +46,17 @@ func (x *Block) UnwrapBlockID() iotago.BlockID {
 	return x.GetBlockId().Unwrap()
 }
 
-func (x *Block) UnwrapBlock(api iotago.API, opts ...serix.Option) (*iotago.ProtocolBlock, error) {
-	return x.GetBlock().UnwrapBlock(api, opts...)
+func (x *Block) UnwrapBlock(apiProvider iotago.APIProvider) (*iotago.ProtocolBlock, error) {
+	return x.GetBlock().UnwrapBlock(apiProvider)
 }
 
-func (x *Block) MustUnwrapBlock(api iotago.API, opts ...serix.Option) *iotago.ProtocolBlock {
-	msg, err := x.GetBlock().UnwrapBlock(api, opts...)
+func (x *Block) MustUnwrapBlock(apiProvider iotago.APIProvider) *iotago.ProtocolBlock {
+	msg, err := x.GetBlock().UnwrapBlock(apiProvider)
 	if err != nil {
 		panic(err)
 	}
 
 	return msg
-}
-
-// Payload
-
-func WrapPayload(block iotago.BlockPayload, api iotago.API) (*RawPayload, error) {
-	bytes, err := api.Encode(block)
-	if err != nil {
-		return nil, err
-	}
-
-	return &RawPayload{
-		Data: bytes,
-	}, nil
-}
-
-func (x *RawPayload) Unwrap(api iotago.API, opts ...serix.Option) (iotago.BlockPayload, error) {
-	var payload iotago.Payload
-	if _, err := api.Decode(x.GetData(), &payload, opts...); err != nil {
-		return nil, err
-	}
-
-	return payload, nil
 }
 
 // Ledger
