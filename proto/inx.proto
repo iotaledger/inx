@@ -20,8 +20,9 @@ service INX {
   rpc ReadBlock(BlockId) returns (RawBlock);
   rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
 
-  // Payload
-  rpc SubmitPayload(RawPayload) returns (BlockId);
+  // Tips
+  rpc RequestTips(TipsRequest) returns (TipsResponse);
+
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
@@ -189,27 +190,16 @@ message RawPayload {
   bytes data = 1;
 }
 
-
 // Tips
 message TipsRequest {
   uint32 count = 1;
-  bool allow_semiLazy = 2;
 }
 
 message TipsResponse {
-  repeated BlockId tips = 1;
+  repeated BlockId strong_tips = 1;
+  repeated BlockId weak_tips = 2;
+  repeated BlockId shallow_like_tips = 3;
 }
-
-message TipsMetricRequest {
-  uint32 interval_in_milliseconds = 1;
-}
-
-message TipsMetric {
-  uint32 non_lazy_pool_size = 1;
-  uint32 semi_lazy_pool_size = 2;
-}
-
-
 
 // UTXO
 message TransactionId {
