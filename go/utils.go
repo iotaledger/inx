@@ -239,3 +239,17 @@ func (x BlockMetadata_BlockFailureReason) Unwrap() apimodels.BlockFailureReason 
 func (x BlockMetadata_TransactionFailureReason) Unwrap() apimodels.TransactionFailureReason {
 	return apimodels.TransactionFailureReason(x)
 }
+
+// Tips
+
+func (x *TipsResponse) UnwrapStrongTips() iotago.BlockIDs {
+	return blockIDsFromSlice(x.GetStrongTips())
+}
+
+func (x *TipsResponse) UnwrapWeakTips() iotago.BlockIDs {
+	return blockIDsFromSlice(x.GetWeakTips())
+}
+
+func (x *TipsResponse) UnwrapShallowLikeTips() iotago.BlockIDs {
+	return blockIDsFromSlice(x.GetShallowLikeTips())
+}
