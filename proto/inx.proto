@@ -20,9 +20,9 @@ service INX {
   rpc ReadBlock(BlockId) returns (RawBlock);
   rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
 
-  // Tips
+  // Block Issuance
   rpc RequestTips(TipsRequest) returns (TipsResponse);
-
+  rpc ValidatePayload(RawPayload) returns (PayloadValidationResponse);
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
@@ -185,7 +185,7 @@ message BlockMetadata {
   TransactionFailureReason tx_failure_reason = 5;
 }
 
-// Tips
+// Block Issuance
 message TipsRequest {
   uint32 count = 1;
 }
@@ -194,6 +194,15 @@ message TipsResponse {
   repeated BlockId strong_tips = 1;
   repeated BlockId weak_tips = 2;
   repeated BlockId shallow_like_tips = 3;
+}
+
+message RawPayload {
+  bytes data = 1;
+}
+
+message PayloadValidationResponse {
+  bool is_valid = 1;
+  string error = 2;
 }
 
 // UTXO

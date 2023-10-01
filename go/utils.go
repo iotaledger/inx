@@ -214,7 +214,7 @@ func (x BlockMetadata_TransactionFailureReason) Unwrap() apimodels.TransactionFa
 	return apimodels.TransactionFailureReason(x)
 }
 
-// Tips
+// Block Issuance
 
 func (x *TipsResponse) UnwrapStrongTips() iotago.BlockIDs {
 	return blockIDsFromSlice(x.GetStrongTips())
@@ -226,4 +226,26 @@ func (x *TipsResponse) UnwrapWeakTips() iotago.BlockIDs {
 
 func (x *TipsResponse) UnwrapShallowLikeTips() iotago.BlockIDs {
 	return blockIDsFromSlice(x.GetShallowLikeTips())
+}
+
+// Payload
+
+func WrapPayload(block iotago.BlockPayload, api iotago.API) (*RawPayload, error) {
+	bytes, err := api.Encode(block)
+	if err != nil {
+		return nil, err
+	}
+
+	return &RawPayload{
+		Data: bytes,
+	}, nil
+}
+
+func (x *RawPayload) Unwrap(api iotago.API, opts ...serix.Option) (iotago.BlockPayload, error) {
+	var payload iotago.Payload
+	if _, err := api.Decode(x.GetData(), &payload, opts...); err != nil {
+		return nil, err
+	}
+
+	return payload, nil
 }
