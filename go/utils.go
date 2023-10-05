@@ -36,7 +36,7 @@ func (x *RawBlock) UnwrapBlock(apiProvider iotago.APIProvider) (*iotago.Protocol
 
 func (x *BlockId) Unwrap() iotago.BlockID {
 	if len(x.GetId()) != iotago.BlockIDLength {
-		return iotago.EmptyBlockID()
+		return iotago.EmptyBlockID
 	}
 
 	return iotago.BlockID(x.GetId())
