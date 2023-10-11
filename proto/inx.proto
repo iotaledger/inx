@@ -59,11 +59,11 @@ message BaseToken {
 
 message NodeStatus {
   bool is_healthy = 1;
-  uint64 last_accepted_block_slot = 4;
-  uint64 last_confirmed_block_slot = 5;
+  uint32 last_accepted_block_slot = 4;
+  uint32 last_confirmed_block_slot = 5;
   Commitment latest_commitment = 6;
   CommitmentId latest_finalized_commitment_id = 7;
-  uint64 pruning_epoch = 8;
+  uint32 pruning_epoch = 8;
 }
 
 message NodeStatusRequest {
@@ -72,7 +72,7 @@ message NodeStatusRequest {
 
 message RawProtocolParameters {
   uint32 protocol_version = 1;
-  uint64 start_epoch = 2;
+  uint32 start_epoch = 2;
   bytes params = 3;
 }
 
@@ -86,15 +86,15 @@ message CommitmentId {
 }
 
 message CommitmentRequest {
-  uint64 commitment_index = 1;
+  uint32 commitment_slot = 1;
   CommitmentId commitment_id = 2;
 }
 
 message SlotRangeRequest {
   // start_slot is the initial slot to get. Use 0 to start from the current node status.
-  uint64 start_slot = 1;
+  uint32 start_slot = 1;
   // end_slot is the last slot to get (inclusive). Use 0 to keep getting new confirmed slots.
-  uint64 end_slot = 2;
+  uint32 end_slot = 2;
 }
 
 message Commitment {
@@ -233,22 +233,21 @@ message RawOutput {
 message LedgerOutput {
   OutputId output_id = 1;
   BlockId blockId = 2;
-  uint64 slot_booked = 3;
-  uint64 slot_created = 4;
-  CommitmentId commitment_id_included = 5;
-  RawOutput output = 6;
+  uint32 slot_booked = 3;
+  CommitmentId commitment_id_included = 4;
+  RawOutput output = 5;
 }
 
 message LedgerSpent {
   LedgerOutput output = 1;
   CommitmentId commitment_id_spent = 2;
   TransactionId transaction_id_spent = 3;
-  uint64 slot_spent = 4;
+  uint32 slot_spent = 4;
 }
 
 message LedgerUpdate {
   message Marker {
-    uint64 slot = 1;
+    uint32 slot = 1;
     enum MarkerType {
       BEGIN = 0;
       END = 1;

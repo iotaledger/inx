@@ -166,7 +166,7 @@ func WrapProtocolParameters(startEpoch iotago.EpochIndex, params iotago.Protocol
 
 	return &RawProtocolParameters{
 		ProtocolVersion: uint32(params.Version()),
-		StartEpoch:      uint64(startEpoch),
+		StartEpoch:      uint32(startEpoch),
 		Params:          bytes,
 	}, nil
 }
