@@ -242,7 +242,7 @@ func WrapPayload(block iotago.BlockPayload, api iotago.API) (*RawPayload, error)
 }
 
 func (x *RawPayload) Unwrap(api iotago.API, opts ...serix.Option) (iotago.BlockPayload, error) {
-	var payload iotago.Payload
+	var payload iotago.BlockPayload
 	if _, err := api.Decode(x.GetData(), &payload, opts...); err != nil {
 		return nil, err
 	}
