@@ -64,6 +64,8 @@ message NodeStatus {
   Commitment latest_commitment = 6;
   CommitmentId latest_finalized_commitment_id = 7;
   uint32 pruning_epoch = 8;
+  bool is_bootstrapped = 9;
+
 }
 
 message NodeStatusRequest {
