@@ -14,3 +14,5 @@ Here are some examples (in alphabetical order) of node plugins that are based on
 * [inx-participation](https://github.com/iotaledger/inx-participation) (Go)
 * [inx-poi](https://github.com/iotaledger/inx-poi) (Go)
 * [inx-spammer](https://github.com/iotaledger/inx-spammer) (Go)
+* [inx-validator](https://github.com/iotaledger/inx-validator) (Go)
+
