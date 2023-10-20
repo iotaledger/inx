@@ -32,6 +32,8 @@ service INX {
   // `BEGIN` and `END` will also be sent for slots that did not mutate the ledger.
   // The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
   rpc ListenToLedgerUpdates(SlotRangeRequest) returns (stream LedgerUpdate);
+  rpc ListenToAcceptedTransactions(NoParams) returns (stream AcceptedTransaction);
+
   rpc ReadOutput(OutputId) returns (OutputResponse);
 
   // REST API
@@ -264,6 +266,12 @@ message LedgerUpdate {
   }
 }
 
+message AcceptedTransaction {
+  TransactionId transaction_id = 1;
+  uint32 slot = 2;
+  repeated LedgerSpent consumed = 3;
+  repeated LedgerOutput created = 4;
+}
 
 // REST API
 message APIRouteRequest {

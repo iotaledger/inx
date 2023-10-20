@@ -45,6 +45,7 @@ type INXClient interface {
 	// `BEGIN` and `END` will also be sent for slots that did not mutate the ledger.
 	// The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
 	ListenToLedgerUpdates(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error)
+	ListenToAcceptedTransactions(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToAcceptedTransactionsClient, error)
 	ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputResponse, error)
 	// REST API
 	RegisterAPIRoute(ctx context.Context, in *APIRouteRequest, opts ...grpc.CallOption) (*NoParams, error)
@@ -324,6 +325,38 @@ func (x *iNXListenToLedgerUpdatesClient) Recv() (*LedgerUpdate, error) {
 	return m, nil
 }
 
+func (c *iNXClient) ListenToAcceptedTransactions(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToAcceptedTransactionsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[6], "/inx.INX/ListenToAcceptedTransactions", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &iNXListenToAcceptedTransactionsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type INX_ListenToAcceptedTransactionsClient interface {
+	Recv() (*AcceptedTransaction, error)
+	grpc.ClientStream
+}
+
+type iNXListenToAcceptedTransactionsClient struct {
+	grpc.ClientStream
+}
+
+func (x *iNXListenToAcceptedTransactionsClient) Recv() (*AcceptedTransaction, error) {
+	m := new(AcceptedTransaction)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *iNXClient) ReadOutput(ctx context.Context, in *OutputId, opts ...grpc.CallOption) (*OutputResponse, error) {
 	out := new(OutputResponse)
 	err := c.cc.Invoke(ctx, "/inx.INX/ReadOutput", in, out, opts...)
@@ -387,6 +420,7 @@ type INXServer interface {
 	// `BEGIN` and `END` will also be sent for slots that did not mutate the ledger.
 	// The counts in the batch markers can be used to sanity check that everything arrived and to pre-allocate space if needed.
 	ListenToLedgerUpdates(*SlotRangeRequest, INX_ListenToLedgerUpdatesServer) error
+	ListenToAcceptedTransactions(*NoParams, INX_ListenToAcceptedTransactionsServer) error
 	ReadOutput(context.Context, *OutputId) (*OutputResponse, error)
 	// REST API
 	RegisterAPIRoute(context.Context, *APIRouteRequest) (*NoParams, error)
@@ -440,6 +474,9 @@ func (UnimplementedINXServer) ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutpu
 }
 func (UnimplementedINXServer) ListenToLedgerUpdates(*SlotRangeRequest, INX_ListenToLedgerUpdatesServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToLedgerUpdates not implemented")
+}
+func (UnimplementedINXServer) ListenToAcceptedTransactions(*NoParams, INX_ListenToAcceptedTransactionsServer) error {
+	return status.Errorf(codes.Unimplemented, "method ListenToAcceptedTransactions not implemented")
 }
 func (UnimplementedINXServer) ReadOutput(context.Context, *OutputId) (*OutputResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadOutput not implemented")
@@ -736,6 +773,27 @@ func (x *iNXListenToLedgerUpdatesServer) Send(m *LedgerUpdate) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _INX_ListenToAcceptedTransactions_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(NoParams)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(INXServer).ListenToAcceptedTransactions(m, &iNXListenToAcceptedTransactionsServer{stream})
+}
+
+type INX_ListenToAcceptedTransactionsServer interface {
+	Send(*AcceptedTransaction) error
+	grpc.ServerStream
+}
+
+type iNXListenToAcceptedTransactionsServer struct {
+	grpc.ServerStream
+}
+
+func (x *iNXListenToAcceptedTransactionsServer) Send(m *AcceptedTransaction) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 func _INX_ReadOutput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(OutputId)
 	if err := dec(in); err != nil {
@@ -893,6 +951,11 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ListenToLedgerUpdates",
 			Handler:       _INX_ListenToLedgerUpdates_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ListenToAcceptedTransactions",
+			Handler:       _INX_ListenToAcceptedTransactions_Handler,
 			ServerStreams: true,
 		},
 	},
