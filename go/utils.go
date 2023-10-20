@@ -249,3 +249,9 @@ func (x *RawPayload) Unwrap(api iotago.API, opts ...serix.Option) (iotago.BlockP
 
 	return payload, nil
 }
+
+// BoolResponse
+
+func WrapBoolResponse(value bool) *BoolResponse {
+	return &BoolResponse{Value: value}
+}

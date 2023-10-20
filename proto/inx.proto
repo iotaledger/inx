@@ -26,7 +26,12 @@ service INX {
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
-  
+
+  // Committee
+  rpc ReadIsCommitteeMember(AccountInfoRequest) returns (BoolResponse);
+  rpc ReadIsCandidate(AccountInfoRequest) returns (BoolResponse);
+  rpc ReadIsAccountValidator(AccountInfoRequest) returns (BoolResponse);
+
   // A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
   // It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
   // `BEGIN` and `END` will also be sent for slots that did not mutate the ledger.
@@ -58,6 +63,7 @@ message BaseToken {
 }
 
 message NodeStatus {
+  reserved 2, 3;
   bool is_healthy = 1;
   uint32 last_accepted_block_slot = 4;
   uint32 last_confirmed_block_slot = 5;
@@ -266,6 +272,16 @@ message LedgerUpdate {
   }
 }
 
+// Committee
+
+message AccountInfoRequest {
+  bytes account_id = 1;
+  uint32 account_slot = 2;
+}
+
+message BoolResponse {
+  bool value = 1;
+}
 
 // REST API
 message APIRouteRequest {

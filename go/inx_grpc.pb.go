@@ -40,6 +40,10 @@ type INXClient interface {
 	ValidatePayload(ctx context.Context, in *RawPayload, opts ...grpc.CallOption) (*PayloadValidationResponse, error)
 	// UTXO
 	ReadUnspentOutputs(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ReadUnspentOutputsClient, error)
+	// Committee
+	ReadIsCommitteeMember(ctx context.Context, in *AccountInfoRequest, opts ...grpc.CallOption) (*BoolResponse, error)
+	ReadIsCandidate(ctx context.Context, in *AccountInfoRequest, opts ...grpc.CallOption) (*BoolResponse, error)
+	ReadIsAccountValidator(ctx context.Context, in *AccountInfoRequest, opts ...grpc.CallOption) (*BoolResponse, error)
 	// A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
 	// It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
 	// `BEGIN` and `END` will also be sent for slots that did not mutate the ledger.
@@ -292,6 +296,33 @@ func (x *iNXReadUnspentOutputsClient) Recv() (*UnspentOutput, error) {
 	return m, nil
 }
 
+func (c *iNXClient) ReadIsCommitteeMember(ctx context.Context, in *AccountInfoRequest, opts ...grpc.CallOption) (*BoolResponse, error) {
+	out := new(BoolResponse)
+	err := c.cc.Invoke(ctx, "/inx.INX/ReadIsCommitteeMember", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iNXClient) ReadIsCandidate(ctx context.Context, in *AccountInfoRequest, opts ...grpc.CallOption) (*BoolResponse, error) {
+	out := new(BoolResponse)
+	err := c.cc.Invoke(ctx, "/inx.INX/ReadIsCandidate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iNXClient) ReadIsAccountValidator(ctx context.Context, in *AccountInfoRequest, opts ...grpc.CallOption) (*BoolResponse, error) {
+	out := new(BoolResponse)
+	err := c.cc.Invoke(ctx, "/inx.INX/ReadIsAccountValidator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *iNXClient) ListenToLedgerUpdates(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (INX_ListenToLedgerUpdatesClient, error) {
 	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[5], "/inx.INX/ListenToLedgerUpdates", opts...)
 	if err != nil {
@@ -382,6 +413,10 @@ type INXServer interface {
 	ValidatePayload(context.Context, *RawPayload) (*PayloadValidationResponse, error)
 	// UTXO
 	ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error
+	// Committee
+	ReadIsCommitteeMember(context.Context, *AccountInfoRequest) (*BoolResponse, error)
+	ReadIsCandidate(context.Context, *AccountInfoRequest) (*BoolResponse, error)
+	ReadIsAccountValidator(context.Context, *AccountInfoRequest) (*BoolResponse, error)
 	// A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
 	// It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
 	// `BEGIN` and `END` will also be sent for slots that did not mutate the ledger.
@@ -437,6 +472,15 @@ func (UnimplementedINXServer) ValidatePayload(context.Context, *RawPayload) (*Pa
 }
 func (UnimplementedINXServer) ReadUnspentOutputs(*NoParams, INX_ReadUnspentOutputsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReadUnspentOutputs not implemented")
+}
+func (UnimplementedINXServer) ReadIsCommitteeMember(context.Context, *AccountInfoRequest) (*BoolResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadIsCommitteeMember not implemented")
+}
+func (UnimplementedINXServer) ReadIsCandidate(context.Context, *AccountInfoRequest) (*BoolResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadIsCandidate not implemented")
+}
+func (UnimplementedINXServer) ReadIsAccountValidator(context.Context, *AccountInfoRequest) (*BoolResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadIsAccountValidator not implemented")
 }
 func (UnimplementedINXServer) ListenToLedgerUpdates(*SlotRangeRequest, INX_ListenToLedgerUpdatesServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToLedgerUpdates not implemented")
@@ -715,6 +759,60 @@ func (x *iNXReadUnspentOutputsServer) Send(m *UnspentOutput) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _INX_ReadIsCommitteeMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(INXServer).ReadIsCommitteeMember(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/inx.INX/ReadIsCommitteeMember",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(INXServer).ReadIsCommitteeMember(ctx, req.(*AccountInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _INX_ReadIsCandidate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(INXServer).ReadIsCandidate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/inx.INX/ReadIsCandidate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(INXServer).ReadIsCandidate(ctx, req.(*AccountInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _INX_ReadIsAccountValidator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(INXServer).ReadIsAccountValidator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/inx.INX/ReadIsAccountValidator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(INXServer).ReadIsAccountValidator(ctx, req.(*AccountInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _INX_ListenToLedgerUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(SlotRangeRequest)
 	if err := stream.RecvMsg(m); err != nil {
@@ -846,6 +944,18 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ValidatePayload",
 			Handler:    _INX_ValidatePayload_Handler,
+		},
+		{
+			MethodName: "ReadIsCommitteeMember",
+			Handler:    _INX_ReadIsCommitteeMember_Handler,
+		},
+		{
+			MethodName: "ReadIsCandidate",
+			Handler:    _INX_ReadIsCandidate_Handler,
+		},
+		{
+			MethodName: "ReadIsAccountValidator",
+			Handler:    _INX_ReadIsAccountValidator_Handler,
 		},
 		{
 			MethodName: "ReadOutput",
