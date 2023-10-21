@@ -6,7 +6,7 @@ require (
 	github.com/iotaledger/hive.go/ierrors v0.0.0-20231020115340-13da292c580b
 	github.com/iotaledger/hive.go/lo v0.0.0-20231020115340-13da292c580b
 	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20231020115340-13da292c580b
-	github.com/iotaledger/iota.go/v4 v4.0.0-20231020175721-e9e5ab76e32d
+	github.com/iotaledger/iota.go/v4 v4.0.0-20231021203915-ad9b32d411e8
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 )
