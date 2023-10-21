@@ -158,7 +158,7 @@ message BlockMetadata {
     TRANSACTION_STATE_FINALIZED = 4;
     TRANSACTION_STATE_FAILED = 5;
   }
-  TransactionState tx_state = 4;
+  TransactionState transaction_state = 4;
   enum TransactionFailureReason {
     TRANSACTION_FAILURE_REASON_NONE = 0;
     TRANSACTION_FAILURE_REASON_UTXO_INPUT_ALREADY_SPENT = 1;
@@ -183,7 +183,7 @@ message BlockMetadata {
     TRANSACTION_FAILURE_REASON_FAILED_TO_CLAIM_DELEGATION_REWARD = 20;
     TRANSACTION_FAILURE_REASON_SEMANTIC_VALIDATION_FAILED = 255;
   }
-  TransactionFailureReason tx_failure_reason = 5;
+  TransactionFailureReason transaction_failure_reason = 5;
 }
 
 // Block Issuance
