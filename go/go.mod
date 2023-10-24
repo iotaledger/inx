@@ -3,11 +3,11 @@ module github.com/iotaledger/inx/go
 go 1.21
 
 require (
-	github.com/iotaledger/hive.go/ierrors v0.0.0-20231019175611-f85bce9102d1
-	github.com/iotaledger/hive.go/lo v0.0.0-20231019175611-f85bce9102d1
-	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20231019175611-f85bce9102d1
-	github.com/iotaledger/iota.go/v4 v4.0.0-20231019174124-aa2290512bcd
-	google.golang.org/grpc v1.58.3
+	github.com/iotaledger/hive.go/ierrors v0.0.0-20231020115340-13da292c580b
+	github.com/iotaledger/hive.go/lo v0.0.0-20231020115340-13da292c580b
+	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20231020115340-13da292c580b
+	github.com/iotaledger/iota.go/v4 v4.0.0-20231023190719-1a9daaa83ca8
+	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 )
 
@@ -21,11 +21,11 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/holiman/uint256 v1.2.3 // indirect
 	github.com/iancoleman/orderedmap v0.3.0 // indirect
-	github.com/iotaledger/hive.go/constraints v0.0.0-20231019175611-f85bce9102d1 // indirect
-	github.com/iotaledger/hive.go/core v1.0.0-rc.3.0.20231019175611-f85bce9102d1 // indirect
-	github.com/iotaledger/hive.go/crypto v0.0.0-20231019175611-f85bce9102d1 // indirect
-	github.com/iotaledger/hive.go/runtime v0.0.0-20231019175611-f85bce9102d1 // indirect
-	github.com/iotaledger/hive.go/stringify v0.0.0-20231019175611-f85bce9102d1 // indirect
+	github.com/iotaledger/hive.go/constraints v0.0.0-20231020115340-13da292c580b // indirect
+	github.com/iotaledger/hive.go/core v1.0.0-rc.3.0.20231020115340-13da292c580b // indirect
+	github.com/iotaledger/hive.go/crypto v0.0.0-20231020115340-13da292c580b // indirect
+	github.com/iotaledger/hive.go/runtime v0.0.0-20231020115340-13da292c580b // indirect
+	github.com/iotaledger/hive.go/stringify v0.0.0-20231020115340-13da292c580b // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/pasztorpisti/qs v0.0.0-20171216220353-8d6c33ee906c // indirect
@@ -34,5 +34,5 @@ require (
 	golang.org/x/sync v0.4.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231009173412-8bfb1ae86b6c // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20231016165738-49dd2c1f3d0b // indirect
 )

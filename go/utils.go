@@ -1,3 +1,4 @@
+// nolint: nosnakecase // generated GRPC code uses snake case
 package inx
 
 import (
