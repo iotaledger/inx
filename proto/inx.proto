@@ -8,9 +8,11 @@ service INX {
   rpc ReadNodeStatus(NoParams) returns (NodeStatus);
   rpc ListenToNodeStatus(NodeStatusRequest) returns (stream NodeStatus);
   rpc ReadNodeConfiguration(NoParams) returns (NodeConfiguration);
+  rpc ReadActiveRootBlocks(NoParams) returns (RootBlocksResponse);
 
   // Commitments
   rpc ReadCommitment(CommitmentRequest) returns (Commitment);
+  rpc ForceCommitment(SlotRangeRequest) returns (NoParams);
 
   // Blocks
   rpc ListenToBlocks(NoParams) returns (stream Block);
@@ -212,6 +214,10 @@ message RawPayload {
 message PayloadValidationResponse {
   bool is_valid = 1;
   string error = 2;
+}
+
+message RootBlocksResponse {
+  repeated BlockId active_root_blocks = 1;
 }
 
 // UTXO

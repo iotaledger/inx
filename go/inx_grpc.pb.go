@@ -26,8 +26,10 @@ type INXClient interface {
 	ReadNodeStatus(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeStatus, error)
 	ListenToNodeStatus(ctx context.Context, in *NodeStatusRequest, opts ...grpc.CallOption) (INX_ListenToNodeStatusClient, error)
 	ReadNodeConfiguration(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*NodeConfiguration, error)
+	ReadActiveRootBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*RootBlocksResponse, error)
 	// Commitments
 	ReadCommitment(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (*Commitment, error)
+	ForceCommitment(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (*NoParams, error)
 	// Blocks
 	ListenToBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToBlocksClient, error)
 	ListenToAcceptedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToAcceptedBlocksClient, error)
@@ -115,9 +117,27 @@ func (c *iNXClient) ReadNodeConfiguration(ctx context.Context, in *NoParams, opt
 	return out, nil
 }
 
+func (c *iNXClient) ReadActiveRootBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*RootBlocksResponse, error) {
+	out := new(RootBlocksResponse)
+	err := c.cc.Invoke(ctx, "/inx.INX/ReadActiveRootBlocks", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *iNXClient) ReadCommitment(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (*Commitment, error) {
 	out := new(Commitment)
 	err := c.cc.Invoke(ctx, "/inx.INX/ReadCommitment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *iNXClient) ForceCommitment(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (*NoParams, error) {
+	out := new(NoParams)
+	err := c.cc.Invoke(ctx, "/inx.INX/ForceCommitment", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -432,8 +452,10 @@ type INXServer interface {
 	ReadNodeStatus(context.Context, *NoParams) (*NodeStatus, error)
 	ListenToNodeStatus(*NodeStatusRequest, INX_ListenToNodeStatusServer) error
 	ReadNodeConfiguration(context.Context, *NoParams) (*NodeConfiguration, error)
+	ReadActiveRootBlocks(context.Context, *NoParams) (*RootBlocksResponse, error)
 	// Commitments
 	ReadCommitment(context.Context, *CommitmentRequest) (*Commitment, error)
+	ForceCommitment(context.Context, *SlotRangeRequest) (*NoParams, error)
 	// Blocks
 	ListenToBlocks(*NoParams, INX_ListenToBlocksServer) error
 	ListenToAcceptedBlocks(*NoParams, INX_ListenToAcceptedBlocksServer) error
@@ -477,8 +499,14 @@ func (UnimplementedINXServer) ListenToNodeStatus(*NodeStatusRequest, INX_ListenT
 func (UnimplementedINXServer) ReadNodeConfiguration(context.Context, *NoParams) (*NodeConfiguration, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadNodeConfiguration not implemented")
 }
+func (UnimplementedINXServer) ReadActiveRootBlocks(context.Context, *NoParams) (*RootBlocksResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadActiveRootBlocks not implemented")
+}
 func (UnimplementedINXServer) ReadCommitment(context.Context, *CommitmentRequest) (*Commitment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadCommitment not implemented")
+}
+func (UnimplementedINXServer) ForceCommitment(context.Context, *SlotRangeRequest) (*NoParams, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ForceCommitment not implemented")
 }
 func (UnimplementedINXServer) ListenToBlocks(*NoParams, INX_ListenToBlocksServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToBlocks not implemented")
@@ -604,6 +632,24 @@ func _INX_ReadNodeConfiguration_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _INX_ReadActiveRootBlocks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NoParams)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(INXServer).ReadActiveRootBlocks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/inx.INX/ReadActiveRootBlocks",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(INXServer).ReadActiveRootBlocks(ctx, req.(*NoParams))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _INX_ReadCommitment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CommitmentRequest)
 	if err := dec(in); err != nil {
@@ -618,6 +664,24 @@ func _INX_ReadCommitment_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(INXServer).ReadCommitment(ctx, req.(*CommitmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _INX_ForceCommitment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SlotRangeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(INXServer).ForceCommitment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/inx.INX/ForceCommitment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(INXServer).ForceCommitment(ctx, req.(*SlotRangeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -980,8 +1044,16 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _INX_ReadNodeConfiguration_Handler,
 		},
 		{
+			MethodName: "ReadActiveRootBlocks",
+			Handler:    _INX_ReadActiveRootBlocks_Handler,
+		},
+		{
 			MethodName: "ReadCommitment",
 			Handler:    _INX_ReadCommitment_Handler,
+		},
+		{
+			MethodName: "ForceCommitment",
+			Handler:    _INX_ForceCommitment_Handler,
 		},
 		{
 			MethodName: "SubmitBlock",
