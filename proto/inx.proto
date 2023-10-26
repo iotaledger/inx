@@ -12,7 +12,7 @@ service INX {
 
   // Commitments
   rpc ReadCommitment(CommitmentRequest) returns (Commitment);
-  rpc ForceCommitment(SlotRangeRequest) returns (NoParams);
+  rpc ForceCommitUntil(SlotIndex) returns (NoParams);
 
   // Blocks
   rpc ListenToBlocks(NoParams) returns (stream Block);
@@ -100,6 +100,10 @@ message CommitmentId {
 message CommitmentRequest {
   uint32 commitment_slot = 1;
   CommitmentId commitment_id = 2;
+}
+
+message SlotIndex {
+  uint32 index = 1;
 }
 
 message SlotRangeRequest {
@@ -217,7 +221,12 @@ message PayloadValidationResponse {
 }
 
 message RootBlocksResponse {
-  repeated BlockId active_root_blocks = 1;
+  repeated RootBlock root_blocks = 1;
+}
+
+message RootBlock {
+  BlockId blockId = 1;
+  CommitmentId commitmentId = 2;
 }
 
 // UTXO

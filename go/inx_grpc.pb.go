@@ -29,7 +29,7 @@ type INXClient interface {
 	ReadActiveRootBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (*RootBlocksResponse, error)
 	// Commitments
 	ReadCommitment(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (*Commitment, error)
-	ForceCommitment(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (*NoParams, error)
+	ForceCommitUntil(ctx context.Context, in *SlotIndex, opts ...grpc.CallOption) (*NoParams, error)
 	// Blocks
 	ListenToBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToBlocksClient, error)
 	ListenToAcceptedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToAcceptedBlocksClient, error)
@@ -135,9 +135,9 @@ func (c *iNXClient) ReadCommitment(ctx context.Context, in *CommitmentRequest, o
 	return out, nil
 }
 
-func (c *iNXClient) ForceCommitment(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (*NoParams, error) {
+func (c *iNXClient) ForceCommitUntil(ctx context.Context, in *SlotIndex, opts ...grpc.CallOption) (*NoParams, error) {
 	out := new(NoParams)
-	err := c.cc.Invoke(ctx, "/inx.INX/ForceCommitment", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/inx.INX/ForceCommitUntil", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -455,7 +455,7 @@ type INXServer interface {
 	ReadActiveRootBlocks(context.Context, *NoParams) (*RootBlocksResponse, error)
 	// Commitments
 	ReadCommitment(context.Context, *CommitmentRequest) (*Commitment, error)
-	ForceCommitment(context.Context, *SlotRangeRequest) (*NoParams, error)
+	ForceCommitUntil(context.Context, *SlotIndex) (*NoParams, error)
 	// Blocks
 	ListenToBlocks(*NoParams, INX_ListenToBlocksServer) error
 	ListenToAcceptedBlocks(*NoParams, INX_ListenToAcceptedBlocksServer) error
@@ -505,8 +505,8 @@ func (UnimplementedINXServer) ReadActiveRootBlocks(context.Context, *NoParams) (
 func (UnimplementedINXServer) ReadCommitment(context.Context, *CommitmentRequest) (*Commitment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadCommitment not implemented")
 }
-func (UnimplementedINXServer) ForceCommitment(context.Context, *SlotRangeRequest) (*NoParams, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ForceCommitment not implemented")
+func (UnimplementedINXServer) ForceCommitUntil(context.Context, *SlotIndex) (*NoParams, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ForceCommitUntil not implemented")
 }
 func (UnimplementedINXServer) ListenToBlocks(*NoParams, INX_ListenToBlocksServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListenToBlocks not implemented")
@@ -668,20 +668,20 @@ func _INX_ReadCommitment_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _INX_ForceCommitment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SlotRangeRequest)
+func _INX_ForceCommitUntil_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SlotIndex)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(INXServer).ForceCommitment(ctx, in)
+		return srv.(INXServer).ForceCommitUntil(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/inx.INX/ForceCommitment",
+		FullMethod: "/inx.INX/ForceCommitUntil",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(INXServer).ForceCommitment(ctx, req.(*SlotRangeRequest))
+		return srv.(INXServer).ForceCommitUntil(ctx, req.(*SlotIndex))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1052,8 +1052,8 @@ var INX_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _INX_ReadCommitment_Handler,
 		},
 		{
-			MethodName: "ForceCommitment",
-			Handler:    _INX_ForceCommitment_Handler,
+			MethodName: "ForceCommitUntil",
+			Handler:    _INX_ForceCommitUntil_Handler,
 		},
 		{
 			MethodName: "SubmitBlock",
