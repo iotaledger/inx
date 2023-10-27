@@ -20,7 +20,7 @@ func blockIDsFromSlice(slice []*BlockId) iotago.BlockIDs {
 
 // Block
 
-func WrapBlock(block *iotago.ProtocolBlock) (*RawBlock, error) {
+func WrapBlock(block *iotago.Block) (*RawBlock, error) {
 	bytes, err := block.API.Encode(block)
 	if err != nil {
 		return nil, err
@@ -31,8 +31,8 @@ func WrapBlock(block *iotago.ProtocolBlock) (*RawBlock, error) {
 	}, nil
 }
 
-func (x *RawBlock) UnwrapBlock(apiProvider iotago.APIProvider) (*iotago.ProtocolBlock, error) {
-	return lo.DropCount(iotago.ProtocolBlockFromBytes(apiProvider)(x.GetData()))
+func (x *RawBlock) UnwrapBlock(apiProvider iotago.APIProvider) (*iotago.Block, error) {
+	return lo.DropCount(iotago.BlockFromBytes(apiProvider)(x.GetData()))
 }
 
 func (x *BlockId) Unwrap() iotago.BlockID {
@@ -47,11 +47,11 @@ func (x *Block) UnwrapBlockID() iotago.BlockID {
 	return x.GetBlockId().Unwrap()
 }
 
-func (x *Block) UnwrapBlock(apiProvider iotago.APIProvider) (*iotago.ProtocolBlock, error) {
+func (x *Block) UnwrapBlock(apiProvider iotago.APIProvider) (*iotago.Block, error) {
 	return x.GetBlock().UnwrapBlock(apiProvider)
 }
 
-func (x *Block) MustUnwrapBlock(apiProvider iotago.APIProvider) *iotago.ProtocolBlock {
+func (x *Block) MustUnwrapBlock(apiProvider iotago.APIProvider) *iotago.Block {
 	msg, err := x.GetBlock().UnwrapBlock(apiProvider)
 	if err != nil {
 		panic(err)
