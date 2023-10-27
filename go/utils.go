@@ -231,7 +231,7 @@ func (x *TipsResponse) UnwrapShallowLikeTips() iotago.BlockIDs {
 
 // Payload
 
-func WrapPayload(block iotago.BlockPayload, api iotago.API) (*RawPayload, error) {
+func WrapPayload(block iotago.ApplicationPayload, api iotago.API) (*RawPayload, error) {
 	bytes, err := api.Encode(block)
 	if err != nil {
 		return nil, err
@@ -242,8 +242,8 @@ func WrapPayload(block iotago.BlockPayload, api iotago.API) (*RawPayload, error)
 	}, nil
 }
 
-func (x *RawPayload) Unwrap(api iotago.API, opts ...serix.Option) (iotago.BlockPayload, error) {
-	var payload iotago.BlockPayload
+func (x *RawPayload) Unwrap(api iotago.API, opts ...serix.Option) (iotago.ApplicationPayload, error) {
+	var payload iotago.ApplicationPayload
 	if _, err := api.Decode(x.GetData(), &payload, opts...); err != nil {
 		return nil, err
 	}
