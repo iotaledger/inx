@@ -263,7 +263,7 @@ message RawOutput {
 
 message LedgerOutput {
   OutputId output_id = 1;
-  BlockId blockId = 2;
+  BlockId block_id = 2;
   uint32 slot_booked = 3;
   CommitmentId commitment_id_included = 4;
   RawOutput output = 5;
