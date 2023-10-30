@@ -32,7 +32,7 @@ service INX {
   // Committee
   rpc ReadIsCommitteeMember(AccountInfoRequest) returns (BoolResponse);
   rpc ReadIsCandidate(AccountInfoRequest) returns (BoolResponse);
-  rpc ReadIsAccountValidator(AccountInfoRequest) returns (BoolResponse);
+  rpc ReadIsValidatorAccount(AccountInfoRequest) returns (BoolResponse);
 
   // A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
   // It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
@@ -231,8 +231,8 @@ message RootBlocksResponse {
 }
 
 message RootBlock {
-  BlockId blockId = 1;
-  CommitmentId commitmentId = 2;
+  BlockId block_id = 1;
+  CommitmentId commitment_id = 2;
 }
 
 // UTXO
@@ -301,8 +301,8 @@ message AcceptedTransaction {
   repeated LedgerSpent consumed = 3;
   repeated LedgerOutput created = 4;
 }
-// Committee
 
+// Committee
 message AccountInfoRequest {
   bytes account_id = 1;
   uint32 account_slot = 2;

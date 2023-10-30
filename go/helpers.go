@@ -68,7 +68,7 @@ func NewCommitmentId(commitmentID iotago.CommitmentID) *CommitmentId {
 // nolint:revive,stylecheck // this name is auto generated
 func NewAccountInfoRequest(accountID iotago.AccountID, slot iotago.SlotIndex) *AccountInfoRequest {
 	accountInfoRequest := &AccountInfoRequest{
-		AccountId:   make([]byte, iotago.CommitmentIDLength),
+		AccountId:   make([]byte, iotago.AccountIDLength),
 		AccountSlot: uint32(slot),
 	}
 	copy(accountInfoRequest.AccountId, accountID[:])
