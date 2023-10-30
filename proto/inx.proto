@@ -8,9 +8,11 @@ service INX {
   rpc ReadNodeStatus(NoParams) returns (NodeStatus);
   rpc ListenToNodeStatus(NodeStatusRequest) returns (stream NodeStatus);
   rpc ReadNodeConfiguration(NoParams) returns (NodeConfiguration);
+  rpc ReadActiveRootBlocks(NoParams) returns (RootBlocksResponse);
 
   // Commitments
   rpc ReadCommitment(CommitmentRequest) returns (Commitment);
+  rpc ForceCommitUntil(SlotIndex) returns (NoParams);
 
   // Blocks
   rpc ListenToBlocks(NoParams) returns (stream Block);
@@ -26,7 +28,12 @@ service INX {
 
   // UTXO
   rpc ReadUnspentOutputs(NoParams) returns (stream UnspentOutput);
-  
+
+  // Committee
+  rpc ReadIsCommitteeMember(AccountInfoRequest) returns (BoolResponse);
+  rpc ReadIsCandidate(AccountInfoRequest) returns (BoolResponse);
+  rpc ReadIsValidatorAccount(AccountInfoRequest) returns (BoolResponse);
+
   // A stream that yields updates to the ledger. A `LedgerUpdate` represents a batch to be applied to the ledger.
   // It first sends a `BEGIN`, then all the consumed outputs, then all the created outputs and finally an `END`.
   // `BEGIN` and `END` will also be sent for slots that did not mutate the ledger.
@@ -60,12 +67,15 @@ message BaseToken {
 }
 
 message NodeStatus {
+  reserved 2, 3;
   bool is_healthy = 1;
   uint32 last_accepted_block_slot = 4;
   uint32 last_confirmed_block_slot = 5;
   Commitment latest_commitment = 6;
   CommitmentId latest_finalized_commitment_id = 7;
   uint32 pruning_epoch = 8;
+  bool is_bootstrapped = 9;
+
 }
 
 message NodeStatusRequest {
@@ -90,6 +100,10 @@ message CommitmentId {
 message CommitmentRequest {
   uint32 commitment_slot = 1;
   CommitmentId commitment_id = 2;
+}
+
+message SlotIndex {
+  uint32 index = 1;
 }
 
 message SlotRangeRequest {
@@ -212,6 +226,15 @@ message PayloadValidationResponse {
   string error = 2;
 }
 
+message RootBlocksResponse {
+  repeated RootBlock root_blocks = 1;
+}
+
+message RootBlock {
+  BlockId block_id = 1;
+  CommitmentId commitment_id = 2;
+}
+
 // UTXO
 message TransactionId {
   bytes id = 1;
@@ -240,7 +263,7 @@ message RawOutput {
 
 message LedgerOutput {
   OutputId output_id = 1;
-  BlockId blockId = 2;
+  BlockId block_id = 2;
   uint32 slot_booked = 3;
   CommitmentId commitment_id_included = 4;
   RawOutput output = 5;
@@ -277,6 +300,16 @@ message AcceptedTransaction {
   uint32 slot = 2;
   repeated LedgerSpent consumed = 3;
   repeated LedgerOutput created = 4;
+}
+
+// Committee
+message AccountInfoRequest {
+  bytes account_id = 1;
+  uint32 account_slot = 2;
+}
+
+message BoolResponse {
+  bool value = 1;
 }
 
 // REST API

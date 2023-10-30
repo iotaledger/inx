@@ -60,6 +60,40 @@ func (x *Block) MustUnwrapBlock(apiProvider iotago.APIProvider) *iotago.Block {
 	return msg
 }
 
+func WrapRootBlocks(rootBlocks map[iotago.BlockID]iotago.CommitmentID) *RootBlocksResponse {
+	rootBlocksWrapped := make([]*RootBlock, 0, len(rootBlocks))
+	for blockID, commitmentID := range rootBlocks {
+		rootBlocksWrapped = append(rootBlocksWrapped, &RootBlock{
+			BlockId:      NewBlockId(blockID),
+			CommitmentId: NewCommitmentId(commitmentID),
+		})
+	}
+
+	return &RootBlocksResponse{
+		RootBlocks: rootBlocksWrapped,
+	}
+}
+
+func (x *RootBlocksResponse) Unwrap() (map[iotago.BlockID]iotago.CommitmentID, error) {
+	rootBlockUnwrapped := make(map[iotago.BlockID]iotago.CommitmentID)
+
+	for _, rootBlock := range x.RootBlocks {
+		rootBlockUnwrapped[rootBlock.GetBlockId().Unwrap()] = rootBlock.GetCommitmentId().Unwrap()
+	}
+
+	return rootBlockUnwrapped, nil
+}
+
+func WrapSlotIndex(slot iotago.SlotIndex) *SlotIndex {
+	return &SlotIndex{
+		Index: uint32(slot),
+	}
+}
+
+func (x *SlotIndex) Unwrap() iotago.SlotIndex {
+	return iotago.SlotIndex(x.GetIndex())
+}
+
 // Ledger
 
 func (x *TransactionId) Unwrap() iotago.TransactionID {
@@ -249,4 +283,10 @@ func (x *RawPayload) Unwrap(api iotago.API, opts ...serix.Option) (iotago.Applic
 	}
 
 	return payload, nil
+}
+
+// BoolResponse
+
+func WrapBoolResponse(value bool) *BoolResponse {
+	return &BoolResponse{Value: value}
 }
