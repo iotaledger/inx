@@ -6,7 +6,7 @@ require (
 	github.com/iotaledger/hive.go/ierrors v0.0.0-20231027195901-620bd7470e42
 	github.com/iotaledger/hive.go/lo v0.0.0-20231027195901-620bd7470e42
 	github.com/iotaledger/hive.go/serializer/v2 v2.0.0-rc.1.0.20231020115340-13da292c580b
-	github.com/iotaledger/iota.go/v4 v4.0.0-20231028103644-b834fd54b02a
+	github.com/iotaledger/iota.go/v4 v4.0.0-20231031113109-5d7d59311967
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 )
@@ -34,5 +34,5 @@ require (
 	golang.org/x/sync v0.4.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231016165738-49dd2c1f3d0b // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20231030173426-d783a09b4405 // indirect
 )
