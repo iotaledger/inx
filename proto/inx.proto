@@ -67,14 +67,13 @@ message BaseToken {
 }
 
 message NodeStatus {
-  reserved 2, 3;
   bool is_healthy = 1;
-  uint32 last_accepted_block_slot = 4;
-  uint32 last_confirmed_block_slot = 5;
-  Commitment latest_commitment = 6;
-  CommitmentId latest_finalized_commitment_id = 7;
-  uint32 pruning_epoch = 8;
-  bool is_bootstrapped = 9;
+  uint32 last_accepted_block_slot = 2;
+  uint32 last_confirmed_block_slot = 3;
+  Commitment latest_commitment = 4;
+  CommitmentId latest_finalized_commitment_id = 5;
+  uint32 pruning_epoch = 6;
+  bool is_bootstrapped = 7;
 
 }
 
