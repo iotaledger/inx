@@ -2,4 +2,5 @@ go/.idea
 .DS_Store
 .idea
 examples/nodejs/node_modules
+Cargo.lock
 target

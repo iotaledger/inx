@@ -5,6 +5,7 @@ on:
     paths-ignore:
       - 'examples/**'
       - 'proto/**'
+      - 'rust/**'
 
 jobs:
   golangci-lint:
