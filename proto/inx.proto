@@ -11,6 +11,7 @@ service INX {
   rpc ReadActiveRootBlocks(NoParams) returns (RootBlocksResponse);
 
   // Commitments
+  rpc ListenToCommitments(SlotRangeRequest) returns (stream Commitment);
   rpc ReadCommitment(CommitmentRequest) returns (Commitment);
   rpc ForceCommitUntil(SlotIndex) returns (NoParams);
 
@@ -21,6 +22,7 @@ service INX {
   rpc SubmitBlock(RawBlock) returns (BlockId);
   rpc ReadBlock(BlockId) returns (RawBlock);
   rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
+  rpc ReadAcceptedBlocks(SlotIndex) returns (stream BlockWithMetadata);
 
   // Block Issuance
   rpc RequestTips(TipsRequest) returns (TipsResponse);
