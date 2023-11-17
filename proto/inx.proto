@@ -65,7 +65,6 @@ message BaseToken {
   string unit = 3;
   string subunit = 4;
   uint32 decimals = 5;
-  bool use_metric_prefix = 6;
 }
 
 message NodeStatus {
@@ -73,7 +72,7 @@ message NodeStatus {
   uint32 last_accepted_block_slot = 2;
   uint32 last_confirmed_block_slot = 3;
   Commitment latest_commitment = 4;
-  CommitmentId latest_finalized_commitment_id = 5;
+  Commitment latest_finalized_commitment = 5;
   uint32 pruning_epoch = 6;
   bool is_bootstrapped = 7;
 
@@ -269,12 +268,17 @@ message RawOutput {
   bytes data = 1;
 }
 
+message RawOutputIDProof {
+  bytes data = 1;
+}
+
 message LedgerOutput {
   OutputId output_id = 1;
   BlockId block_id = 2;
   uint32 slot_booked = 3;
   CommitmentId commitment_id_included = 4;
   RawOutput output = 5;
+  RawOutputIDProof output_id_proof = 6;
 }
 
 message LedgerSpent {
@@ -286,7 +290,7 @@ message LedgerSpent {
 
 message LedgerUpdate {
   message Marker {
-    uint32 slot = 1;
+    CommitmentId commitment_id = 1;
     enum MarkerType {
       BEGIN = 0;
       END = 1;
