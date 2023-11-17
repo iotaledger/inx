@@ -240,7 +240,7 @@ func (x *RawProtocolParameters) Unwrap() (iotago.EpochIndex, iotago.ProtocolPara
 	return iotago.EpochIndex(x.StartEpoch), params, nil
 }
 
-func (x *NodeConfiguration) APIProvider() iotago.APIProvider {
+func (x *NodeConfiguration) APIProvider() *api.EpochBasedProvider {
 	// Create a new api provider that uses the protocol parameters of the node
 	apiProvider := api.NewEpochBasedProvider()
 
