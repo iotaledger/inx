@@ -6,6 +6,7 @@ import (
 	"github.com/iotaledger/hive.go/lo"
 	"github.com/iotaledger/hive.go/serializer/v2/serix"
 	iotago "github.com/iotaledger/iota.go/v4"
+	"github.com/iotaledger/iota.go/v4/api"
 	"github.com/iotaledger/iota.go/v4/nodeclient/apimodels"
 )
 
@@ -213,6 +214,22 @@ func (x *RawProtocolParameters) Unwrap() (iotago.EpochIndex, iotago.ProtocolPara
 	}
 
 	return iotago.EpochIndex(x.StartEpoch), params, nil
+}
+
+func (x *NodeConfiguration) APIProvider() iotago.APIProvider {
+	// Create a new api provider that uses the protocol parameters of the node
+	apiProvider := api.NewEpochBasedProvider()
+
+	for _, rawParams := range x.GetProtocolParameters() {
+		startEpoch, protoParams, err := rawParams.Unwrap()
+		if err != nil {
+			panic(err)
+		}
+
+		apiProvider.AddProtocolParametersAtEpoch(protoParams, startEpoch)
+	}
+
+	return apiProvider
 }
 
 // BlockMetadata
