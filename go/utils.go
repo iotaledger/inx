@@ -129,6 +129,10 @@ func (x *LedgerOutput) UnwrapOutput(api iotago.API, opts ...serix.Option) (iotag
 	return x.GetOutput().Unwrap(api, opts...)
 }
 
+func (x *LedgerOutput) UnwrapOutputIDProof(api iotago.API) (*iotago.OutputIDProof, error) {
+	return x.GetOutputIdProof().Unwrap(api)
+}
+
 func (x *LedgerOutput) MustUnwrapOutput(api iotago.API, opts ...serix.Option) iotago.Output {
 	output, err := x.UnwrapOutput(api, opts...)
 	if err != nil {
@@ -162,6 +166,26 @@ func (x *RawOutput) Unwrap(api iotago.API, opts ...serix.Option) (iotago.Output,
 	}
 
 	return output, nil
+}
+
+func WrapOutputIDProof(proof *iotago.OutputIDProof) (*RawOutputIDProof, error) {
+	bytes, err := proof.Bytes()
+	if err != nil {
+		return nil, err
+	}
+
+	return &RawOutputIDProof{
+		Data: bytes,
+	}, nil
+}
+
+func (x *RawOutputIDProof) Unwrap(api iotago.API) (*iotago.OutputIDProof, error) {
+	data := x.GetData()
+	if len(data) == 0 {
+		return nil, ierrors.New("invalid output ID proof length")
+	}
+
+	return lo.DropCount(iotago.OutputIDProofFromBytes(api)(data))
 }
 
 func (x *LedgerSpent) UnwrapTransactionIDSpent() iotago.TransactionID {
