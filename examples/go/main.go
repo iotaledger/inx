@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 
@@ -25,13 +24,21 @@ func main() {
 	// Create a new INX client
 	client := inx.NewINXClient(conn)
 
-	// Listen to all confirmed milestones
-	stream, err := client.ListenToConfirmedCommitments(context.Background(), &inx.CommitmentRangeRequest{})
+	config, err := client.ReadNodeConfiguration(context.Background(), &inx.NoParams{})
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a new api provider that uses the protocol parameters of the node
+	apiProvider := config.APIProvider()
+
+	// Listen to all commitments
+	stream, err := client.ListenToCommitments(context.Background(), &inx.SlotRangeRequest{})
 	if err != nil {
 		panic(err)
 	}
 	for {
-		commitmentAndParams, err := stream.Recv()
+		payload, err := stream.Recv()
 		if err != nil {
 			if err == io.EOF {
 				break
@@ -39,26 +46,20 @@ func main() {
 			panic(err)
 		}
 
-		api := iotago.V3API(&iotago.ProtocolParameters{})
-		protoParams := &iotago.ProtocolParameters{}
-		if _, err := api.Decode(commitmentAndParams.GetCurrentProtocolParameters().GetParams(), protoParams); err != nil {
-			panic(err)
-		}
-
-		// Fetch all messages included by this milestone
-		if err := fetchCommitmentCone(client, commitmentAndParams.GetCommitment(), iotago.V3API(protoParams)); err != nil {
+		// Fetch all blocks included by this commitment
+		if err := fetchCommitmentBlocks(client, payload.GetCommitmentId().Unwrap(), apiProvider); err != nil {
 			panic(err)
 		}
 	}
 }
 
-func fetchCommitmentCone(client inx.INXClient, commitment *inx.Commitment, api iotago.API) error {
-	index := commitment.GetCommitmentInfo().GetCommitmentIndex()
-	fmt.Printf("Fetch cone of milestone %d\n", index)
-	req := &inx.CommitmentRequest{
-		CommitmentIndex: index,
+func fetchCommitmentBlocks(client inx.INXClient, commitmentID iotago.CommitmentID, apiProvider iotago.APIProvider) error {
+	slot := commitmentID.Slot()
+	fmt.Printf("Fetch accepted blocks included in commitment %d\n", slot)
+	req := &inx.SlotIndex{
+		Index: uint32(slot),
 	}
-	stream, err := client.ReadCommitmentCone(context.Background(), req)
+	stream, err := client.ReadAcceptedBlocks(context.Background(), req)
 	if err != nil {
 		return err
 	}
@@ -74,15 +75,15 @@ func fetchCommitmentCone(client inx.INXClient, commitment *inx.Commitment, api i
 		}
 
 		// Deserialize the raw bytes into an iota.go Block
-		block, err := payload.UnwrapBlock(api)
+		block, err := payload.GetBlock().UnwrapBlock(apiProvider)
 		if err != nil {
 			return err
 		}
 
-		blockID := payload.GetMetadata().UnwrapBlockID()
+		blockID := payload.GetMetadata().GetBlockId().Unwrap()
 
 		// Serialize the Block to JSON
-		jsonBlock, err := json.MarshalIndent(block, "", "  ")
+		jsonBlock, err := apiProvider.APIForSlot(blockID.Slot()).JSONEncode(block)
 		if err != nil {
 			return err
 		}
@@ -91,6 +92,6 @@ func fetchCommitmentCone(client inx.INXClient, commitment *inx.Commitment, api i
 		fmt.Printf("Block: %s\n%s\n\n", blockID.ToHex(), string(jsonBlock))
 		count++
 	}
-	fmt.Printf("Milestone %d contained %d blocks\n", index, count)
+	fmt.Printf("Commitment %d contained %d accepted blocks\n", slot, count)
 	return nil
 }
