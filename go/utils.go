@@ -7,7 +7,6 @@ import (
 	"github.com/iotaledger/hive.go/serializer/v2/serix"
 	iotago "github.com/iotaledger/iota.go/v4"
 	"github.com/iotaledger/iota.go/v4/api"
-	"github.com/iotaledger/iota.go/v4/nodeclient/apimodels"
 )
 
 func blockIDsFromSlice(slice []*BlockId) iotago.BlockIDs {
@@ -240,9 +239,9 @@ func (x *RawProtocolParameters) Unwrap() (iotago.EpochIndex, iotago.ProtocolPara
 	return iotago.EpochIndex(x.StartEpoch), params, nil
 }
 
-func (x *NodeConfiguration) APIProvider() *api.EpochBasedProvider {
+func (x *NodeConfiguration) APIProvider() *iotago.EpochBasedProvider {
 	// Create a new api provider that uses the protocol parameters of the node
-	apiProvider := api.NewEpochBasedProvider()
+	apiProvider := iotago.NewEpochBasedProvider()
 
 	for _, rawParams := range x.GetProtocolParameters() {
 		startEpoch, protoParams, err := rawParams.Unwrap()
@@ -258,36 +257,36 @@ func (x *NodeConfiguration) APIProvider() *api.EpochBasedProvider {
 
 // BlockMetadata
 
-func WrapBlockState(state apimodels.BlockState) BlockMetadata_BlockState {
+func WrapBlockState(state api.BlockState) BlockMetadata_BlockState {
 	return BlockMetadata_BlockState(state)
 }
 
-func WrapBlockFailureReason(reason apimodels.BlockFailureReason) BlockMetadata_BlockFailureReason {
+func WrapBlockFailureReason(reason api.BlockFailureReason) BlockMetadata_BlockFailureReason {
 	return BlockMetadata_BlockFailureReason(reason)
 }
 
-func WrapTransactionState(state apimodels.TransactionState) BlockMetadata_TransactionState {
+func WrapTransactionState(state api.TransactionState) BlockMetadata_TransactionState {
 	return BlockMetadata_TransactionState(state)
 }
 
-func WrapTransactionFailureReason(reason apimodels.TransactionFailureReason) BlockMetadata_TransactionFailureReason {
+func WrapTransactionFailureReason(reason api.TransactionFailureReason) BlockMetadata_TransactionFailureReason {
 	return BlockMetadata_TransactionFailureReason(reason)
 }
 
-func (x BlockMetadata_BlockState) Unwrap() apimodels.BlockState {
-	return apimodels.BlockState(x)
+func (x BlockMetadata_BlockState) Unwrap() api.BlockState {
+	return api.BlockState(x)
 }
 
-func (x BlockMetadata_TransactionState) Unwrap() apimodels.TransactionState {
-	return apimodels.TransactionState(x)
+func (x BlockMetadata_TransactionState) Unwrap() api.TransactionState {
+	return api.TransactionState(x)
 }
 
-func (x BlockMetadata_BlockFailureReason) Unwrap() apimodels.BlockFailureReason {
-	return apimodels.BlockFailureReason(x)
+func (x BlockMetadata_BlockFailureReason) Unwrap() api.BlockFailureReason {
+	return api.BlockFailureReason(x)
 }
 
-func (x BlockMetadata_TransactionFailureReason) Unwrap() apimodels.TransactionFailureReason {
-	return apimodels.TransactionFailureReason(x)
+func (x BlockMetadata_TransactionFailureReason) Unwrap() api.TransactionFailureReason {
+	return api.TransactionFailureReason(x)
 }
 
 // Block Issuance
