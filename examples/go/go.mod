@@ -6,7 +6,7 @@ replace github.com/iotaledger/inx/go => ../../go
 
 require (
 	github.com/iotaledger/inx/go v0.0.0-00010101000000-000000000000
-	github.com/iotaledger/iota.go/v4 v4.0.0-20231124103306-ad44904e2b86
+	github.com/iotaledger/iota.go/v4 v4.0.0-20231128162016-23f1b4e12cec
 	google.golang.org/grpc v1.59.0
 )
 
