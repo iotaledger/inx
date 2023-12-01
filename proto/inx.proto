@@ -24,6 +24,9 @@ service INX {
   rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
   rpc ReadAcceptedBlocks(SlotIndex) returns (stream BlockWithMetadata);
 
+  // Transactions
+  rpc ReadTransactionMetadata(TransactionId) returns (TransactionMetadata);
+
   // Block Issuance
   rpc RequestTips(TipsRequest) returns (TipsResponse);
   rpc ValidatePayload(RawPayload) returns (PayloadValidationResponse);
@@ -75,7 +78,6 @@ message NodeStatus {
   Commitment latest_finalized_commitment = 5;
   uint32 pruning_epoch = 6;
   bool is_bootstrapped = 7;
-
 }
 
 message NodeStatusRequest {
@@ -171,6 +173,11 @@ message BlockMetadata {
     BLOCK_FAILURE_REASON_FAILURE_INVALID = 255;
   }
   BlockFailureReason block_failure_reason = 3;
+  TransactionMetadata transaction_metadata = 4;
+}
+
+message TransactionMetadata {
+  TransactionId transaction_id = 1;
   enum TransactionState {
     TRANSACTION_STATE_NO_TRANSACTION = 0;
     TRANSACTION_STATE_PENDING = 1;
@@ -179,7 +186,7 @@ message BlockMetadata {
     TRANSACTION_STATE_FINALIZED = 4;
     TRANSACTION_STATE_FAILED = 5;
   }
-  TransactionState transaction_state = 4;
+  TransactionState transaction_state = 2;
   enum TransactionFailureReason {
     TRANSACTION_FAILURE_REASON_NONE = 0;
     TRANSACTION_FAILURE_REASON_UTXO_INPUT_ALREADY_SPENT = 1;
@@ -210,7 +217,7 @@ message BlockMetadata {
     TRANSACTION_FAILURE_REASON_CAPABILITIES_NFT_DESTRUCTION_NOT_ALLOWED = 26;
     TRANSACTION_FAILURE_REASON_SEMANTIC_VALIDATION_FAILED = 255;
   }
-  TransactionFailureReason transaction_failure_reason = 5;
+  TransactionFailureReason transaction_failure_reason = 3;
 }
 
 // Block Issuance
