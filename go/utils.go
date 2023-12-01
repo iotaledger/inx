@@ -94,6 +94,84 @@ func (x *SlotIndex) Unwrap() iotago.SlotIndex {
 	return iotago.SlotIndex(x.GetIndex())
 }
 
+// BlockMetadata
+
+func WrapBlockState(state api.BlockState) BlockMetadata_BlockState {
+	return BlockMetadata_BlockState(state)
+}
+
+func WrapBlockFailureReason(reason api.BlockFailureReason) BlockMetadata_BlockFailureReason {
+	return BlockMetadata_BlockFailureReason(reason)
+}
+
+func (x BlockMetadata_BlockState) Unwrap() api.BlockState {
+	return api.BlockState(x)
+}
+
+func (x BlockMetadata_BlockFailureReason) Unwrap() api.BlockFailureReason {
+	return api.BlockFailureReason(x)
+}
+
+func WrapBlockMetadata(blockMetadata *api.BlockMetadataResponse) (*BlockMetadata, error) {
+	return &BlockMetadata{
+		BlockId:             NewBlockId(blockMetadata.BlockID),
+		BlockState:          WrapBlockState(blockMetadata.BlockState),
+		BlockFailureReason:  WrapBlockFailureReason(blockMetadata.BlockFailureReason),
+		TransactionMetadata: WrapTransactionMetadata(blockMetadata.TransactionMetadata),
+	}, nil
+}
+
+func (x *BlockMetadata) Unwrap() (*api.BlockMetadataResponse, error) {
+	return &api.BlockMetadataResponse{
+		BlockID:             x.GetBlockId().Unwrap(),
+		BlockState:          x.GetBlockState().Unwrap(),
+		BlockFailureReason:  x.GetBlockFailureReason().Unwrap(),
+		TransactionMetadata: x.GetTransactionMetadata().Unwrap(),
+	}, nil
+}
+
+// TransactionMetadata
+
+func WrapTransactionState(state api.TransactionState) TransactionMetadata_TransactionState {
+	return TransactionMetadata_TransactionState(state)
+}
+
+func WrapTransactionFailureReason(reason api.TransactionFailureReason) TransactionMetadata_TransactionFailureReason {
+	return TransactionMetadata_TransactionFailureReason(reason)
+}
+
+func (x TransactionMetadata_TransactionState) Unwrap() api.TransactionState {
+	return api.TransactionState(x)
+}
+
+func (x TransactionMetadata_TransactionFailureReason) Unwrap() api.TransactionFailureReason {
+	return api.TransactionFailureReason(x)
+}
+
+func WrapTransactionMetadata(transactionMetadata *api.TransactionMetadataResponse) *TransactionMetadata {
+	if transactionMetadata == nil {
+		return nil
+	}
+
+	return &TransactionMetadata{
+		TransactionId:            NewTransactionId(transactionMetadata.TransactionID),
+		TransactionState:         WrapTransactionState(transactionMetadata.TransactionState),
+		TransactionFailureReason: WrapTransactionFailureReason(transactionMetadata.TransactionFailureReason),
+	}
+}
+
+func (x *TransactionMetadata) Unwrap() *api.TransactionMetadataResponse {
+	if x == nil {
+		return nil
+	}
+
+	return &api.TransactionMetadataResponse{
+		TransactionID:            x.GetTransactionId().Unwrap(),
+		TransactionState:         x.GetTransactionState().Unwrap(),
+		TransactionFailureReason: x.GetTransactionFailureReason().Unwrap(),
+	}
+}
+
 // Ledger
 
 func (x *TransactionId) Unwrap() iotago.TransactionID {
@@ -253,40 +331,6 @@ func (x *NodeConfiguration) APIProvider() *iotago.EpochBasedProvider {
 	}
 
 	return apiProvider
-}
-
-// BlockMetadata
-
-func WrapBlockState(state api.BlockState) BlockMetadata_BlockState {
-	return BlockMetadata_BlockState(state)
-}
-
-func WrapBlockFailureReason(reason api.BlockFailureReason) BlockMetadata_BlockFailureReason {
-	return BlockMetadata_BlockFailureReason(reason)
-}
-
-func WrapTransactionState(state api.TransactionState) BlockMetadata_TransactionState {
-	return BlockMetadata_TransactionState(state)
-}
-
-func WrapTransactionFailureReason(reason api.TransactionFailureReason) BlockMetadata_TransactionFailureReason {
-	return BlockMetadata_TransactionFailureReason(reason)
-}
-
-func (x BlockMetadata_BlockState) Unwrap() api.BlockState {
-	return api.BlockState(x)
-}
-
-func (x BlockMetadata_TransactionState) Unwrap() api.TransactionState {
-	return api.TransactionState(x)
-}
-
-func (x BlockMetadata_BlockFailureReason) Unwrap() api.BlockFailureReason {
-	return api.BlockFailureReason(x)
-}
-
-func (x BlockMetadata_TransactionFailureReason) Unwrap() api.TransactionFailureReason {
-	return api.TransactionFailureReason(x)
 }
 
 // Block Issuance
