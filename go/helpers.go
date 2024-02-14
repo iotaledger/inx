@@ -14,6 +14,7 @@ func NewBlockId(blockID iotago.BlockID) *BlockId {
 	return id
 }
 
+// nolint:revive,stylecheck // this name is auto generated
 func NewBlockIds(blockIDs iotago.BlockIDs) []*BlockId {
 	result := make([]*BlockId, len(blockIDs))
 	for i := range blockIDs {
