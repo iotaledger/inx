@@ -172,7 +172,6 @@ message BlockMetadata {
     BLOCK_FAILURE_REASON_INVALID = 255;
   }
   BlockFailureReason block_failure_reason = 3;
-  TransactionMetadata transaction_metadata = 4;
 }
 
 message TransactionMetadata {

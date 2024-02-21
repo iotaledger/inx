@@ -114,19 +114,17 @@ func (x BlockMetadata_BlockFailureReason) Unwrap() api.BlockFailureReason {
 
 func WrapBlockMetadata(blockMetadata *api.BlockMetadataResponse) (*BlockMetadata, error) {
 	return &BlockMetadata{
-		BlockId:             NewBlockId(blockMetadata.BlockID),
-		BlockState:          WrapBlockState(blockMetadata.BlockState),
-		BlockFailureReason:  WrapBlockFailureReason(blockMetadata.BlockFailureReason),
-		TransactionMetadata: WrapTransactionMetadata(blockMetadata.TransactionMetadata),
+		BlockId:            NewBlockId(blockMetadata.BlockID),
+		BlockState:         WrapBlockState(blockMetadata.BlockState),
+		BlockFailureReason: WrapBlockFailureReason(blockMetadata.BlockFailureReason),
 	}, nil
 }
 
 func (x *BlockMetadata) Unwrap() (*api.BlockMetadataResponse, error) {
 	return &api.BlockMetadataResponse{
-		BlockID:             x.GetBlockId().Unwrap(),
-		BlockState:          x.GetBlockState().Unwrap(),
-		BlockFailureReason:  x.GetBlockFailureReason().Unwrap(),
-		TransactionMetadata: x.GetTransactionMetadata().Unwrap(),
+		BlockID:            x.GetBlockId().Unwrap(),
+		BlockState:         x.GetBlockState().Unwrap(),
+		BlockFailureReason: x.GetBlockFailureReason().Unwrap(),
 	}, nil
 }
 
