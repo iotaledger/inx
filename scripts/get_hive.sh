@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pushd ./../go
+
 COMMIT=$1
 if [ -z "$COMMIT" ]
 then
@@ -17,3 +19,5 @@ done
 # Run go mod tidy
 echo "Running go mod tidy..."
 go mod tidy >/dev/null
+
+popd
