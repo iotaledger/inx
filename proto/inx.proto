@@ -72,12 +72,13 @@ message BaseToken {
 
 message NodeStatus {
   bool is_healthy = 1;
-  uint32 last_accepted_block_slot = 2;
-  uint32 last_confirmed_block_slot = 3;
-  Commitment latest_commitment = 4;
-  Commitment latest_finalized_commitment = 5;
-  uint32 pruning_epoch = 6;
-  bool is_bootstrapped = 7;
+  bool is_bootstrapped = 2;
+  uint32 last_accepted_block_slot = 3;
+  uint32 last_confirmed_block_slot = 4;
+  Commitment latest_commitment = 5;
+  Commitment latest_finalized_commitment = 6;
+  uint32 pruning_epoch = 7;
+  bool has_pruned = 8;
 }
 
 message NodeStatusRequest {
