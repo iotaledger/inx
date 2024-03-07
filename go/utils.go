@@ -84,14 +84,14 @@ func (x *RootBlocksResponse) Unwrap() (map[iotago.BlockID]iotago.CommitmentID, e
 	return rootBlockUnwrapped, nil
 }
 
-func WrapSlotIndex(slot iotago.SlotIndex) *SlotIndex {
-	return &SlotIndex{
-		Index: uint32(slot),
+func WrapSlotRequest(slot iotago.SlotIndex) *SlotRequest {
+	return &SlotRequest{
+		Slot: uint32(slot),
 	}
 }
 
-func (x *SlotIndex) Unwrap() iotago.SlotIndex {
-	return iotago.SlotIndex(x.GetIndex())
+func (x *SlotRequest) Unwrap() iotago.SlotIndex {
+	return iotago.SlotIndex(x.GetSlot())
 }
 
 // BlockMetadata
@@ -100,33 +100,21 @@ func WrapBlockState(state api.BlockState) BlockMetadata_BlockState {
 	return BlockMetadata_BlockState(state)
 }
 
-func WrapBlockFailureReason(reason api.BlockFailureReason) BlockMetadata_BlockFailureReason {
-	return BlockMetadata_BlockFailureReason(reason)
-}
-
 func (x BlockMetadata_BlockState) Unwrap() api.BlockState {
 	return api.BlockState(x)
 }
 
-func (x BlockMetadata_BlockFailureReason) Unwrap() api.BlockFailureReason {
-	return api.BlockFailureReason(x)
-}
-
 func WrapBlockMetadata(blockMetadata *api.BlockMetadataResponse) (*BlockMetadata, error) {
 	return &BlockMetadata{
-		BlockId:             NewBlockId(blockMetadata.BlockID),
-		BlockState:          WrapBlockState(blockMetadata.BlockState),
-		BlockFailureReason:  WrapBlockFailureReason(blockMetadata.BlockFailureReason),
-		TransactionMetadata: WrapTransactionMetadata(blockMetadata.TransactionMetadata),
+		BlockId:    NewBlockId(blockMetadata.BlockID),
+		BlockState: WrapBlockState(blockMetadata.BlockState),
 	}, nil
 }
 
 func (x *BlockMetadata) Unwrap() (*api.BlockMetadataResponse, error) {
 	return &api.BlockMetadataResponse{
-		BlockID:             x.GetBlockId().Unwrap(),
-		BlockState:          x.GetBlockState().Unwrap(),
-		BlockFailureReason:  x.GetBlockFailureReason().Unwrap(),
-		TransactionMetadata: x.GetTransactionMetadata().Unwrap(),
+		BlockID:    x.GetBlockId().Unwrap(),
+		BlockState: x.GetBlockState().Unwrap(),
 	}, nil
 }
 
@@ -154,9 +142,11 @@ func WrapTransactionMetadata(transactionMetadata *api.TransactionMetadataRespons
 	}
 
 	return &TransactionMetadata{
-		TransactionId:            NewTransactionId(transactionMetadata.TransactionID),
-		TransactionState:         WrapTransactionState(transactionMetadata.TransactionState),
-		TransactionFailureReason: WrapTransactionFailureReason(transactionMetadata.TransactionFailureReason),
+		TransactionId:             NewTransactionId(transactionMetadata.TransactionID),
+		TransactionState:          WrapTransactionState(transactionMetadata.TransactionState),
+		EarliestAttachmentSlot:    uint32(transactionMetadata.EarliestAttachmentSlot),
+		TransactionFailureReason:  WrapTransactionFailureReason(transactionMetadata.TransactionFailureReason),
+		TransactionFailureDetails: transactionMetadata.TransactionFailureDetails,
 	}
 }
 
@@ -166,9 +156,11 @@ func (x *TransactionMetadata) Unwrap() *api.TransactionMetadataResponse {
 	}
 
 	return &api.TransactionMetadataResponse{
-		TransactionID:            x.GetTransactionId().Unwrap(),
-		TransactionState:         x.GetTransactionState().Unwrap(),
-		TransactionFailureReason: x.GetTransactionFailureReason().Unwrap(),
+		TransactionID:             x.GetTransactionId().Unwrap(),
+		TransactionState:          x.GetTransactionState().Unwrap(),
+		EarliestAttachmentSlot:    iotago.SlotIndex(x.GetEarliestAttachmentSlot()),
+		TransactionFailureReason:  x.GetTransactionFailureReason().Unwrap(),
+		TransactionFailureDetails: x.GetTransactionFailureDetails(),
 	}
 }
 

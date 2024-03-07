@@ -13,7 +13,7 @@ service INX {
   // Commitments
   rpc ListenToCommitments(SlotRangeRequest) returns (stream Commitment);
   rpc ReadCommitment(CommitmentRequest) returns (Commitment);
-  rpc ForceCommitUntil(SlotIndex) returns (NoParams);
+  rpc ForceCommitUntil(SlotRequest) returns (NoParams);
 
   // Blocks
   rpc ListenToBlocks(NoParams) returns (stream Block);
@@ -22,7 +22,7 @@ service INX {
   rpc SubmitBlock(RawBlock) returns (BlockId);
   rpc ReadBlock(BlockId) returns (RawBlock);
   rpc ReadBlockMetadata(BlockId) returns (BlockMetadata);
-  rpc ReadAcceptedBlocks(SlotIndex) returns (stream BlockWithMetadata);
+  rpc ReadAcceptedBlocks(SlotRequest) returns (stream BlockWithMetadata);
 
   // Transactions
   rpc ReadTransactionMetadata(TransactionId) returns (TransactionMetadata);
@@ -104,8 +104,8 @@ message CommitmentRequest {
   CommitmentId commitment_id = 2;
 }
 
-message SlotIndex {
-  uint32 index = 1;
+message SlotRequest {
+  uint32 slot = 1;
 }
 
 message SlotRangeRequest {
@@ -152,33 +152,16 @@ message BlockMetadata {
     BLOCK_STATE_ACCEPTED = 2;
     BLOCK_STATE_CONFIRMED = 3;
     BLOCK_STATE_FINALIZED = 4;
-    BLOCK_STATE_REJECTED = 5;
-    BLOCK_STATE_FAILED = 6;
+    BLOCK_STATE_DROPPED = 5;
+    BLOCK_STATE_ORPHANED = 6;
   }
   BlockState block_state = 2;
-  enum BlockFailureReason {
-    BLOCK_FAILURE_REASON_NONE = 0;
-    BLOCK_FAILURE_REASON_IS_TOO_OLD = 1;
-    BLOCK_FAILURE_REASON_PARENT_IS_TOO_OLD = 2;
-    BLOCK_FAILURE_REASON_PARENT_NOT_FOUND = 3;
-    BLOCK_FAILURE_REASON_ISSUER_ACCOUNT_NOT_FOUND = 4;
-    BLOCK_FAILURE_REASON_MANA_COST_CALCULATION_FAILED = 5;
-    BLOCK_FAILURE_REASON_BURNED_INSUFFICIENT_MANA = 6;
-    BLOCK_FAILURE_REASON_ACCOUNT_LOCKED = 7;
-    BLOCK_FAILURE_REASON_ACCOUNT_EXPIRED = 8;
-    BLOCK_FAILURE_REASON_SIGNATURE_INVALID = 9;
-    BLOCK_FAILURE_REASON_DROPPED_DUE_TO_CONGESTION = 10;
-    BLOCK_FAILURE_REASON_PAYLOAD_INVALID = 11;
-    BLOCK_FAILURE_REASON_INVALID = 255;
-  }
-  BlockFailureReason block_failure_reason = 3;
-  TransactionMetadata transaction_metadata = 4;
 }
 
 message TransactionMetadata {
   TransactionId transaction_id = 1;
   enum TransactionState {
-    TRANSACTION_STATE_NO_TRANSACTION = 0;
+    TRANSACTION_STATE_UNKNOWN = 0;
     TRANSACTION_STATE_PENDING = 1;
     TRANSACTION_STATE_ACCEPTED = 2;
     TRANSACTION_STATE_CONFIRMED = 3;
@@ -186,6 +169,7 @@ message TransactionMetadata {
     TRANSACTION_STATE_FAILED = 5;
   }
   TransactionState transaction_state = 2;
+  uint32 earliest_attachment_slot = 3;
   enum TransactionFailureReason {
     TRANSACTION_FAILURE_REASON_NONE = 0;
 
@@ -284,7 +268,8 @@ message TransactionMetadata {
 
     TRANSACTION_FAILURE_REASON_SEMANTIC_VALIDATION_FAILED = 255;
   }
-  TransactionFailureReason transaction_failure_reason = 3;
+  TransactionFailureReason transaction_failure_reason = 4;
+  string transaction_failure_details = 5;
 }
 
 // Block Issuance

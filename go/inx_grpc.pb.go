@@ -60,7 +60,7 @@ type INXClient interface {
 	// Commitments
 	ListenToCommitments(ctx context.Context, in *SlotRangeRequest, opts ...grpc.CallOption) (INX_ListenToCommitmentsClient, error)
 	ReadCommitment(ctx context.Context, in *CommitmentRequest, opts ...grpc.CallOption) (*Commitment, error)
-	ForceCommitUntil(ctx context.Context, in *SlotIndex, opts ...grpc.CallOption) (*NoParams, error)
+	ForceCommitUntil(ctx context.Context, in *SlotRequest, opts ...grpc.CallOption) (*NoParams, error)
 	// Blocks
 	ListenToBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToBlocksClient, error)
 	ListenToAcceptedBlocks(ctx context.Context, in *NoParams, opts ...grpc.CallOption) (INX_ListenToAcceptedBlocksClient, error)
@@ -68,7 +68,7 @@ type INXClient interface {
 	SubmitBlock(ctx context.Context, in *RawBlock, opts ...grpc.CallOption) (*BlockId, error)
 	ReadBlock(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*RawBlock, error)
 	ReadBlockMetadata(ctx context.Context, in *BlockId, opts ...grpc.CallOption) (*BlockMetadata, error)
-	ReadAcceptedBlocks(ctx context.Context, in *SlotIndex, opts ...grpc.CallOption) (INX_ReadAcceptedBlocksClient, error)
+	ReadAcceptedBlocks(ctx context.Context, in *SlotRequest, opts ...grpc.CallOption) (INX_ReadAcceptedBlocksClient, error)
 	// Transactions
 	ReadTransactionMetadata(ctx context.Context, in *TransactionId, opts ...grpc.CallOption) (*TransactionMetadata, error)
 	// Block Issuance
@@ -201,7 +201,7 @@ func (c *iNXClient) ReadCommitment(ctx context.Context, in *CommitmentRequest, o
 	return out, nil
 }
 
-func (c *iNXClient) ForceCommitUntil(ctx context.Context, in *SlotIndex, opts ...grpc.CallOption) (*NoParams, error) {
+func (c *iNXClient) ForceCommitUntil(ctx context.Context, in *SlotRequest, opts ...grpc.CallOption) (*NoParams, error) {
 	out := new(NoParams)
 	err := c.cc.Invoke(ctx, INX_ForceCommitUntil_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -333,7 +333,7 @@ func (c *iNXClient) ReadBlockMetadata(ctx context.Context, in *BlockId, opts ...
 	return out, nil
 }
 
-func (c *iNXClient) ReadAcceptedBlocks(ctx context.Context, in *SlotIndex, opts ...grpc.CallOption) (INX_ReadAcceptedBlocksClient, error) {
+func (c *iNXClient) ReadAcceptedBlocks(ctx context.Context, in *SlotRequest, opts ...grpc.CallOption) (INX_ReadAcceptedBlocksClient, error) {
 	stream, err := c.cc.NewStream(ctx, &INX_ServiceDesc.Streams[5], INX_ReadAcceptedBlocks_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
@@ -563,7 +563,7 @@ type INXServer interface {
 	// Commitments
 	ListenToCommitments(*SlotRangeRequest, INX_ListenToCommitmentsServer) error
 	ReadCommitment(context.Context, *CommitmentRequest) (*Commitment, error)
-	ForceCommitUntil(context.Context, *SlotIndex) (*NoParams, error)
+	ForceCommitUntil(context.Context, *SlotRequest) (*NoParams, error)
 	// Blocks
 	ListenToBlocks(*NoParams, INX_ListenToBlocksServer) error
 	ListenToAcceptedBlocks(*NoParams, INX_ListenToAcceptedBlocksServer) error
@@ -571,7 +571,7 @@ type INXServer interface {
 	SubmitBlock(context.Context, *RawBlock) (*BlockId, error)
 	ReadBlock(context.Context, *BlockId) (*RawBlock, error)
 	ReadBlockMetadata(context.Context, *BlockId) (*BlockMetadata, error)
-	ReadAcceptedBlocks(*SlotIndex, INX_ReadAcceptedBlocksServer) error
+	ReadAcceptedBlocks(*SlotRequest, INX_ReadAcceptedBlocksServer) error
 	// Transactions
 	ReadTransactionMetadata(context.Context, *TransactionId) (*TransactionMetadata, error)
 	// Block Issuance
@@ -619,7 +619,7 @@ func (UnimplementedINXServer) ListenToCommitments(*SlotRangeRequest, INX_ListenT
 func (UnimplementedINXServer) ReadCommitment(context.Context, *CommitmentRequest) (*Commitment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadCommitment not implemented")
 }
-func (UnimplementedINXServer) ForceCommitUntil(context.Context, *SlotIndex) (*NoParams, error) {
+func (UnimplementedINXServer) ForceCommitUntil(context.Context, *SlotRequest) (*NoParams, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ForceCommitUntil not implemented")
 }
 func (UnimplementedINXServer) ListenToBlocks(*NoParams, INX_ListenToBlocksServer) error {
@@ -640,7 +640,7 @@ func (UnimplementedINXServer) ReadBlock(context.Context, *BlockId) (*RawBlock, e
 func (UnimplementedINXServer) ReadBlockMetadata(context.Context, *BlockId) (*BlockMetadata, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReadBlockMetadata not implemented")
 }
-func (UnimplementedINXServer) ReadAcceptedBlocks(*SlotIndex, INX_ReadAcceptedBlocksServer) error {
+func (UnimplementedINXServer) ReadAcceptedBlocks(*SlotRequest, INX_ReadAcceptedBlocksServer) error {
 	return status.Errorf(codes.Unimplemented, "method ReadAcceptedBlocks not implemented")
 }
 func (UnimplementedINXServer) ReadTransactionMetadata(context.Context, *TransactionId) (*TransactionMetadata, error) {
@@ -810,7 +810,7 @@ func _INX_ReadCommitment_Handler(srv interface{}, ctx context.Context, dec func(
 }
 
 func _INX_ForceCommitUntil_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SlotIndex)
+	in := new(SlotRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -822,7 +822,7 @@ func _INX_ForceCommitUntil_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: INX_ForceCommitUntil_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(INXServer).ForceCommitUntil(ctx, req.(*SlotIndex))
+		return srv.(INXServer).ForceCommitUntil(ctx, req.(*SlotRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -945,7 +945,7 @@ func _INX_ReadBlockMetadata_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _INX_ReadAcceptedBlocks_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(SlotIndex)
+	m := new(SlotRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}

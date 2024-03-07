@@ -56,8 +56,8 @@ func main() {
 func fetchCommitmentBlocks(client inx.INXClient, commitmentID iotago.CommitmentID, apiProvider iotago.APIProvider) error {
 	slot := commitmentID.Slot()
 	fmt.Printf("Fetch accepted blocks included in commitment %d\n", slot)
-	req := &inx.SlotIndex{
-		Index: uint32(slot),
+	req := &inx.SlotRequest{
+		Slot: uint32(slot),
 	}
 	stream, err := client.ReadAcceptedBlocks(context.Background(), req)
 	if err != nil {
