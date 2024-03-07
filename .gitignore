@@ -3,3 +3,6 @@ go/.idea
 .idea
 examples/nodejs/node_modules
 Cargo.lock
+target/
+**/*.rs.bk
+**/.vscode/
