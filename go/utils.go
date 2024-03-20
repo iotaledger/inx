@@ -1,4 +1,3 @@
-// nolint: nosnakecase // generated GRPC code uses snake case
 package inx
 
 import (
@@ -77,7 +76,7 @@ func WrapRootBlocks(rootBlocks map[iotago.BlockID]iotago.CommitmentID) *RootBloc
 func (x *RootBlocksResponse) Unwrap() (map[iotago.BlockID]iotago.CommitmentID, error) {
 	rootBlockUnwrapped := make(map[iotago.BlockID]iotago.CommitmentID)
 
-	for _, rootBlock := range x.RootBlocks {
+	for _, rootBlock := range x.GetRootBlocks() {
 		rootBlockUnwrapped[rootBlock.GetBlockId().Unwrap()] = rootBlock.GetCommitmentId().Unwrap()
 	}
 
@@ -187,11 +186,11 @@ func (x *OutputId) Unwrap() iotago.OutputID {
 }
 
 func (x *LedgerOutput) UnwrapOutputID() iotago.OutputID {
-	return x.OutputId.Unwrap()
+	return x.GetOutputId().Unwrap()
 }
 
 func (x *LedgerOutput) UnwrapBlockID() iotago.BlockID {
-	return x.BlockId.Unwrap()
+	return x.GetBlockId().Unwrap()
 }
 
 func (x *LedgerOutput) UnwrapOutput(api iotago.API, opts ...serix.Option) (iotago.Output, error) {
@@ -301,12 +300,12 @@ func WrapProtocolParameters(startEpoch iotago.EpochIndex, params iotago.Protocol
 }
 
 func (x *RawProtocolParameters) Unwrap() (iotago.EpochIndex, iotago.ProtocolParameters, error) {
-	params, _, err := iotago.ProtocolParametersFromBytes(x.Params)
+	params, _, err := iotago.ProtocolParametersFromBytes(x.GetParams())
 	if err != nil {
 		return 0, nil, err
 	}
 
-	return iotago.EpochIndex(x.StartEpoch), params, nil
+	return iotago.EpochIndex(x.GetStartEpoch()), params, nil
 }
 
 func (x *NodeConfiguration) APIProvider() *iotago.EpochBasedProvider {
