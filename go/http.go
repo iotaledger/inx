@@ -24,7 +24,6 @@ func NewAPIRoundTripper(client INXClient) *APIRoundTripper {
 }
 
 func (r *APIRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-
 	apiReq := &APIRequest{
 		Method:  req.Method,
 		Path:    req.URL.RequestURI(),

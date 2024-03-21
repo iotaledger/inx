@@ -4,17 +4,17 @@ import (
 	iotago "github.com/iotaledger/iota.go/v4"
 )
 
-// nolint:revive,stylecheck // this name is auto generated
+//nolint:revive,stylecheck
 func NewBlockId(blockID iotago.BlockID) *BlockId {
 	id := &BlockId{
 		Id: make([]byte, iotago.BlockIDLength),
 	}
-	copy(id.Id, blockID[:])
+	copy(id.GetId(), blockID[:])
 
 	return id
 }
 
-// nolint:revive,stylecheck // this name is auto generated
+//nolint:revive
 func NewBlockIds(blockIDs iotago.BlockIDs) []*BlockId {
 	result := make([]*BlockId, len(blockIDs))
 	for i := range blockIDs {
@@ -31,48 +31,47 @@ func NewBlockWithBytes(blockID iotago.BlockID, data []byte) *Block {
 			Data: make([]byte, len(data)),
 		},
 	}
-	copy(m.Block.Data, data)
+	copy(m.GetBlock().GetData(), data)
 
 	return m
 }
 
-// nolint:revive,stylecheck // this name is auto generated
+//nolint:revive,stylecheck // this name is auto generated
 func NewTransactionId(transactionID iotago.TransactionID) *TransactionId {
 	id := &TransactionId{
 		Id: make([]byte, iotago.TransactionIDLength),
 	}
-	copy(id.Id, transactionID[:])
+	copy(id.GetId(), transactionID[:])
 
 	return id
 }
 
-// nolint:revive,stylecheck // this name is auto generated
+//nolint:revive,stylecheck // this name is auto generated
 func NewOutputId(outputID iotago.OutputID) *OutputId {
 	id := &OutputId{
 		Id: make([]byte, iotago.OutputIDLength),
 	}
-	copy(id.Id, outputID[:])
+	copy(id.GetId(), outputID[:])
 
 	return id
 }
 
-// nolint:revive,stylecheck // this name is auto generated
+//nolint:revive,stylecheck // this name is auto generated
 func NewCommitmentId(commitmentID iotago.CommitmentID) *CommitmentId {
 	id := &CommitmentId{
 		Id: make([]byte, iotago.CommitmentIDLength),
 	}
-	copy(id.Id, commitmentID[:])
+	copy(id.GetId(), commitmentID[:])
 
 	return id
 }
 
-// nolint:revive,stylecheck // this name is auto generated
 func NewAccountInfoRequest(accountID iotago.AccountID, slot iotago.SlotIndex) *AccountInfoRequest {
 	accountInfoRequest := &AccountInfoRequest{
 		AccountId:   make([]byte, iotago.AccountIDLength),
 		AccountSlot: uint32(slot),
 	}
-	copy(accountInfoRequest.AccountId, accountID[:])
+	copy(accountInfoRequest.GetAccountId(), accountID[:])
 
 	return accountInfoRequest
 }
@@ -84,7 +83,7 @@ func NewCommitmentWithBytes(commitmentID iotago.CommitmentID, data []byte) *Comm
 			Data: make([]byte, len(data)),
 		},
 	}
-	copy(c.Commitment.Data, data)
+	copy(c.GetCommitment().GetData(), data)
 
 	return c
 }
